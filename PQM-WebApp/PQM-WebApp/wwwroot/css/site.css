@@ -91,6 +91,7 @@ body {
 .dashboard-card {
     margin: 10px
 }
+
     .dashboard-card:hover {
         background-color: whitesmoke;
     }
@@ -118,4 +119,26 @@ hr {
 
 .dashboard-chart-30 {
     height: 30vh;
+}
+
+.dashboard-row {
+    padding: 20px;
+}
+
+.dashboard-bg-ws {
+    background-color: whitesmoke;
+}
+
+.indicator-title {
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+.indicator-value {
+    font-size: 70px;
+    font-weight: bold;
+}
+
+.indicator-percent {
+    font-size: x-large;
 }
