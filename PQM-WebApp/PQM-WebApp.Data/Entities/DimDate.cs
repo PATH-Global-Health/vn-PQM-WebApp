@@ -15,9 +15,9 @@ namespace PQM_WebApp.Data.Entities
         public int DayNumOfMonth { get; set; }
         public int DayNumOfQuarter { get; set; }
         public int DayNumOfYear { get; set; }
-        public int WeekId { get; set; }
-        public int MonthId { get; set; }
-        public int QuarterId { get; set; }
+        public Guid WeekId { get; set; }
+        public Guid MonthId { get; set; }
+        public Guid QuarterId { get; set; }
         public int YearId { get; set; }
         [ForeignKey("WeekId")]
         public virtual DimWeek Week { get; set; }
