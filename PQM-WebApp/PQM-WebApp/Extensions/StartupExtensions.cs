@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using PQM_WebApp.Data;
 using PQM_WebApp.Service;
 using System;
 using System.Collections.Generic;
@@ -13,5 +15,13 @@ namespace PQM_WebApp.Extensions
         {
             services.AddTransient<IPrEPService, PrEPService>();
         }
+
+        public static void ConfigDbContext(this IServiceCollection services, string dbConnection)
+        {
+
+            services.AddDbContext<AppDBContext>(options =>
+                                                       options.UseLazyLoadingProxies().UseSqlServer(dbConnection));
+        }
+
     }
 }
