@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Create Summary Data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <form>
+        <div class="row">
+            <div class="col">
+                <h3>Indicator Information:</h3>
+                <div class="k-content">
+                    <label for="indicator-group-input">Choose indicator group:</label>
+                    <input class="form-control" id="indicator-group-input" />
+                </div>
+                <div class="k-content">
+                    <label for="indicator-input">Choose indicator:</label>
+                    <input class="form-control" id="indicator-input" />
+                </div>
+            </div>
+            <div class="col">
+                <h3>Time Information:</h3>
+                <div class="k-content">
+                    <label for="indicator-input">Choose date:</label>
+                    <input class="form-control" id="datepicker" />
+                </div>
+
+            </div>
+            <div class="col">
+                <h3>Area information:</h3>
+                <div class="k-content">
+                    <label for="city-input">Choose city/provine:</label>
+                    <input class="form-control" id="city-input" />
+                </div>
+                <div class="k-content">
+                    <label for="district-input">Choose district:</label>
+                    <input class="form-control" id="districtp-input" />
+                </div>
+                <div class="k-content">
+                    <label for="ward-input">Choose ward:</label>
+                    <input class="form-control" id="ward-input" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <h3>Summary Data:</h3>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="inputEmail4">Value Type</label>
+                    <input class="form-control" id="inputEmail4" placeholder="Email">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="inputEmail4">Value</label>
+                    <input class="form-control" id="inputEmail4" placeholder="Email">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <script src="~/js/createSummary.js"></script>
+}

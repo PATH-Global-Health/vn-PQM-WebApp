@@ -25,6 +25,8 @@ namespace PQM_WebApp
         {
             services.AddControllersWithViews();
             services.AddBusinessServices();
+            services.ConfigDbContext(Configuration["ConnectionStrings:DbConnection"]);
+            services.ConfigSwagger();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +45,9 @@ namespace PQM_WebApp
             app.UseRouting();
 
             app.UseAuthorization();
+            // Register the Swagger generator and the Swagger UI middlewares
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             app.UseEndpoints(endpoints =>
             {

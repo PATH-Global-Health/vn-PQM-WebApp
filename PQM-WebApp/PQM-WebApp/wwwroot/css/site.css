@@ -83,7 +83,6 @@ body {
 }
 
 .dashboard-container {
-    height: 100vh;
     padding: 0px !important;
     font-size: 20px
 }
@@ -110,7 +109,7 @@ hr {
     }
 
 .dashboard-map {
-    height: 30vh;
+    height: 35vh;
 }
 
 .dashboard-chart-25 {
@@ -142,3 +141,28 @@ hr {
 .indicator-percent {
     font-size: x-large;
 }
+
+.chip {
+    display: inline-block;
+    padding: 0 20px;
+    height: 40px;
+    font-size: 16px;
+    line-height: 40px;
+    border-radius: 20px;
+    background-color: darkgray;
+    margin-right: 5px;
+    margin-bottom: 10px;
+}
+
+.closebtn {
+    padding-left: 10px;
+    color: #999;
+    float: right;
+    font-weight: bold;
+    font-size: 19px;
+    cursor: pointer;
+}
+
+    .closebtn:hover {
+        color: dimgray
+    }

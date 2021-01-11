@@ -3,8 +3,110 @@
     ViewData["Title"] = "PrEP";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">PrEP Overview</a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+        </ul>
+        <button class="btn btn-outline my-2 my-sm-0" type="submit" style="color: white;" onclick="openConfig()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z" />
+                <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z" />
+            </svg>
+        </button>
+    </div>
+</nav>
 <div class="container-fluid">
+    <div class="row" style="background-color: whitesmoke; height: 200px; transition: height 1s; overflow: hidden" id="configPanel">
+        <div class="col-12 dashboard-container">
+            <div class="card dashboard-card" style="background-color: white; padding: 20px">
+                <form>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="inputState">City</label>
+                                <select id="inputState" class="form-control">
+                                    <option selected>Ho Chi Minh City</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="inputState">District</label>
+                                <select id="inputState" class="form-control">
+                                    <option>Bình Chánh District</option>
+                                    <option>Bình Tân District</option>
+                                    <option>Bình Thạnh District</option>
+                                    <option>Cần Giờ District</option>
+                                    <option>Củ Chi District</option>
+                                    <option>District 1</option>
+                                    <option>District 2</option>
+                                    <option>District 3</option>
+                                    <option>District 4</option>
+                                    <option>District 5</option>
+                                    <option>District 6</option>
+                                    <option>District 7</option>
+                                    <option>District 8</option>
+                                    <option>District 9</option>
+                                    <option>District 10</option>
+                                    <option>District 11</option>
+                                    <option>District 12</option>
+                                    <option>Gò Vấp District</option>
+                                    <option>Hóc Môn District</option>
+                                    <option>Nhà Bè District</option>
+                                    <option>Phú Nhuận District</option>
+                                    <option>Tân Bình District</option>
+                                    <option>Tân Phú District</option>
+                                    <option>Thủ Đức District</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="k-content">
+                                <label for="city-input">Year</label>
+                                <input class="form-control" id="year-picker" />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="inputState">Quarter</label>
+                                <select id="inputState" class="form-control">
+                                    <option selected>Quarter 1</option>
+                                    <option>Quarter 2</option>
+                                    <option>Quarter 3</option>
+                                    <option>Quarter 4</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="inputState">Month</label>
+                                <select id="inputState" class="form-control">
+                                    <option selected value='1'>Janaury</option>
+                                    <option value='2'>February</option>
+                                    <option value='3'>March</option>
+                                    <option value='4'>April</option>
+                                    <option value='5'>May</option>
+                                    <option value='6'>June</option>
+                                    <option value='7'>July</option>
+                                    <option value='8'>August</option>
+                                    <option value='9'>September</option>
+                                    <option value='10'>October</option>
+                                    <option value='11'>November</option>
+                                    <option value='12'>December</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex justify-content-end">
+                            <button class="btn btn-info">Process</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around">
         <div class="col-3" style="background-color: white; height: 40vh">
             <div class="d-flex flex-column justify-content-around" style="height: 20vh">
@@ -14,7 +116,7 @@
                 </div>
                 <div class="row d-flex justify-content-center indicator-percent">
                     <span class="align-middle" id="PrEP_NEW-percent">
-                        
+
                     </span>
                 </div>
             </div>
@@ -61,6 +163,9 @@
         <div class="col-12" style="margin:15px">
             <h3>PrEP Variables</h3>
         </div>
+        <div class="col-12" id="variables" style="padding-left: 30px">
+            
+        </div>
         <div class="col-12 d-flex justify-content-around">
             <div class="col-3">
                 <div class="col-12" style="background-color: whitesmoke; height: 40vh">
@@ -99,310 +204,5 @@
 </div>
 
 @section Scripts{
-    <script>
-        function createAgeGroupChart() {
-            $("#age-group-chart").kendoChart({
-                theme: "bootstrap",
-                legend: {
-                    visible: false
-                },
-                seriesDefaults: {
-                    type: "bar"
-                },
-                series: [{
-                    name: "Age Group",
-                    data: [10, 70, 43, 25, 12, 5, 2, 4],
-                    color: "#62666e",
-                }],
-                valueAxis: {
-                    max: 75,
-                    line: {
-                        visible: false
-                    },
-                    minorGridLines: {
-                        visible: true
-                    },
-                    labels: {
-                        rotation: "auto"
-                    }
-                },
-                categoryAxis: {
-                    categories: ["15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50+"],
-                    majorGridLines: {
-                        visible: false
-                    }
-                },
-            });
-        }
-
-        function createGenderChart() {
-            $("#gender-chart").kendoChart({
-                theme: "bootstrap",
-                legend: {
-                    visible: false
-                },
-                seriesDefaults: {
-                    type: "bar"
-                },
-                series: [{
-                    name: "Gender",
-                    data: [20, 150],
-                    color: "#62666e",
-                }],
-                valueAxis: {
-                    max: 155,
-                    line: {
-                        visible: false
-                    },
-                    minorGridLines: {
-                        visible: true
-                    },
-                    labels: {
-                        rotation: "auto"
-                    }
-                },
-                categoryAxis: {
-                    categories: ["Female", "Male"],
-                    majorGridLines: {
-                        visible: false
-                    }
-                },
-            });
-        }
-
-        function createKeyPopulationsChart() {
-            $("#key-populations-chart").kendoChart({
-                theme: "bootstrap",
-                legend: {
-                    visible: false
-                },
-                seriesDefaults: {
-                    type: "bar"
-                },
-                series: [{
-                    name: "Key Populations",
-                    data: [3, 105, 0, 60, 0, 0, 0],
-                    color: "#62666e",
-                }],
-                valueAxis: {
-                    max: 115,
-                    line: {
-                        visible: false
-                    },
-                    minorGridLines: {
-                        visible: true
-                    },
-                    labels: {
-                        rotation: "auto"
-                    }
-                },
-                categoryAxis: {
-                    categories: ["FSWs", "MSM", "PWID", "SDCs", "TCMT", "TGW", "Others"],
-                    majorGridLines: {
-                        visible: false
-                    }
-                },
-            });
-        }
-
-        function createClinicsChart() {
-            $("#clinics-chart").kendoChart({
-                theme: "bootstrap",
-                legend: {
-                    visible: false
-                },
-                seriesDefaults: {
-                    type: "bar"
-                },
-                series: [{
-                    name: "Clinic",
-                    data: [55, 70, 50],
-                    color: "#62666e",
-                }],
-                valueAxis: {
-                    max: 75,
-                    line: {
-                        visible: false
-                    },
-                    minorGridLines: {
-                        visible: true
-                    },
-                    labels: {
-                        rotation: "auto"
-                    }
-                },
-                categoryAxis: {
-                    categories: ["OPC D9", "OPC D11", "Thu Duc"],
-                    majorGridLines: {
-                        visible: false
-                    }
-                },
-            });
-        }
-
-        function createPrEP_NEW_chart() {
-            $("#PrEP_NEW_chart").kendoChart({
-                seriesDefaults: {
-                    type: "area",
-                    area: {
-                        line: {
-                            style: "smooth"
-                        }
-                    },
-                },
-                series: [{
-                    data: [0.507, 1.943, 2.848, 0.284, 3.263, 4.801, 6.890, 8.238, 9, 4.552, 15.855, 25],
-                    color: "#62666e"
-                }],
-                categoryAxis: {
-                    title: {
-                    },
-                    majorGridLines: {
-                        visible: false
-                    },
-                    majorTicks: {
-                        visible: false
-                    }
-                },
-                valueAxis: {
-                    max: 25,
-                    title: {
-                    },
-                    majorGridLines: {
-                        visible: false
-                    },
-                    visible: false
-                }
-            });
-        }
-
-        function createPrEP_CURR_chart() {
-            $("#PrEP_CURR_chart").kendoChart({
-                seriesDefaults: {
-                    type: "area",
-                    area: {
-                        line: {
-                            style: "smooth"
-                        }
-                    },
-                },
-                series: [{
-                    data: [0.507, 3.943, 2.848, 0.284, 7.263, 4.801, 7.890, 4.238, 9, 4.552, 15.855, 25],
-                    color: "#62666e"
-                }],
-                categoryAxis: {
-                    title: {
-                    },
-                    majorGridLines: {
-                        visible: false
-                    },
-                    majorTicks: {
-                        visible: false
-                    }
-                },
-                valueAxis: {
-                    max: 25,
-                    title: {
-                    },
-                    majorGridLines: {
-                        visible: false
-                    },
-                    visible: false
-                }
-            });
-        }
-
-        function createPrEP_3M_chart() {
-            $("#pPrEP_3M_chart").kendoChart({
-                seriesDefaults: {
-                    type: "area",
-                    area: {
-                        line: {
-                            style: "smooth"
-                        }
-                    },
-                },
-                series: [{
-                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25],
-                    color: "#62666e"
-                }],
-                categoryAxis: {
-                    title: {
-                    },
-                    majorGridLines: {
-                        visible: false
-                    },
-                    majorTicks: {
-                        visible: false
-                    }
-                },
-                valueAxis: {
-                    max: 25,
-                    title: {
-                    },
-                    majorGridLines: {
-                        visible: false
-                    },
-                    visible: false
-                }
-            });
-        }
-
-        function trendElement(trend) {
-            let trendDirection = trend.direction == 1 ?
-                `<svg xmlns="http://www.w3.org/2000/svg" color="${trend.criticalInfo}" width="35" height="35" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 20 20">
-                    <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                 </svg>`
-                :
-                `<svg xmlns="http://www.w3.org/2000/svg" color="${trend.criticalInfo}" width="20" height="20" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 20 20">
-                     <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                 </svg>`;
-            return `${trendDirection}
-                     ${trend.comparePercent}%
-                    `;
-        }
-
-        function initPrEP_NewIndicator(indicator) {
-            createPrEP_NEW_chart();
-            $("#PrEP_NEW-value").html(indicator.value.value);
-            $("#PrEP_NEW-value").css("color", indicator.value.criticalInfo);
-            $("#PrEP_NEW-percent").html(trendElement(indicator.trend));
-        }
-
-        function initPrEP_CurrIndicator(indicator) {
-            createPrEP_CURR_chart();
-            $("#PrEP_CURR-value").html(indicator.value.value);
-            $("#PrEP_CURR-value").css("color", indicator.value.criticalInfo);
-            $("#PrEP_CURR-percent").html(trendElement(indicator.trend));
-        }
-
-        function initPrEP_3MIndicator(indicator) {
-            createPrEP_3M_chart();
-            $("#pPrEP_3M-value").html(indicator.value.value);
-            $("#pPrEP_3M-value").css("color", indicator.value.criticalInfo);
-            $("#pPrEP_3M-percent").html(trendElement(indicator.trend));
-        }
-
-        $(document).ready(() => {
-            $.get('/PrEP/indicators', function (data) {
-                data.forEach(indicator => {
-                    switch (indicator.name) {
-                        case "PrEP_NEW":
-                            initPrEP_NewIndicator(indicator);
-                            break;
-                        case "PrEP_CURR":
-                            initPrEP_CurrIndicator(indicator);
-                            break;
-                        case "%PrEP_3M":
-                            initPrEP_3MIndicator(indicator);
-                    }
-                });
-            });
-            createAgeGroupChart();
-            createGenderChart();
-            createKeyPopulationsChart();
-            createClinicsChart();
-        });
-        $(document).bind("kendo:skinChange", createPrEP_NEW_chart);
-    </script>
+    <script src="~/js/PrEP.js"></script>
 }
