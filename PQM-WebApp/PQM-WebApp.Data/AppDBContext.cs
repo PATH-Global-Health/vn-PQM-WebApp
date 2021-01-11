@@ -2,6 +2,7 @@
 using PQM_WebApp.Data.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace PQM_WebApp.Data
@@ -26,7 +27,10 @@ namespace PQM_WebApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            };
         }
     }
 
