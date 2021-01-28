@@ -6,10 +6,10 @@ using System.Text;
 
 namespace PQM_WebApp.Data.Entities
 {
-    public class DimYear : BaseEntity
+    public class KeyPopulation : BaseEntity
     {
-        public int Year { get; set; }
+        public string Name { get; set; }
 
-        public virtual ICollection<DimMonth> Months { get; set; }
+        public virtual ICollection<AggregatedValue> AggregatedValues { get; set; }
     }
 }

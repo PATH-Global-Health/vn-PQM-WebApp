@@ -16,7 +16,7 @@ namespace PQM_WebApp.Data.Entities
 
         [Key, Column(Order = 0)]
         public Guid Id { get; set; }
-        public Boolean IsDeleted { get; set; }
+        public bool IsDeleted { get; set; }
         public DateTime? DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
         public string CreatedBy { get; set; }

@@ -13,17 +13,18 @@ namespace PQM_WebApp.Data
         : base(options)
         { }
 
+        public DbSet<AgeGroup> AgeGroups { get; set; }
+        public DbSet<AggregatedValue> AggregatedValues { get; set; }
+        public DbSet<DimDate> DimDates { get; set; }
+        public DbSet<DimMonth> DimMonths { get; set; }
+        public DbSet<DimYear> DimYears { get; set; }
+        public DbSet<District> Districts { get; set; }
         public DbSet<Indicator> Indicators { get; set; }
         public DbSet<IndicatorGroup> IndicatorGroups { get; set; }
-        public DbSet<Ward> Wards { get; set; }
-        public DbSet<District> Districts { get; set; }
-        public DbSet<City> Cities { get; set; }
-        public DbSet<DimYear> DimYears { get; set; }
-        public DbSet<DimQuarter> DimQuarters { get; set; }
-        public DbSet<DimMonth> DimMonths { get; set; }
-        public DbSet<DimWeek> DimWeeks { get; set; }
-        public DbSet<DimDate> DimDates { get; set; }
-        public DbSet<IndicatorSummaryValue> IndicatorSummaryValues { get; set; }
+        public DbSet<KeyPopulation> KeyPopulations { get; set; }
+        public DbSet<Province> Provinces { get; set; }
+        public DbSet<Sex> Sex { get; set; }
+        public DbSet<Site> Sites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,4 +35,6 @@ namespace PQM_WebApp.Data
         }
     }
 
+    // Add-Migration PQM_DB_v1
+    // Update-Database
 }

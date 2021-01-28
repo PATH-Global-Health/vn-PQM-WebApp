@@ -6,15 +6,13 @@ using System.Text;
 
 namespace PQM_WebApp.Data.Entities
 {
-    public class Indicator : BaseEntity
+    public class Site : BaseEntity
     {
         public string Code { get; set; }
         public string Name { get; set; }
 
-        public Guid IndicatorGroupId { get; set; }
-        [ForeignKey("IndicatorGroupId")]
-        public virtual IndicatorGroup IndicatorGroup { get; set; }
-
-        public virtual ICollection<AggregatedValue> AggregatedValues { get; set; }
+        public Guid DistrictId { get; set; }
+        [ForeignKey("DistrictId")]
+        public virtual District District { get; set; }
     }
 }
