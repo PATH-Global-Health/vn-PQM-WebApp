@@ -9,8 +9,8 @@ namespace PQM_WebApp.Data.Entities
     public class AgeGroup : BaseEntity
     {
         public string Name { get; set; }
-        public byte From { get; set; }
-        public byte To { get; set; }
+        public byte? From { get; set; }
+        public byte? To { get; set; }
 
         public virtual ICollection<AggregatedValue> AggregatedValues { get; set; }
     }
