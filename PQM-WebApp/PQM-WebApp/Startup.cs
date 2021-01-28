@@ -55,6 +55,8 @@ namespace PQM_WebApp
                     name: "default",
                     pattern: "{controller=Dashboard}/{action=Index}/{id?}");
             });
+
+            app.UseMapsterConfig();
         }
     }
 }

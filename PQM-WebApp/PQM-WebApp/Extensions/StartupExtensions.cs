@@ -19,6 +19,7 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<IIndicatorGroupService, IndicatorGroupService>();
             services.AddTransient<IIndicatorService, IndicatorService>();
             services.AddTransient<IUtilsService, UtilsService>();
+            services.AddTransient<ILocationService, LocationService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)

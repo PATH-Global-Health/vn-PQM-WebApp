@@ -11,4 +11,9 @@ namespace PQM_WebApp.Data.Models
         public bool Succeed { get; set; }
 
     }
+
+    public class PagingModel : ResultModel
+    {
+        public int PageCount { get; set; }
+    }
 }
