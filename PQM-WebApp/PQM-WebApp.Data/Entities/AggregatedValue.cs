@@ -20,7 +20,7 @@ namespace PQM_WebApp.Data.Entities
         public Guid MonthId { get; set; }
         [ForeignKey("MonthId")]
         public virtual DimMonth Month { get; set; }
-        public Guid DateId { get; set; }
+        public Guid? DateId { get; set; }
         [ForeignKey("DateId")]
         public virtual DimDate Date { get; set; }
         public Guid SexId { get; set; }
