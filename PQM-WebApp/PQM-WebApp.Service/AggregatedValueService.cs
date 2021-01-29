@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using PQM_WebApp.Data;
 using PQM_WebApp.Data.Entities;
 using PQM_WebApp.Data.Enums;
@@ -8,12 +7,19 @@ using PQM_WebApp.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PQM_WebApp.Service
 {
     public interface IAggregatedValueService
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="year">Năm</param>
+        /// <param name="month">Tháng</param>
+        /// <param name="indicatorCode">Mã indicator</param>
+        /// <param name="groupBy">Loại</param>
+        /// <returns>Loại và Tổng giá trị</returns>
         ResultModel GetAggregatedValues(int year, int month, string indicatorCode, string groupBy);
     }
 
