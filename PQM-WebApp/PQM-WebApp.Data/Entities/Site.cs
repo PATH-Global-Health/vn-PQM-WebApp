@@ -6,10 +6,9 @@ using System.Text;
 
 namespace PQM_WebApp.Data.Entities
 {
-    public class Site : BaseEntity
+    public class Site : DimensionGroup
     {
         public string Code { get; set; }
-        public string Name { get; set; }
 
         public Guid DistrictId { get; set; }
         [ForeignKey("DistrictId")]

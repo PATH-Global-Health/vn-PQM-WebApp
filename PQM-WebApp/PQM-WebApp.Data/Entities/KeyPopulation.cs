@@ -6,10 +6,8 @@ using System.Text;
 
 namespace PQM_WebApp.Data.Entities
 {
-    public class KeyPopulation : BaseEntity
+    public class KeyPopulation : DimensionGroup
     {
-        public string Name { get; set; }
-
         public virtual ICollection<AggregatedValue> AggregatedValues { get; set; }
     }
 }

@@ -6,9 +6,8 @@ using System.Text;
 
 namespace PQM_WebApp.Data.Entities
 {
-    public class AgeGroup : BaseEntity
+    public class AgeGroup : DimensionGroup
     {
-        public string Name { get; set; }
         public byte? From { get; set; }
         public byte? To { get; set; }
 
