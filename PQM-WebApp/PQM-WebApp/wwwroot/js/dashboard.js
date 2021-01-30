@@ -1,5 +1,5 @@
 ﻿function drillDown(groupIndicator) {
-    if (groupIndicator !== 'PrEP') return;
+    if (groupIndicator !== 'PrEP' && groupIndicator !== 'Testing') return;
     console.log(`${groupIndicator} is clicked`);
     var win = window.open(groupIndicator, '_blank');
     win.focus();

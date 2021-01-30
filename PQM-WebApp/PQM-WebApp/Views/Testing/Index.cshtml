@@ -1,9 +1,11 @@
-﻿@{
-    ViewData["Title"] = "Dashboard";
+﻿
+@{
+    ViewData["Title"] = "Testing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">PQM Overview</a>
+    <a class="navbar-brand" href="#">Testing Overview</a>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
         </ul>
@@ -20,7 +22,6 @@
         <div class="col-12 dashboard-container">
             <div class="card dashboard-card" style="background-color: white; padding: 20px">
                 <form>
-
                     <div class="row">
                         <div class="col">
                             <div class="form-group">
@@ -107,72 +108,90 @@
             </div>
         </div>
     </div>
-    <div class="row" style="background-color: whitesmoke">
-        <div class="col d-flex justify-content-end">
-            <a class="btn btn-outline-info" href="/Dashboard/KeyIndicators" target="_blank">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
-                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
-                </svg>
-                Key Indicators
-            </a>
+    <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around">
+        <div class="col-3" style="background-color: white; height: 40vh">
+            <div class="d-flex flex-column justify-content-around" style="height: 20vh">
+                <div class="row d-flex justify-content-center indicator-title">HTS_TEST_POS</div>
+                <div class="row d-flex justify-content-center indicator-value">
+                    <span id="HTS_TEST_POS-value"></span>
+                </div>
+                <div class="row d-flex justify-content-center indicator-percent">
+                    <span class="align-middle" id="HTS_TEST_POS-percent">
+
+                    </span>
+                </div>
+            </div>
+            <div id="HTS_TEST_POS_chart" style="height: 20vh">
+
+            </div>
+        </div>
+        <div class="col-3" style="background-color: white; height: 40vh">
+            <div class="d-flex flex-column justify-content-around" style="height: 20vh">
+                <div class="row d-flex justify-content-center indicator-title">HTS_TEST-Recency</div>
+                <div class="row d-flex justify-content-center indicator-value" id="HTS_TEST-Recency-value"></div>
+                <div class="row d-flex justify-content-center indicator-percent">
+                    <span class="align-middle" id="HTS_TEST-Recency-percent">
+                        
+                    </span>
+                </div>
+            </div>
+            <div id="HTS_TEST-Recency_chart" style="height: 20vh">
+
+            </div>
+        </div>
+        <div class="col-3" style="background-color: white; height: 40vh">
+            <div class="d-flex flex-column justify-content-around" style="height: 22vh">
+                <div class="row d-flex justify-content-center indicator-title">
+                    <div class="col-12 d-flex justify-content-center indicator-title">HTS_TEST_POS</div>
+                    <div class="col-12 d-flex justify-content-center indicator-title">successfully refer to OPC</div>
+                </div>
+                <div class="row d-flex justify-content-center indicator-value" id="HTS_TEST_POS-refer-value"></div>
+                <div class="row d-flex justify-content-center indicator-percent">
+                    <span class="align-middle" id="HTS_TEST_POS-refer-percent">
+                        
+                    </span>
+                </div>
+            </div>
+            <div id="HTS_TEST_POS-refer_chart" style="height: 18vh">
+
+            </div>
         </div>
     </div>
-    <div class="row" style="background-color: whitesmoke">
-        <div class="col-4 dashboard-container">
-            <div class="card dashboard-card">
-                <div class="card-body">
-                    <h3 class="card-title">HTS Positive</h3>
-                    <div id="map" class="dashboard-map"></div>
-                    <div id="person-type-char" class="dashboard-chart-25"></div>
-                    <hr />
-                    <div id="HTS-chart" class="dashboard-chart-30"></div>
-                </div>
-            </div>
+    <div class="row dashboard-row">
+        <div class="col-12" style="margin:15px">
+            <h3>PrEP Variables</h3>
         </div>
-        <div class="col-4 dashboard-container">
-            <div class="card dashboard-card" onclick="drillDown('Testing')">
-                <div class="card-body">
-                    <h3 class="card-title">Testing</h3>
-                    <div id="testing">
-                    </div>
-                </div>
-            </div>
-            <div class="card dashboard-card" onclick="drillDown('PrEP')">
-                <div class="card-body">
-                    <h3 class="card-title">PrEP</h3>
-                    <div id="prep">
-                    </div>
-                </div>
-            </div>
-            <div class="card dashboard-card" onclick="drillDown('Treatment')">
-                <div class="card-body">
-                    <h3 class="card-title">Treatment</h3>
-                    <div id="treatment">
-                    </div>
-                </div>
-            </div>
+        <div class="col-12" id="variables" style="padding-left: 30px">
+
         </div>
-        <div class="col-4 dashboard-container" onclick="drillDown('Drugs')">
-            <div class="card dashboard-card">
-                <div class="card-body">
-                    <h3 class="card-title">Drugs</h3>
-                    <div id="drugs">
+        <div class="col-12 d-flex justify-content-around">
+            <div class="col-3">
+                <div class="col-12" style="background-color: whitesmoke; height: 40vh">
+                    <div class="row" style="padding-left: 15px; padding-top: 15px">
+                        <h4>Age Group</h4>
                     </div>
+                    <div id="age-group-chart"></div>
                 </div>
             </div>
-            <div class="card dashboard-card" onclick="drillDown('SHI')">
-                <div class="card-body">
-                    <h3 class="card-title">SHI</h3>
-                    <div id="shi">
+            <div class="col-3">
+                <div class="col-12" style="background-color: whitesmoke; height: 40vh">
+                    <div class="row" style="padding-left: 15px; padding-top: 15px">
+                        <h4>Gender</h4>
                     </div>
+                    <div id="gender-chart"></div>
                 </div>
             </div>
-            <div class="card dashboard-card" onclick="drillDown('ServiceQuality')">
-                <div class="card-body">
-                    <h3 class="card-title">Service Quality</h3>
-                    <div id="service-quality">
+            <div class="col-3">
+                <div class="col-12" style="background-color: whitesmoke; height: 40vh">
+                    <div class="row" style="padding-left: 15px; padding-top: 15px">
+                        <h4>Key Populations</h4>
                     </div>
+                    <div id="key-populations-chart"></div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="col-12" style="background-color: whitesmoke; height: 40vh">
+                    <div id="map" style="height: 100%"></div>
                 </div>
             </div>
         </div>
@@ -181,7 +200,7 @@
 
 @section Scripts {
     <script src="~/js/markerclustererplus.min.js"></script>
-    <script src="~/js/dashboard.js"></script>
+    <script src="~/js/testing.js"></script>
     <script defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_uYWyuQfE3qofErFoGnDl9PkjEF7xGbk&callback=initMap">
     </script>
