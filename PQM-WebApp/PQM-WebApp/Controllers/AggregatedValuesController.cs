@@ -20,9 +20,9 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet()]
-        public IActionResult Provinces(int year, int month, string indicatorCode, string groupBy)
+        public IActionResult Provinces(int year, int quarter, int? month, string indicatorGroup, string indicatorCode, string groupBy, string proviceCode, string districtCode)
         {
-            var rs = _aggregatedService.GetAggregatedValues(year, month, indicatorCode, groupBy);
+            var rs = _aggregatedService.GetAggregatedValues(year, quarter, month, indicatorGroup, indicatorCode, groupBy);
             if (rs.Succeed) return Ok(rs.Data);
             return BadRequest(rs.ErrorMessage);
         }

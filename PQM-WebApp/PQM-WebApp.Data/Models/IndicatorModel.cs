@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PQM_WebApp.Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,8 +8,10 @@ namespace PQM_WebApp.Data.Models
 
     public class IndicatorValue
     {
-        public string Value { get; set; }
-        public string Type { get; set; }
+        public int Value { get; set; }
+        public int? Denominator { get; set; }
+        public int? Numerator { get; set; }
+        public DataType DataType { get; set; }
         public string CriticalInfo { get; set; }
     }
 
@@ -16,7 +19,7 @@ namespace PQM_WebApp.Data.Models
     {
         public int Direction { get; set; }
         public string CriticalInfo { get; set; }
-        public int ComparePercent { get; set; }
+        public double ComparePercent { get; set; }
     }
 
     public class IndicatorModel

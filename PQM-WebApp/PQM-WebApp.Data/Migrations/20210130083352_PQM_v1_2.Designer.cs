@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PQM_WebApp.Data;
 
 namespace PQM_WebApp.Data.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210130083352_PQM_v1_2")]
+    partial class PQM_v1_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,9 +44,6 @@ namespace PQM_WebApp.Data.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
 
                     b.Property<byte?>("To")
                         .HasColumnType("tinyint");
@@ -78,9 +77,6 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<DateTime?>("DateUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Denominator")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("IndicatorId")
                         .HasColumnType("uniqueidentifier");
 
@@ -93,16 +89,13 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<Guid>("MonthId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("Numerator")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("SexId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("SiteId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("Value")
+                    b.Property<int>("Value")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -348,9 +341,6 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("KeyPopulations");
@@ -415,9 +405,6 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("Sex");
@@ -449,9 +436,6 @@ namespace PQM_WebApp.Data.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

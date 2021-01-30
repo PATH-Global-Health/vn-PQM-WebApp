@@ -7,5 +7,6 @@ namespace PQM_WebApp.Data.Entities
     public class DimensionGroup : BaseEntity
     {
         public string Name { get; set; }
+        public int Order { get; set; }
     }
 }

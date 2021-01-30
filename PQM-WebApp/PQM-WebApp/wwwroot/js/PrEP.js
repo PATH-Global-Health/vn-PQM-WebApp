@@ -1,153 +1,190 @@
-﻿function createAgeGroupChart() {
-    $("#age-group-chart").kendoChart({
-        theme: "bootstrap",
-        legend: {
-            visible: false
-        },
-        seriesDefaults: {
-            type: "bar"
-        },
-        series: [{
-            name: "Age Group",
-            data: [10, 70, 43, 25, 12, 5, 2, 4],
-            color: "#62666e",
-        }],
-        valueAxis: {
-            max: 75,
-            line: {
-                visible: false
-            },
-            minorGridLines: {
-                visible: true
-            },
-            labels: {
-                rotation: "auto"
-            }
-        },
-        categoryAxis: {
-            categories: ["15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50+"],
-            majorGridLines: {
-                visible: false
-            }
-        },
-        seriesClick: function (e) {
-            addVar(`Age group: ${e.category}`)
+﻿var year = 2020;
+var month = '';
+var quarter = 1;
+var proviceCode = '';
+var districtCode = '';
+
+function createAgeGroupChart() {
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&proviceCode=${proviceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=AgeGroup`,
+        function (respones) {
+            $("#age-group-chart").kendoChart({
+                theme: "bootstrap",
+                legend: {
+                    visible: false
+                },
+                seriesDefaults: {
+                    type: "bar"
+                },
+                series: [{
+                    name: "Age Group",
+                    data: respones.map(m => m.value),
+                    color: "#62666e",
+                }],
+                valueAxis: {
+                    max: 75,
+                    line: {
+                        visible: false
+                    },
+                    minorGridLines: {
+                        visible: true
+                    },
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                categoryAxis: {
+                    categories: respones.map(m => m.name),
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                seriesClick: function (e) {
+                    addVar(`Age group: ${e.category}`)
+                }
+            });
         }
-    });
+    );
 }
 
 function createGenderChart() {
-    $("#gender-chart").kendoChart({
-        theme: "bootstrap",
-        legend: {
-            visible: false
-        },
-        seriesDefaults: {
-            type: "bar"
-        },
-        series: [{
-            name: "Gender",
-            data: [20, 150],
-            color: "#62666e",
-        }],
-        valueAxis: {
-            max: 155,
-            line: {
-                visible: false
-            },
-            minorGridLines: {
-                visible: true
-            },
-            labels: {
-                rotation: "auto"
-            }
-        },
-        categoryAxis: {
-            categories: ["Female", "Male"],
-            majorGridLines: {
-                visible: false
-            }
-        },
-        seriesClick: function (e) {
-            addVar(`Gender: ${e.category}`)
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&proviceCode=${proviceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Sex`,
+        function (respones) {
+            $("#gender-chart").kendoChart({
+                theme: "bootstrap",
+                legend: {
+                    visible: false
+                },
+                seriesDefaults: {
+                    type: "bar"
+                },
+                series: [{
+                    name: "Gender",
+                    data: respones.map(m => m.value),
+                    color: "#62666e",
+                }],
+                valueAxis: {
+                    max: 155,
+                    line: {
+                        visible: false
+                    },
+                    minorGridLines: {
+                        visible: true
+                    },
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                categoryAxis: {
+                    categories: respones.map(m => m.name),
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                seriesClick: function (e) {
+                    addVar(`Gender: ${e.category}`)
+                }
+            });
         }
-    });
+    )
 }
 
 function createKeyPopulationsChart() {
-    $("#key-populations-chart").kendoChart({
-        theme: "bootstrap",
-        legend: {
-            visible: false
-        },
-        seriesDefaults: {
-            type: "bar"
-        },
-        series: [{
-            name: "Key Populations",
-            data: [3, 105, 0, 60, 0, 0, 0],
-            color: "#62666e",
-        }],
-        valueAxis: {
-            max: 115,
-            line: {
-                visible: false
-            },
-            minorGridLines: {
-                visible: true
-            },
-            labels: {
-                rotation: "auto"
-            }
-        },
-        categoryAxis: {
-            categories: ["FSWs", "MSM", "PWID", "SDCs", "TCMT", "TGW", "Others"],
-            majorGridLines: {
-                visible: false
-            }
-        },
-        seriesClick: function (e) {
-            addVar(`Key population: ${e.category}`)
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&proviceCode=${proviceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=KeyPopulation`,
+        function (respones) {
+            $("#key-populations-chart").kendoChart({
+                theme: "bootstrap",
+                legend: {
+                    visible: false
+                },
+                seriesDefaults: {
+                    type: "bar"
+                },
+                series: [{
+                    name: "Key Populations",
+                    data: respones.map(m => m.value),
+                    color: "#62666e",
+                }],
+                valueAxis: {
+                    max: 115,
+                    line: {
+                        visible: false
+                    },
+                    minorGridLines: {
+                        visible: true
+                    },
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                categoryAxis: {
+                    categories: respones.map(m => m.name),
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                seriesClick: function (e) {
+                    addVar(`Key population: ${e.category}`)
+                }
+            });
         }
-    });
+    )
 }
 
 function createClinicsChart() {
-    $("#clinics-chart").kendoChart({
-        theme: "bootstrap",
-        legend: {
-            visible: false
-        },
-        seriesDefaults: {
-            type: "bar"
-        },
-        series: [{
-            name: "Clinic",
-            data: [55, 70, 50],
-            color: "#62666e",
-        }],
-        valueAxis: {
-            max: 75,
-            line: {
-                visible: false
-            },
-            minorGridLines: {
-                visible: true
-            },
-            labels: {
-                rotation: "auto"
-            }
-        },
-        categoryAxis: {
-            categories: ["OPC D9", "OPC D11", "Thu Duc"],
-            majorGridLines: {
-                visible: false
-            }
-        },
-        seriesClick: function (e) {
-            addVar(`Clinniic: ${e.category}`)
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&proviceCode=${proviceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Site`,
+        function (respones) {
+            $("#clinics-chart").kendoChart({
+                theme: "bootstrap",
+                legend: {
+                    visible: false
+                },
+                seriesDefaults: {
+                    type: "bar"
+                },
+                series: [{
+                    name: "Clinic",
+                    data: respones.map(m => m.value),
+                    color: "#62666e",
+                }],
+                valueAxis: {
+                    max: 75,
+                    line: {
+                        visible: false
+                    },
+                    minorGridLines: {
+                        visible: true
+                    },
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                categoryAxis: {
+                    labels: {
+                        visual: function (e) {
+                            var rect = new kendo.geometry.Rect(e.rect.origin, [e.rect.size.width, 250]);
+                            var layout = new kendo.drawing.Layout(rect, {
+                                orientation: "vertical",
+                                alignContent: "center"
+                            });
+                            var words = e.text.split(" ");
+                            for (var i = 0; i < words.length; i++) {
+                                layout.append(new kendo.drawing.Text(words[i]));
+                            }
+                            layout.reflow();
+                            return layout;
+                        }
+                    },  
+                    categories: respones.map(m => m.name),
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                seriesClick: function (e) {
+                    addVar(`Clinniic: ${e.category}`)
+                }
+            });
         }
-    });
+    )
 }
 
 function createPrEP_NEW_chart() {
@@ -303,10 +340,10 @@ function initConfigPanel() {
 }
 
 $(document).ready(() => {
-    $.get('/PrEP/indicators', function (data) {
+    $.get('/api/PrEP/indicators?year=2020&quater=1&provinceCode=79&districtCode=768', function (data) {
         data.forEach(indicator => {
             switch (indicator.name) {
-                case "PrEP_NEW":
+                case "PrEP NEW":
                     initPrEP_NewIndicator(indicator);
                     break;
                 case "PrEP_CURR":

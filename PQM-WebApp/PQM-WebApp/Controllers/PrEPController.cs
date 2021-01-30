@@ -21,15 +21,7 @@ namespace PQM_WebApp.Controllers
             return View();
         }
 
-        public IActionResult Indicators()
-        {
-            var rs = _prEPService.GetIndicators();
-            if (rs.Succeed)
-            {
-                return Ok(rs.Data);
-            }
-            return BadRequest(rs.ErrorMessage);
-        }
+       
 
         public IActionResult Indicator(string name)
         {

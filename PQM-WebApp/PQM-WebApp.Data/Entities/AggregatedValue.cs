@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using PQM_WebApp.Data.Enums;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace PQM_WebApp.Data.Entities
 {
+
     public class AggregatedValue : BaseEntity
     {
         public DataType DataType { get; set; }
-        public string Value { get; set; }
+        public int? Value { get; set; }
+        public int? Denominator { get; set; }
+        public int? Numerator { get; set; }
 
         public Guid SiteId { get; set; }
         [ForeignKey("SiteId")]

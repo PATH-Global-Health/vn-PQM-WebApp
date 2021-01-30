@@ -23,14 +23,14 @@ namespace PQM_WebApp.Controllers
         public IActionResult Provinces(int pageIndex = 0, int pageSize = int.MaxValue)
         {
             var rs = _locationService.GetProvinces(pageIndex, pageSize);
-            return Ok(rs);
+            return Ok(rs.Data);
         }
 
         [HttpGet("Districts")]
         public IActionResult Districts(string provinceCode)
         {
             var rs = _locationService.GetDistricts(provinceCode);
-            return Ok(rs);
+            return Ok(rs.Data);
         }
     }
 }

@@ -14,10 +14,12 @@ namespace PQM_WebApp.Controllers
     public class IndicatorsController : ControllerBase
     {
         private readonly IIndicatorService _indicatorService;
+        private readonly IPrEPService _prEPService;
 
-        public IndicatorsController(IIndicatorService indicatorService)
+        public IndicatorsController(IIndicatorService indicatorService, IPrEPService prEPService)
         {
             _indicatorService = indicatorService;
+            _prEPService = prEPService;
         }
 
         [HttpGet]
@@ -33,6 +35,17 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _indicatorService.Create(model);
             if (rs.Succeed) return Ok(rs.Data);
+            return BadRequest(rs.ErrorMessage);
+        }
+
+        [HttpGet("/api/PrEP/indicators")]
+        public IActionResult Indicators(int year, int quater, int? month, string provinceCode, string districtCode)
+        {
+            var rs = _prEPService.GetIndicators(year, quater, month, provinceCode, districtCode);
+            if (rs.Succeed)
+            {
+                return Ok(rs.Data);
+            }
             return BadRequest(rs.ErrorMessage);
         }
     }
