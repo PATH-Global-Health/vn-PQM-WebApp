@@ -13,7 +13,7 @@ namespace PQM_WebApp.Service
     public interface IIndicatorService
     {
         public ResultModel Create(IndicatorCreateModel model);
-        public ResultModel Get(int year, int quater, int? month, string provinceCode, string districtCode);
+        public ResultModel Get();
     }
 
     public class IndicatorService : IIndicatorService
@@ -49,7 +49,7 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public ResultModel Get(int year, int quater, int? month, string provinceCode, string districtCode)
+        public ResultModel Get()
         {
             var rs = new ResultModel();
             try
