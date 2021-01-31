@@ -10,7 +10,7 @@ namespace PQM_WebApp.Service
 {
     public interface IPrEPService
     {
-        ResultModel GetIndicators(int year, int quater, int? month, string provinceCode, string districtCode);
+        ResultModel GetIndicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null);
         ResultModel GetIndicator(string name);
     }
 
@@ -91,7 +91,7 @@ namespace PQM_WebApp.Service
             };
         }
 
-        public ResultModel GetIndicators(int year, int quater, int? month, string provinceCode, string districtCode)
+        public ResultModel GetIndicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
         {
             var fromMonth = quater == 1 ? 1 : quater == 2 ? 4 : quater == 3 ? 7 : 10;
             var toMonth = quater == 1 ? 3 : quater == 2 ? 6 : quater == 3 ? 9 : 12;
@@ -99,6 +99,26 @@ namespace PQM_WebApp.Service
             var districts = _dbContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || d.Code == districtCode)).Select(s => s.Id);
             var sites = _dbContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
             var aggregatedValues = _dbContext.AggregatedValues.Where(w => months.Contains(w.MonthId) && sites.Contains(w.SiteId) && w.Indicator.IndicatorGroup.Name == "PrEP");
+            if (!string.IsNullOrEmpty(ageGroups))
+            {
+                var _ageGroups = ageGroups.Split(',').Select(s => Guid.Parse(s));
+                aggregatedValues = aggregatedValues.Where(s => _ageGroups.Contains(s.AgeGroupId));
+            }
+            if (!string.IsNullOrEmpty(keyPopulations))
+            {
+                var _keyPopulations = keyPopulations.Split(',').Select(s => Guid.Parse(s));
+                aggregatedValues = aggregatedValues.Where(s => _keyPopulations.Contains(s.KeyPopulationId));
+            }
+            if (!string.IsNullOrEmpty(genders))
+            {
+                var _genders = genders.Split(',').Select(s => Guid.Parse(s));
+                aggregatedValues = aggregatedValues.Where(s => _genders.Contains(s.SexId));
+            }
+            if(!string.IsNullOrEmpty(clinnics))
+            {
+                var _clinnics = clinnics.Split(',').Select(s => Guid.Parse(s));
+                aggregatedValues = aggregatedValues.Where(s => _clinnics.Contains(s.SiteId));
+            }
             var groupIndicator = aggregatedValues.ToList().GroupBy(g => g.Indicator);
             var data = groupIndicator.Select(s => new IndicatorModel
                                                 {

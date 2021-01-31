@@ -53,7 +53,8 @@ namespace PQM_WebApp.Service
                                         .ToList();
                 var grouped = filter.GroupBy(_ => _.GetType().GetProperty(dimensionString).GetValue(_, null))
                                     .OrderBy(_ => (_.Key as DimensionGroup).Order)
-                                    .Select(s => new { 
+                                    .Select(s => new {
+                                                    (s.Key as DimensionGroup).Id,
                                                     (s.Key as DimensionGroup).Name,
                                                     Value = s.Sum(v => v.Value),
                                                     Numerator = s.Sum(n => n.Numerator),

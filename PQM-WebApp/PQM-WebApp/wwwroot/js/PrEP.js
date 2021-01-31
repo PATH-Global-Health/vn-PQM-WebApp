@@ -1,12 +1,18 @@
-﻿var year = 2020;
-var month = '';
-var quarter = 1;
-var proviceCode = '';
-var districtCode = '';
+﻿let year = 2020;
+let month = '';
+let quarter = 1;
+let provinceCode = '';
+let districtCode = '';
+let firstload = true;
+let ageGroups = [];
+let keyPopulations = [];
+let genders = [];
+let clinnics = [];
 
 function createAgeGroupChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&proviceCode=${proviceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=AgeGroup`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=AgeGroup`,
         function (respones) {
+            ageGroups = respones;
             $("#age-group-chart").kendoChart({
                 theme: "bootstrap",
                 legend: {
@@ -39,7 +45,8 @@ function createAgeGroupChart() {
                     }
                 },
                 seriesClick: function (e) {
-                    addVar(`Age group: ${e.category}`)
+                    let a = ageGroups.find(ag => ag.name === e.category);
+                    addVar({name: `Age group: ${e.category}`, id: a.id, type: 'AgeGroup'});
                 }
             });
         }
@@ -47,8 +54,9 @@ function createAgeGroupChart() {
 }
 
 function createGenderChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&proviceCode=${proviceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Sex`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Sex`,
         function (respones) {
+            genders = respones;
             $("#gender-chart").kendoChart({
                 theme: "bootstrap",
                 legend: {
@@ -81,7 +89,8 @@ function createGenderChart() {
                     }
                 },
                 seriesClick: function (e) {
-                    addVar(`Gender: ${e.category}`)
+                    let a = genders.find(g => g.name === e.category);
+                    addVar({ name: `Gender: ${e.category}`, id: a.id, type: 'Gender' });
                 }
             });
         }
@@ -89,8 +98,9 @@ function createGenderChart() {
 }
 
 function createKeyPopulationsChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&proviceCode=${proviceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=KeyPopulation`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=KeyPopulation`,
         function (respones) {
+            keyPopulations = respones;
             $("#key-populations-chart").kendoChart({
                 theme: "bootstrap",
                 legend: {
@@ -123,7 +133,8 @@ function createKeyPopulationsChart() {
                     }
                 },
                 seriesClick: function (e) {
-                    addVar(`Key population: ${e.category}`)
+                    let a = keyPopulations.find(g => g.name === e.category);
+                    addVar({ name: `Key population: ${e.category}`, id: a.id, type: 'KeyPopulation' });
                 }
             });
         }
@@ -131,8 +142,9 @@ function createKeyPopulationsChart() {
 }
 
 function createClinicsChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&proviceCode=${proviceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Site`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Site`,
         function (respones) {
+            clinnics = respones;
             $("#clinics-chart").kendoChart({
                 theme: "bootstrap",
                 legend: {
@@ -180,7 +192,8 @@ function createClinicsChart() {
                     }
                 },
                 seriesClick: function (e) {
-                    addVar(`Clinniic: ${e.category}`)
+                    let a = clinnics.find(g => g.name === e.category);
+                    addVar({ name: `Clinnic: ${e.category}`, id: a.id, type: 'Clinnic' });
                 }
             });
         }
@@ -310,55 +323,115 @@ function trendElement(trend) {
 }
 
 function initPrEP_NewIndicator(indicator) {
-    createPrEP_NEW_chart();
-    $("#PrEP_NEW-value").html(indicator.value.value);
-    $("#PrEP_NEW-value").css("color", indicator.value.criticalInfo);
-    $("#PrEP_NEW-percent").html(trendElement(indicator.trend));
+    if (indicator) {
+        createPrEP_NEW_chart();
+        $("#PrEP_NEW-value").html(indicator.value.value);
+        $("#PrEP_NEW-value").css("color", indicator.value.criticalInfo);
+        $("#PrEP_NEW-percent").html(trendElement(indicator.trend));
+    }
+    else {
+        $("#PrEP_NEW-value").html('N/A');
+        $("#PrEP_NEW-percent").html('');
+        $("#PrEP_NEW_chart").html('');
+    }
 }
 
 function initPrEP_CurrIndicator(indicator) {
-    createPrEP_CURR_chart();
-    $("#PrEP_CURR-value").html(indicator.value.value);
-    $("#PrEP_CURR-value").css("color", indicator.value.criticalInfo);
-    $("#PrEP_CURR-percent").html(trendElement(indicator.trend));
+    if (indicator) {
+        createPrEP_CURR_chart();
+        $("#PrEP_CURR-value").html(indicator.value.value);
+        $("#PrEP_CURR-value").css("color", indicator.value.criticalInfo);
+        $("#PrEP_CURR-percent").html(trendElement(indicator.trend));
+    } else {
+        $("#PrEP_CURR-value").html('N/A');
+        $("#PrEP_CURR-percent").html('');
+        $("#PrEP_CUR_chart").html('');
+    }
 }
 
 function initPrEP_3MIndicator(indicator) {
-    createPrEP_3M_chart();
-    $("#pPrEP_3M-value").html(indicator.value.value);
-    $("#pPrEP_3M-value").css("color", indicator.value.criticalInfo);
-    $("#pPrEP_3M-percent").html(trendElement(indicator.trend));
+    if (indicator) {
+        createPrEP_3M_chart();
+        $("#pPrEP_3M-value").html(indicator.value.value);
+        $("#pPrEP_3M-value").css("color", indicator.value.criticalInfo);
+        $("#pPrEP_3M-percent").html(trendElement(indicator.trend));
+    } else {
+        $("#pPrEP_3M-value").html('N/A');
+        $("#pPrEP_3M-percent").html('');
+        $("#pPrEP_3M_chart").html('');
+    }
 }
 
 function initConfigPanel() {
     $("#year-picker").kendoDatePicker({
         value: new Date(),
-        format: "yyyy",
+        format: year,
         depth: "decade",
         start: "decade"
     });
 }
 
-$(document).ready(() => {
-    $.get('/api/PrEP/indicators?year=2020&quater=1&provinceCode=79&districtCode=768', function (data) {
+function initIndicators() {
+    let ageGroupQuery = variables.filter(v => v.type === 'AgeGroup').map(s => s.id).join(',');
+    let keyPopulationQuery = variables.filter(v => v.type === 'KeyPopulation').map(s => s.id).join(',');
+    let genderQuery = variables.filter(v => v.type === 'Gender').map(s => s.id).join(',');
+    let clinnicQuery = variables.filter(v => v.type === 'Clinnic').map(s => s.id).join(',');
+    $.get(`/api/PrEP/indicators?year=${year}&quater=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
+        + `&ageGroups=${ageGroupQuery}&genders=${genderQuery}&keyPopulations=${keyPopulationQuery}&clinnics=${clinnicQuery}`, function (data) {
+        let p1 = true;
+        let p2 = true;
+        let p3 = true;
         data.forEach(indicator => {
             switch (indicator.name) {
                 case "PrEP NEW":
                     initPrEP_NewIndicator(indicator);
+                    p1 = false;
                     break;
-                case "PrEP_CURR":
+                case "PrEP CURR":
                     initPrEP_CurrIndicator(indicator);
+                    p2 = false;
                     break;
-                case "%PrEP_3M":
+                case "%PrEP 3M":
                     initPrEP_3MIndicator(indicator);
+                    p3 = false;
+                    break;
             }
         });
+        if (p1) {
+            initPrEP_NewIndicator(null);
+        };
+        if (p2) {
+            initPrEP_CurrIndicator(null);
+        }
+        if (p3) {
+            initPrEP_3MIndicator(null);
+        }
     });
+}
+
+function checkURLParams() {
+    let url = new URL(window.location.href);
+    year = url.searchParams.get("year");
+    quarter = url.searchParams.get("quarter");
+    month = url.searchParams.get("month");
+    provinceCode = url.searchParams.get("provinceCode");
+    districtCode = url.searchParams.get("districtCode");
+    console.log(month);
+    $('#inputQuarter').val(quarter);
+    $('#inputMonth').val(month);
+}
+
+$(document).ready(() => {
+    checkURLParams();
+    initIndicators();
     initConfigPanel();
     createAgeGroupChart();
     createGenderChart();
     createKeyPopulationsChart();
     createClinicsChart();
+
+    onProvinceChange();
+    onQuarterChange();
 });
 $(document).bind("kendo:skinChange", createPrEP_NEW_chart);
 
@@ -367,7 +440,7 @@ function openConfig() {
     if (configPanelOpen) {
         $("#configPanel").css("height", "0px");
     } else {
-        $("#configPanel").css("height", "155px");
+        $("#configPanel").css("height", "185px");
     }
 
     configPanelOpen = !configPanelOpen;
@@ -384,19 +457,103 @@ function createChip(name) {
 
 function updateVariablesComp() {
     let elements = '';
-    variables.forEach(v => elements += createChip(v));
+    variables.forEach(v => elements += createChip(v.name));
     $("#variables").html(elements);
 }
 
-function addVar(name) {
-    let v = variables.find(s => s === name);
+function addVar(variable) {
+    let v = variables.find(s => s.name === variable.name);
     if (!v) {
-        variables.push(name);
+        variables.push(variable);
         updateVariablesComp();
+        applyFilter();
     }
 }
 
 function removeVar(name) {
-    variables = variables.filter(s => s !== name);
+    variables = variables.filter(s => s.name !== name);
     updateVariablesComp();
+    applyFilter();
+}
+
+function onProvinceChange() {
+    provinceCode = $('#inputProvince').val();
+    $.get(`/api/Locations/Districts?provinceCode=${provinceCode}`,
+        function (districts) {
+            let options = districts.map(d => `<option value='${d.code}'>${d.nameWithType}</option>`).join();
+            $('#inputDistrict').html(options);
+            if (firstload) {
+                firstload = false;
+                $('#inputDistrict').val(districtCode);
+            }
+        }
+    );
+}
+
+function onQuarterChange() {
+    quarter = $('#inputQuarter').val();
+    let from = quarter === "1" ? 1 : quarter === "2" ? 4 : quarter === "3" ? 7 : 10;
+    let to = quarter === "1" ? 3 : quarter === "2" ? 6 : quarter === "3" ? 9 : 12;
+    let months = [
+        {
+            name: 'Janaury',
+            value: 1
+        },
+        {
+            name: 'February',
+            value: 2
+        },
+        {
+            name: 'March',
+            value: 3
+        },
+        {
+            name: 'April',
+            value: 4
+        },
+        {
+            name: 'May',
+            value: 5
+        },
+        {
+            name: 'June',
+            value: 6
+        },
+        {
+            name: 'July',
+            value: 7
+        },
+        {
+            name: 'August',
+            value: 8
+        },
+        {
+            name: 'September',
+            value: 9
+        },
+        {
+            name: 'October',
+            value: 10
+        },
+        {
+            name: 'November',
+            value: 11
+        },
+        {
+            name: 'December',
+            value: 12
+        }
+    ];
+    let monthOptions = `<option value="">-- select month --</option>${months.filter(m => from <= m.value && m.value <= to).map(m => `<option value='${m.value}'>${m.name}</option>`).join()}`;
+    $('#inputMonth').html(monthOptions);
+}
+
+function applyFilter() {
+    provinceCode = $('#inputProvince').val();
+    districtCode = $('#inputDistrict').val();
+    year = $('#year-picker').val();
+    quarter = $('#inputQuarter').val();
+    month = $('#inputMonth').val();
+    console.log(`filter with: province - ${provinceCode}; district - ${districtCode}; year - ${year}; quarter - ${quarter}; month - ${month}`);
+    initIndicators();
 }

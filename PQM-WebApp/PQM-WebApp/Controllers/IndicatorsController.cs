@@ -39,9 +39,9 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet("/api/PrEP/indicators")]
-        public IActionResult Indicators(int year, int quater, int? month, string provinceCode, string districtCode)
+        public IActionResult Indicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
         {
-            var rs = _prEPService.GetIndicators(year, quater, month, provinceCode, districtCode);
+            var rs = _prEPService.GetIndicators(year, quater, month, provinceCode, districtCode, ageGroups, keyPopulations, genders, clinnics);
             if (rs.Succeed)
             {
                 return Ok(rs.Data);
