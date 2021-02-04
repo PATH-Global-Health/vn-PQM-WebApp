@@ -1,8 +1,8 @@
 ﻿let year = 2020;
 let month = '';
 let quarter = 1;
-let provinceCode = '';
-let districtCode = '';
+let provinceCode = '79';
+let districtCode = '768';
 let firstload = true;
 let ageGroups = [];
 let keyPopulations = [];
@@ -11,8 +11,8 @@ let clinnics = [];
 
 function createAgeGroupChart() {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=AgeGroup`,
-        function (respones) {
-            ageGroups = respones;
+        function (response) {
+            ageGroups = response;
             $("#age-group-chart").kendoChart({
                 theme: "bootstrap",
                 legend: {
@@ -23,7 +23,7 @@ function createAgeGroupChart() {
                 },
                 series: [{
                     name: "Age Group",
-                    data: respones.map(m => m.value),
+                    data: response.map(m => m.value),
                     color: "#62666e",
                 }],
                 valueAxis: {
@@ -39,7 +39,7 @@ function createAgeGroupChart() {
                     }
                 },
                 categoryAxis: {
-                    categories: respones.map(m => m.name),
+                    categories: response.map(m => m.name),
                     majorGridLines: {
                         visible: false
                     }
@@ -55,8 +55,8 @@ function createAgeGroupChart() {
 
 function createGenderChart() {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Sex`,
-        function (respones) {
-            genders = respones;
+        function (response) {
+            genders = response;
             $("#gender-chart").kendoChart({
                 theme: "bootstrap",
                 legend: {
@@ -67,7 +67,7 @@ function createGenderChart() {
                 },
                 series: [{
                     name: "Gender",
-                    data: respones.map(m => m.value),
+                    data: response.map(m => m.value),
                     color: "#62666e",
                 }],
                 valueAxis: {
@@ -83,7 +83,7 @@ function createGenderChart() {
                     }
                 },
                 categoryAxis: {
-                    categories: respones.map(m => m.name),
+                    categories: response.map(m => m.name),
                     majorGridLines: {
                         visible: false
                     }
@@ -99,8 +99,8 @@ function createGenderChart() {
 
 function createKeyPopulationsChart() {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=KeyPopulation`,
-        function (respones) {
-            keyPopulations = respones;
+        function (response) {
+            keyPopulations = response;
             $("#key-populations-chart").kendoChart({
                 theme: "bootstrap",
                 legend: {
@@ -111,7 +111,7 @@ function createKeyPopulationsChart() {
                 },
                 series: [{
                     name: "Key Populations",
-                    data: respones.map(m => m.value),
+                    data: response.map(m => m.value),
                     color: "#62666e",
                 }],
                 valueAxis: {
@@ -127,7 +127,7 @@ function createKeyPopulationsChart() {
                     }
                 },
                 categoryAxis: {
-                    categories: respones.map(m => m.name),
+                    categories: response.map(m => m.name),
                     majorGridLines: {
                         visible: false
                     }
@@ -143,8 +143,8 @@ function createKeyPopulationsChart() {
 
 function createClinicsChart() {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Site`,
-        function (respones) {
-            clinnics = respones;
+        function (response) {
+            clinnics = response;
             $("#clinics-chart").kendoChart({
                 theme: "bootstrap",
                 legend: {
@@ -155,7 +155,7 @@ function createClinicsChart() {
                 },
                 series: [{
                     name: "Clinic",
-                    data: respones.map(m => m.value),
+                    data: response.map(m => m.value),
                     color: "#62666e",
                 }],
                 valueAxis: {
@@ -186,7 +186,7 @@ function createClinicsChart() {
                             return layout;
                         }
                     },  
-                    categories: respones.map(m => m.name),
+                    categories: response.map(m => m.name),
                     majorGridLines: {
                         visible: false
                     }
@@ -345,14 +345,14 @@ function initPrEP_CurrIndicator(indicator) {
     } else {
         $("#PrEP_CURR-value").html('N/A');
         $("#PrEP_CURR-percent").html('');
-        $("#PrEP_CUR_chart").html('');
+        $("#PrEP_CURR_chart").html('');
     }
 }
 
 function initPrEP_3MIndicator(indicator) {
     if (indicator) {
         createPrEP_3M_chart();
-        $("#pPrEP_3M-value").html(indicator.value.value);
+        $("#pPrEP_3M-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
         $("#pPrEP_3M-value").css("color", indicator.value.criticalInfo);
         $("#pPrEP_3M-percent").html(trendElement(indicator.trend));
     } else {
@@ -364,8 +364,8 @@ function initPrEP_3MIndicator(indicator) {
 
 function initConfigPanel() {
     $("#year-picker").kendoDatePicker({
-        value: new Date(),
-        format: year,
+        value: year,
+        format: "yyyy",
         depth: "decade",
         start: "decade"
     });

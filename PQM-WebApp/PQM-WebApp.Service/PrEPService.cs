@@ -122,6 +122,7 @@ namespace PQM_WebApp.Service
             var groupIndicator = aggregatedValues.ToList().GroupBy(g => g.Indicator);
             var data = groupIndicator.Select(s => new IndicatorModel
                                                 {
+                                                    Order = s.Key.Order,
                                                     Group = "PrEP",
                                                     Name = s.Key.Name,
                                                     Value = new IndicatorValue { 
@@ -129,6 +130,7 @@ namespace PQM_WebApp.Service
                                                         Numerator = s.Sum(_ => _.Numerator),
                                                         Denominator = s.Sum(_ => _.Denominator),
                                                         DataType = s.FirstOrDefault().DataType,
+                                                        CriticalInfo = "green"
                                                     },
                                                     CriticalInfo = "green",
                                                     Trend = new IndicatorTrend
@@ -138,7 +140,7 @@ namespace PQM_WebApp.Service
                                                         Direction = 1,
                                                     }
                                                 }
-            ).ToList();
+            ).OrderBy(o => o.Order).ToList();
             return new ResultModel()
             {
                 Succeed = true,

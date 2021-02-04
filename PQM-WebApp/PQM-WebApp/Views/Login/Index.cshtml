@@ -18,14 +18,15 @@
             <!-- Tabs Titles -->
             <!-- Icon -->
             <div class="fadeIn first">
-                
+
             </div>
 
             <!-- Login Form -->
             <form>
-                <input type="text" id="login" class="fadeIn second" name="login" placeholder="login">
-                <input type="text" id="password" class="fadeIn third" name="login" placeholder="password">
-                <input type="submit" class="fadeIn fourth" value="Log In">
+                <input type="text" id="username" class="fadeIn second" placeholder="Username">
+                <input type="password" id="password" class="fadeIn third" placeholder="Password">
+                <small id="user-error" class="form-text text-muted" style="color: red!important"></small>
+                <button type="button" id="btn-login" class="fadeIn fourth" onclick="onLogin()">Log In</button>
             </form>
 
             <!-- Remind Passowrd -->
@@ -35,5 +36,7 @@
 
         </div>
     </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/auth.js"></script>
 </body>
 </html>

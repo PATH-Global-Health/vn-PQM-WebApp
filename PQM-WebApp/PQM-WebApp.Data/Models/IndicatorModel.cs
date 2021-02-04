@@ -24,6 +24,7 @@ namespace PQM_WebApp.Data.Models
 
     public class IndicatorModel
     {
+        public int Order { get; set; }
         public string Group { get; set; }
         public string Name { get; set; }
         public IndicatorValue Value { get; set; }

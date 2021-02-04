@@ -15,11 +15,13 @@ namespace PQM_WebApp.Controllers
     {
         private readonly IIndicatorService _indicatorService;
         private readonly IPrEPService _prEPService;
+        private readonly ITestingService _testingService;
 
-        public IndicatorsController(IIndicatorService indicatorService, IPrEPService prEPService)
+        public IndicatorsController(IIndicatorService indicatorService, IPrEPService prEPService, ITestingService testingService)
         {
             _indicatorService = indicatorService;
             _prEPService = prEPService;
+            _testingService = testingService;
         }
 
         [HttpGet]
@@ -39,9 +41,20 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet("/api/PrEP/indicators")]
-        public IActionResult Indicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
+        public IActionResult PrEPIndicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
         {
             var rs = _prEPService.GetIndicators(year, quater, month, provinceCode, districtCode, ageGroups, keyPopulations, genders, clinnics);
+            if (rs.Succeed)
+            {
+                return Ok(rs.Data);
+            }
+            return BadRequest(rs.ErrorMessage);
+        }
+
+        [HttpGet("/api/Testing/indicators")]
+        public IActionResult TestingIndicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
+        {
+            var rs = _testingService.GetIndicators(year, quater, month, provinceCode, districtCode, ageGroups, keyPopulations, genders, clinnics);
             if (rs.Succeed)
             {
                 return Ok(rs.Data);
