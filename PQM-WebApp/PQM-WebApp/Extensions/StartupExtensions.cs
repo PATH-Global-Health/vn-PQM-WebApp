@@ -22,6 +22,7 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<ILocationService, LocationService>();
             services.AddTransient<IAggregatedValueService, AggregatedValueService>();
             services.AddTransient<ITestingService, TestingService>();
+            services.AddTransient<ITreatmentService, TreatmentService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)

@@ -72,8 +72,8 @@
         </div>
     </div>
     <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around">
-        <div class="col-3" style="background-color: white; height: 40vh; min-height: 470px">
-            <div class="d-flex flex-column justify-content-around" style="height: 20vh; min-height: 235px">
+        <div class="col-3 indicator-container" onclick="openModal('PrEP NEW')">
+            <div class="d-flex flex-column justify-content-around indicator-infor">
                 <div class="row d-flex justify-content-center indicator-title">PrEP_NEW</div>
                 <div class="row d-flex justify-content-center indicator-value">
                     <span id="PrEP_NEW-value"></span>
@@ -84,12 +84,12 @@
                     </span>
                 </div>
             </div>
-            <div id="PrEP_NEW_chart" style="height: 20vh; min-height: 230px">
+            <div id="PrEP_NEW_chart" class="indicator-infor-chart">
 
             </div>
         </div>
-        <div class="col-3" style="background-color: white; height: 40vh; min-height: 470px">
-            <div class="d-flex flex-column justify-content-around" style="height: 20vh; min-height: 235px">
+        <div class="col-3 indicator-container">
+            <div class="d-flex flex-column justify-content-around indicator-infor">
                 <div class="row d-flex justify-content-center indicator-title">PrEP_CURR</div>
                 <div class="row d-flex justify-content-center indicator-value" id="PrEP_CURR-value"></div>
                 <div class="row d-flex justify-content-center indicator-percent">
@@ -98,12 +98,12 @@
                     </span>
                 </div>
             </div>
-            <div id="PrEP_CURR_chart" style="height: 20vh; min-height: 230px">
+            <div id="PrEP_CURR_chart" class="indicator-infor-chart">
 
             </div>
         </div>
-        <div class="col-3" style="background-color: white; height: 40vh; min-height: 470px">
-            <div class="d-flex flex-column justify-content-around" style="height: 20vh; min-height: 235px">
+        <div class="col-3 indicator-container">
+            <div class="d-flex flex-column justify-content-around indicator-infor">
                 <div class="row d-flex justify-content-center indicator-title">%PrEP_3M</div>
                 <div class="row d-flex justify-content-center indicator-value" id="pPrEP_3M-value"></div>
                 <div class="row d-flex justify-content-center indicator-percent">
@@ -112,7 +112,7 @@
                     </span>
                 </div>
             </div>
-            <div id="pPrEP_3M_chart" style="height: 20vh; min-height: 230px">
+            <div id="pPrEP_3M_chart" class="indicator-infor-chart">
 
             </div>
         </div>
@@ -126,7 +126,7 @@
         </div>
         <div class="col-12 d-flex justify-content-around">
             <div class="col-3">
-                <div class="col-12" style="background-color: whitesmoke; height: 40vh; min-height: 470px">
+                <div class="col-12 variable-containter">
                     <div class="row" style="padding-left: 15px; padding-top: 15px">
                         <h4>Age Group</h4>
                     </div>
@@ -134,7 +134,7 @@
                 </div>
             </div>
             <div class="col-3">
-                <div class="col-12" style="background-color: whitesmoke; height: 40vh; min-height: 470px">
+                <div class="col-12 variable-containter">
                     <div class="row" style="padding-left: 15px; padding-top: 15px">
                         <h4>Gender</h4>
                     </div>
@@ -142,7 +142,7 @@
                 </div>
             </div>
             <div class="col-3">
-                <div class="col-12" style="background-color: whitesmoke; height: 40vh; min-height: 470px">
+                <div class="col-12 variable-containter">
                     <div class="row" style="padding-left: 15px; padding-top: 15px">
                         <h4>Key Populations</h4>
                     </div>
@@ -150,7 +150,7 @@
                 </div>
             </div>
             <div class="col-3">
-                <div class="col-12" style="background-color: whitesmoke; height: 40vh; min-height: 470px">
+                <div class="col-12 variable-containter">
                     <div class="row" style="padding-left: 15px; padding-top: 15px">
                         <h4>Clinics</h4>
                     </div>
@@ -162,5 +162,6 @@
 </div>
 
 @section Scripts{
+    <script src="~/js/indicatorModal.js"></script>
     <script src="~/js/PrEP.js"></script>
 }

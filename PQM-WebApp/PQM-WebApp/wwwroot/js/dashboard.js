@@ -7,7 +7,7 @@
     let firstload = true;
 
     function drillDown(groupIndicator) {
-        if (groupIndicator !== 'PrEP') return;
+        if (groupIndicator !== 'PrEP' && groupIndicator !== 'Testing' && groupIndicator !== 'Treatment') return;
         console.log(`${groupIndicator} is clicked`);
         var win = window.open(`${groupIndicator}?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`, '_blank');
         win.focus();
@@ -67,17 +67,7 @@
         $("#testing").html('');
         $.get(`/api/Testing/indicators?year=${year}&quater=${quarter}&provinceCode=${provinceCode}&districtCode=${districtCode}`, function (data) {
             data.forEach((indicator, idx, array) => {
-                switch (indicator.name) {
-                    case "HTS Positive":
-                        $("#testing").append(createIndicator(indicator, idx !== array.length - 1));
-                        break;
-                    case "%HIV+ referred":
-                        $("#testing").append(createIndicator(indicator, idx !== array.length - 1));
-                        break;
-                    case "%HTS recent":
-                        $("#testing").append(createIndicator(indicator, idx !== array.length - 1));
-                        break;
-                }
+                $("#testing").append(createIndicator(indicator, idx !== array.length - 1));
             });
         });
     }
@@ -86,17 +76,7 @@
         $("#prep").html('');
         $.get(`/api/PrEP/indicators?year=${year}&quater=${quarter}&provinceCode=${provinceCode}&districtCode=${districtCode}`, function (data) {
             data.forEach((indicator, idx, array) => {
-                switch (indicator.name) {
-                    case "PrEP NEW":
-                        $("#prep").append(createIndicator(indicator, idx !== array.length - 1));
-                        break;
-                    case "PrEP CURR":
-                        $("#prep").append(createIndicator(indicator, idx !== array.length - 1));
-                        break;
-                    case "%PrEP 3M":
-                        $("#prep").append(createIndicator(indicator, idx !== array.length - 1));
-                        break;
-                }
+                $("#prep").append(createIndicator(indicator, idx !== array.length - 1));
             });
         });
         //$("#prep").append(fakeIndicator('PrEP_Curr', '1,925', 'green', null, { direction: 1, color: 'green' }, true));
@@ -104,12 +84,12 @@
     }
 
     function initTreatmentIndicators() {
-        $("#treatment").append(fakeIndicator('TX_Curr', '498', 'red', null, { direction: 1, color: 'green' }, true));
-        $("#treatment").append(fakeIndicator('TX_New', '235', 'green', null, { direction: 1, color: 'green' }, true));
-        $("#treatment").append(fakeIndicator('MMD', '20', 'green', null, { direction: 1, color: 'green' }, true));
-        $("#treatment").append(fakeIndicator('IT (Interruption in Treatment)', '24', 'green', null, { direction: 1, color: 'green' }, true));
-        $("#treatment").append(fakeIndicator('% VL unsupressed', '0.05%', 'green', null, { direction: 1, color: 'green' }, true));
-        $("#treatment").append(fakeIndicator('TB_PREW', '129', 'green', null, { direction: 1, color: 'green' }, false));
+        $("#treatment").html('');
+        $.get(`/api/Treatment/indicators?year=${year}&quater=${quarter}&provinceCode=${provinceCode}&districtCode=${districtCode}`, function (data) {
+            data.forEach((indicator, idx, array) => {
+                $("#treatment").append(createIndicator(indicator, idx !== array.length - 1));
+            });
+        });
     }
 
     function initDrugsIndicators() {

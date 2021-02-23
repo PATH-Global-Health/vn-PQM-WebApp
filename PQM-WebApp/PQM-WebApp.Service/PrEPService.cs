@@ -123,7 +123,7 @@ namespace PQM_WebApp.Service
             var data = groupIndicator.Select(s => new IndicatorModel
                                                 {
                                                     Order = s.Key.Order,
-                                                    Group = "PrEP",
+                                                    Group = s.Key.IndicatorGroup.Name,
                                                     Name = s.Key.Name,
                                                     Value = new IndicatorValue { 
                                                         Value = s.Sum(_ => _.Value).Value,

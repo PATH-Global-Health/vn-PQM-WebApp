@@ -7,16 +7,17 @@ using System.Text;
 
 namespace PQM_WebApp.Service
 {
-    public interface ITestingService
+    public interface ITreatmentService
     {
         ResultModel GetIndicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null);
+
     }
 
-    public class TestingService : ITestingService
+    public class TreatmentService : ITreatmentService
     {
         private AppDBContext _dbContext { get; set; }
 
-        public TestingService(AppDBContext dbContext)
+        public TreatmentService(AppDBContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -28,7 +29,7 @@ namespace PQM_WebApp.Service
             var months = _dbContext.DimMonths.Where(m => m.Year.Year == year && (fromMonth <= m.MonthNumOfYear && m.MonthNumOfYear <= toMonth) && (month == null || m.MonthNumOfYear == month)).Select(m => m.Id);
             var districts = _dbContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || d.Code == districtCode)).Select(s => s.Id);
             var sites = _dbContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
-            var aggregatedValues = _dbContext.AggregatedValues.Where(w => months.Contains(w.MonthId) && sites.Contains(w.SiteId) && w.Indicator.IndicatorGroup.Name == "Testing");
+            var aggregatedValues = _dbContext.AggregatedValues.Where(w => months.Contains(w.MonthId) && sites.Contains(w.SiteId) && w.Indicator.IndicatorGroup.Name == "Treatment");
             if (!string.IsNullOrEmpty(ageGroups))
             {
                 var _ageGroups = ageGroups.Split(',').Select(s => Guid.Parse(s));

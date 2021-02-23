@@ -9,6 +9,10 @@ let keyPopulations = [];
 let genders = [];
 let clinnics = [];
 
+function openModal(indicatorName) {
+    openIndicatorModal(indicatorName, year, quarter, month, provinceCode, districtCode);
+}
+
 function createAgeGroupChart() {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=AgeGroup`,
         function (response) {
@@ -432,6 +436,7 @@ $(document).ready(() => {
 
     onProvinceChange();
     onQuarterChange();
+    $('body').append(modal);
 });
 $(document).bind("kendo:skinChange", createPrEP_NEW_chart);
 

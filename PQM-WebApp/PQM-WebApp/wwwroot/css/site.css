@@ -166,3 +166,37 @@ hr {
     .closebtn:hover {
         color: dimgray
     }
+
+.indicator-container {
+    background-color: white;
+    height: 40vh;
+    min-height: 470px;
+}
+
+    .indicator-container:hover {
+        cursor: pointer;
+        border: 1px solid whitesmoke;
+    }
+
+.indicator-infor {
+    height: 20vh;
+    min-height: 235px
+}
+
+.indicator-infor-chart {
+    height: 20vh;
+    min-height: 230px
+}
+
+.variable-containter {
+    background-color: whitesmoke;
+    height: 40vh;
+    min-height: 470px
+}
+
+@media (min-width: 992px) {
+    .modal-lg {
+        width: 800px;
+        min-width: 1868px;
+    }
+}

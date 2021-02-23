@@ -9,8 +9,15 @@ let keyPopulations = [];
 let genders = [];
 let clinnics = [];
 
+function customRound(numerator, denominator) {
+    let d = numerator / denominator;
+    console.log(d);
+    let r = Math.round((d + Number.EPSILON) * 10000) / 10000;
+    return r;
+}
+
 function createAgeGroupChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Testing&groupBy=AgeGroup`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Treatment&groupBy=AgeGroup`,
         function (response) {
             ageGroups = response;
             $("#age-group-chart").kendoChart({
@@ -54,7 +61,7 @@ function createAgeGroupChart() {
 }
 
 function createGenderChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Testing&groupBy=Sex`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Treatment&groupBy=Sex`,
         function (response) {
             genders = response;
             $("#gender-chart").kendoChart({
@@ -98,7 +105,7 @@ function createGenderChart() {
 }
 
 function createKeyPopulationsChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Testing&groupBy=KeyPopulation`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Treatment&groupBy=KeyPopulation`,
         function (response) {
             keyPopulations = response;
             $("#key-populations-chart").kendoChart({
@@ -142,7 +149,7 @@ function createKeyPopulationsChart() {
 }
 
 function createClinicsChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Testing&groupBy=Site`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Treatment&groupBy=Site`,
         function (response) {
             clinnics = response;
             $("#clinics-chart").kendoChart({
@@ -200,8 +207,8 @@ function createClinicsChart() {
     )
 }
 
-function createHTS_TEST_POS_chart() {
-    $("#HTS_TEST_POS_chart").kendoChart({
+function createTX_Curr_chart() {
+    $("#TX_Curr_chart").kendoChart({
         seriesDefaults: {
             type: "area",
             area: {
@@ -236,8 +243,8 @@ function createHTS_TEST_POS_chart() {
     });
 }
 
-function createHTS_TEST_Recency_chart() {
-    $("#HTS_TEST-Recency_chart").kendoChart({
+function createTX_New_chart() {
+    $("#TX_New_chart").kendoChart({
         seriesDefaults: {
             type: "area",
             area: {
@@ -272,8 +279,116 @@ function createHTS_TEST_Recency_chart() {
     });
 }
 
-function createHTS_TEST_POS_refer_chart() {
-    $("#HTS_TEST_POS-refer_chart").kendoChart({
+function createMMD_chart() {
+    $("#MMD_chart").kendoChart({
+        seriesDefaults: {
+            type: "area",
+            area: {
+                line: {
+                    style: "smooth"
+                }
+            },
+        },
+        series: [{
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25],
+            color: "#62666e"
+        }],
+        categoryAxis: {
+            title: {
+            },
+            majorGridLines: {
+                visible: false
+            },
+            majorTicks: {
+                visible: false
+            }
+        },
+        valueAxis: {
+            max: 25,
+            title: {
+            },
+            majorGridLines: {
+                visible: false
+            },
+            visible: false
+        }
+    });
+}
+
+function createIT_chart() {
+    $("#IT_chart").kendoChart({
+        seriesDefaults: {
+            type: "area",
+            area: {
+                line: {
+                    style: "smooth"
+                }
+            },
+        },
+        series: [{
+            data: [0.507, 1.943, 2.848, 0.284, 3.263, 4.801, 6.890, 8.238, 9, 4.552, 15.855, 25],
+            color: "#62666e"
+        }],
+        categoryAxis: {
+            title: {
+            },
+            majorGridLines: {
+                visible: false
+            },
+            majorTicks: {
+                visible: false
+            }
+        },
+        valueAxis: {
+            max: 25,
+            title: {
+            },
+            majorGridLines: {
+                visible: false
+            },
+            visible: false
+        }
+    });
+}
+
+function createpVL_chart() {
+    $("#pVL_chart").kendoChart({
+        seriesDefaults: {
+            type: "area",
+            area: {
+                line: {
+                    style: "smooth"
+                }
+            },
+        },
+        series: [{
+            data: [0.507, 3.943, 2.848, 0.284, 7.263, 4.801, 7.890, 4.238, 9, 4.552, 15.855, 25],
+            color: "#62666e"
+        }],
+        categoryAxis: {
+            title: {
+            },
+            majorGridLines: {
+                visible: false
+            },
+            majorTicks: {
+                visible: false
+            }
+        },
+        valueAxis: {
+            max: 25,
+            title: {
+            },
+            majorGridLines: {
+                visible: false
+            },
+            visible: false
+        }
+    });
+}
+
+function createTB_PREW_chart() {
+    $("#TB_PREW_chart").kendoChart({
         seriesDefaults: {
             type: "area",
             area: {
@@ -322,43 +437,82 @@ function trendElement(trend) {
                         `;
 }
 
-function initHTS_TEST_POSIndicator(indicator) {
+function initTX_CurrIndicator(indicator) {
     if (indicator) {
-        createHTS_TEST_POS_chart();
-        $("#HTS_TEST_POS-value").html(indicator.value.value);
-        $("#HTS_TEST_POS-value").css("color", indicator.value.criticalInfo);
-        $("#HTS_TEST_POS-percent").html(trendElement(indicator.trend));
+        createTX_Curr_chart();
+        $("#TX_Curr-value").html(indicator.value.value);
+        $("#TX_Curr-value").css("color", indicator.value.criticalInfo);
+        $("#TX_Curr-percent").html(trendElement(indicator.trend));
     }
     else {
-        $("#HTS_TEST_POS-value").html('N/A');
-        $("#HTS_TEST_POS-percent").html('');
-        $("#HTS_TEST_POS_chart").html('');
+        $("#TX_Curr-value").html('N/A');
+        $("#TX_Curr-percent").html('');
+        $("#TX_Curr_chart").html('');
     }
 }
 
-function init_pHTSreferredIndicator(indicator) {
+function initTX_NewIndicator(indicator) {
     if (indicator) {
-        createHTS_TEST_Recency_chart();
-        $("#HTS_TEST-Recency-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
-        $("#HTS_TEST-Recency-value").css("color", indicator.value.criticalInfo);
-        $("#HTS_TEST-Recency-percent").html(trendElement(indicator.trend));
+        createTX_New_chart();
+        $("#TX_New-value").html(indicator.value.value);
+        $("#TX_New-value").css("color", indicator.value.criticalInfo);
+        $("#TX_New-percent").html(trendElement(indicator.trend));
     } else {
-        $("#HTS_TEST-Recency-value").html('N/A');
-        $("#HTS_TEST-Recency-percent").html('');
-        $("#HTS_TEST-Recency_chart").html('');
+        $("#TX_New-value").html('N/A');
+        $("#TX_New-percent").html('');
+        $("#TX_New_chart").html('');
     }
 }
 
-function init_pHTSrecentIndicator(indicator) {
+function initMMDIndicator(indicator) {
     if (indicator) {
-        createHTS_TEST_POS_refer_chart();
-        $("#HTS_TEST_POS-refer-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
-        $("#HTS_TEST_POS-refer-value").css("color", indicator.value.criticalInfo);
-        $("#HTS_TEST_POS-refer-percent").html(trendElement(indicator.trend));
+        createMMD_chart();
+        $("#MMD-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
+        $("#MMD-value").css("color", indicator.value.criticalInfo);
+        $("#MMD-percent").html(trendElement(indicator.trend));
     } else {
-        $("#HTS_TEST_POS-refer-value").html('N/A');
-        $("#HTS_TEST_POS-refer-percent").html('');
-        $("#HTS_TEST_POS-refer").html('');
+        $("#MMD-value").html('N/A');
+        $("#MMD-percent").html('');
+        $("#MMD_chart").html('');
+    }
+}
+
+function initITIndicator(indicator) {
+    if (indicator) {
+        createIT_chart();
+        $("#IT-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
+        $("#IT-value").css("color", indicator.value.criticalInfo);
+        $("#IT-percent").html(trendElement(indicator.trend));
+    } else {
+        $("#IT-value").html('N/A');
+        $("#IT-percent").html('');
+        $("#IT_chart").html('');
+    }
+}
+
+function initpVLIndicator(indicator) {
+    if (indicator) {
+        createpVL_chart();
+        $("#pVL-value").html(indicator.value.dataType === 1 ? indicator.value.value : customRound(indicator.value.numerator, indicator.value.denominator) * 100 + '%');
+        $("#pVL-value").css("color", indicator.value.criticalInfo);
+        $("#pVL-percent").html(trendElement(indicator.trend));
+    } else {
+        $("#pVL-value").html('N/A');
+        $("#pVL-percent").html('');
+        $("#pVL_chart").html('');
+    }
+}
+
+function initTB_PREWIndicator(indicator) {
+    if (indicator) {
+        createTB_PREW_chart();
+        $("#TB_PREW-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
+        $("#TB_PREW-value").css("color", indicator.value.criticalInfo);
+        $("#TB_PREW-percent").html(trendElement(indicator.trend));
+    } else {
+        $("#TB_PREW-value").html('N/A');
+        $("#TB_PREW-percent").html('');
+        $("#TB_PREW_chart").html('');
     }
 }
 
@@ -376,23 +530,35 @@ function initIndicators() {
     let keyPopulationQuery = variables.filter(v => v.type === 'KeyPopulation').map(s => s.id).join(',');
     let genderQuery = variables.filter(v => v.type === 'Gender').map(s => s.id).join(',');
     let clinnicQuery = variables.filter(v => v.type === 'Clinnic').map(s => s.id).join(',');
-    $.get(`/api/Testing/indicators?year=${year}&quater=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
+    $.get(`/api/Treatment/indicators?year=${year}&quater=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
         + `&ageGroups=${ageGroupQuery}&genders=${genderQuery}&keyPopulations=${keyPopulationQuery}&clinnics=${clinnicQuery}`, function (data) {
             let p1 = true;
             let p2 = true;
             let p3 = true;
             data.forEach(indicator => {
                 switch (indicator.name) {
-                    case "HTS Positive":
-                        initHTS_TEST_POSIndicator(indicator);
+                    case "TX_Curr":
+                        initTX_CurrIndicator(indicator);
                         p1 = false;
                         break;
-                    case "%HIV+ referred":
-                        init_pHTSreferredIndicator(indicator);
+                    case "TX_New":
+                        initTX_NewIndicator(indicator);
                         p2 = false;
                         break;
-                    case "%HTS recent":
-                        init_pHTSrecentIndicator(indicator);
+                    case "MMD":
+                        initMMDIndicator(indicator);
+                        p3 = false;
+                        break;
+                    case "Interruption in Treatment":
+                        initITIndicator(indicator);
+                        p1 = false;
+                        break;
+                    case "% VL unsupressed":
+                        initpVLIndicator(indicator);
+                        p2 = false;
+                        break;
+                    case "TB_PREW":
+                        initTB_PREWIndicator(indicator);
                         p3 = false;
                         break;
                 }

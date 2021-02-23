@@ -15,13 +15,15 @@ function checkAuth() {
     let token = getToken();
     if (!token) {
         window.location.href = `/Login?returnUrl=${window.location.href}`;
+    } else {
+        $("body").css("display", "");
     }
 }
 
 function onLogin() {
     $.ajax({
         type: 'POST',
-        url: 'http://202.78.227.99:31884/api/Users/Login',
+        url: 'https://auth.vkhealth.vn/api/Users/Login',
         data: JSON.stringify({
             username: $('#username').val(),
             password: $('#password').val()

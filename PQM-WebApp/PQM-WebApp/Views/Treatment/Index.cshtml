@@ -1,11 +1,10 @@
 ﻿
 @{
-    ViewData["Title"] = "Testing";
+    ViewData["Title"] = "Treatment";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Testing Overview</a>
+    <a class="navbar-brand" href="#">Treatment Overview</a>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
         </ul>
@@ -75,55 +74,110 @@
     <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around">
         <div class="col-3 indicator-container">
             <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">HTS_TEST_POS</div>
+                <div class="row d-flex justify-content-center indicator-title">
+                    TX_Curr
+                </div>
                 <div class="row d-flex justify-content-center indicator-value">
-                    <span id="HTS_TEST_POS-value"></span>
+                    <span id="TX_Curr-value"></span>
                 </div>
                 <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="HTS_TEST_POS-percent">
+                    <span class="align-middle" id="TX_Curr-percent">
 
                     </span>
                 </div>
             </div>
-            <div id="HTS_TEST_POS_chart" class="indicator-infor-chart">
-
-            </div>
-        </div>
-        <div class="col-3 indicator-container">
-            <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">HTS_TEST-Recency</div>
-                <div class="row d-flex justify-content-center indicator-value" id="HTS_TEST-Recency-value"></div>
-                <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="HTS_TEST-Recency-percent">
-                        
-                    </span>
-                </div>
-            </div>
-            <div id="HTS_TEST-Recency_chart" class="indicator-infor-chart">
+            <div id="TX_Curr_chart" class="indicator-infor-chart">
 
             </div>
         </div>
         <div class="col-3 indicator-container">
             <div class="d-flex flex-column justify-content-around indicator-infor">
                 <div class="row d-flex justify-content-center indicator-title">
-                    <div class="col-12 d-flex justify-content-center indicator-title">HTS_TEST_POS</div>
-                    <div class="col-12 d-flex justify-content-center indicator-title">successfully refer to OPC</div>
+                    TX_New
                 </div>
-                <div class="row d-flex justify-content-center indicator-value" id="HTS_TEST_POS-refer-value"></div>
+                <div class="row d-flex justify-content-center indicator-value" id="TX_New-value"></div>
                 <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="HTS_TEST_POS-refer-percent">
-                        
+                    <span class="align-middle" id="TX_New-percent">
+
                     </span>
                 </div>
             </div>
-            <div id="HTS_TEST_POS-refer_chart" class="indicator-infor-chart">
+            <div id="TX_New_chart" class="indicator-infor-chart">
+
+            </div>
+        </div>
+        <div class="col-3 indicator-container">
+            <div class="d-flex flex-column justify-content-around indicator-infor">
+                <div class="row d-flex justify-content-center indicator-title">
+                    MMD
+                </div>
+                <div class="row d-flex justify-content-center indicator-value" id="MMD-value"></div>
+                <div class="row d-flex justify-content-center indicator-percent">
+                    <span class="align-middle" id="MMD-percent">
+
+                    </span>
+                </div>
+            </div>
+            <div id="MMD_chart" class="indicator-infor-chart">
+
+            </div>
+        </div>
+    </div>
+    <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around">
+        <div class="col-3 indicator-container">
+            <div class="d-flex flex-column justify-content-around indicator-infor">
+                <div class="row d-flex justify-content-center indicator-title">
+                    Interruption in Treatment
+                </div>
+                <div class="row d-flex justify-content-center indicator-value">
+                    <span id="IT-value"></span>
+                </div>
+                <div class="row d-flex justify-content-center indicator-percent">
+                    <span class="align-middle" id="IT-percent">
+
+                    </span>
+                </div>
+            </div>
+            <div id="IT_chart" class="indicator-infor-chart">
+
+            </div>
+        </div>
+        <div class="col-3 indicator-container">
+            <div class="d-flex flex-column justify-content-around indicator-infor">
+                <div class="row d-flex justify-content-center indicator-title">
+                    % VL unsupressed
+                </div>
+                <div class="row d-flex justify-content-center indicator-value" id="pVL-value"></div>
+                <div class="row d-flex justify-content-center indicator-percent">
+                    <span class="align-middle" id="pVL-percent">
+
+                    </span>
+                </div>
+            </div>
+            <div id="pVL_chart" class="indicator-infor-chart">
+
+            </div>
+        </div>
+        <div class="col-3 indicator-container">
+            <div class="d-flex flex-column justify-content-around indicator-infor">
+                <div class="row d-flex justify-content-center indicator-title">
+                    TB_PREW
+                </div>
+                <div class="row d-flex justify-content-center indicator-value" id="TB_PREW-value"></div>
+                <div class="row d-flex justify-content-center indicator-percent">
+                    <span class="align-middle" id="TB_PREW-percent">
+
+                    </span>
+                </div>
+            </div>
+            <div id="TB_PREW_chart" class="indicator-infor-chart">
 
             </div>
         </div>
     </div>
     <div class="row dashboard-row">
         <div class="col-12" style="margin:15px">
-            <h3>Testing Variables</h3>
+            <h3>Treatment Variables</h3>
         </div>
         <div class="col-12" id="variables" style="padding-left: 30px">
 
@@ -165,10 +219,6 @@
     </div>
 </div>
 
-@section Scripts {
-    <script src="~/js/markerclustererplus.min.js"></script>
-    <script src="~/js/testing.js"></script>
-    <script defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_uYWyuQfE3qofErFoGnDl9PkjEF7xGbk&callback=initMap">
-    </script>
+@section Scripts{
+    <script src="~/js/treatment.js"></script>
 }
