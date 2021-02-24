@@ -12,7 +12,7 @@ let clinnics = [];
 function customRound(numerator, denominator) {
     let d = numerator / denominator;
     console.log(d);
-    let r = Math.round((d + Number.EPSILON) * 10000) / 10000;
+    let r = Math.round(d * 10000) / 10000;
     return r;
 }
 
@@ -34,7 +34,6 @@ function createAgeGroupChart() {
                     color: "#62666e",
                 }],
                 valueAxis: {
-                    max: 75,
                     line: {
                         visible: false
                     },
@@ -78,7 +77,6 @@ function createGenderChart() {
                     color: "#62666e",
                 }],
                 valueAxis: {
-                    max: 155,
                     line: {
                         visible: false
                     },
@@ -122,7 +120,6 @@ function createKeyPopulationsChart() {
                     color: "#62666e",
                 }],
                 valueAxis: {
-                    max: 115,
                     line: {
                         visible: false
                     },
@@ -166,7 +163,6 @@ function createClinicsChart() {
                     color: "#62666e",
                 }],
                 valueAxis: {
-                    max: 75,
                     line: {
                         visible: false
                     },
@@ -424,6 +420,7 @@ function createTB_PREW_chart() {
 }
 
 function trendElement(trend) {
+    if (trend.direction === 0) return "";
     let trendDirection = trend.direction === 1 ?
         `<svg xmlns="http://www.w3.org/2000/svg" color="${trend.criticalInfo}" width="35" height="35" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 20 20">
                         <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
@@ -493,7 +490,7 @@ function initITIndicator(indicator) {
 function initpVLIndicator(indicator) {
     if (indicator) {
         createpVL_chart();
-        $("#pVL-value").html(indicator.value.dataType === 1 ? indicator.value.value : customRound(indicator.value.numerator, indicator.value.denominator) * 100 + '%');
+        $("#pVL-value").html(indicator.value.dataType === 1 ? indicator.value.value : (customRound(indicator.value.numerator, indicator.value.denominator) * 100).toFixed(2) + '%');
         $("#pVL-value").css("color", indicator.value.criticalInfo);
         $("#pVL-percent").html(trendElement(indicator.trend));
     } else {
@@ -535,6 +532,9 @@ function initIndicators() {
             let p1 = true;
             let p2 = true;
             let p3 = true;
+            let p4 = true;
+            let p5 = true;
+            let p6 = true;
             data.forEach(indicator => {
                 switch (indicator.name) {
                     case "TX_Curr":
@@ -551,26 +551,35 @@ function initIndicators() {
                         break;
                     case "Interruption in Treatment":
                         initITIndicator(indicator);
-                        p1 = false;
+                        p4 = false;
                         break;
                     case "% VL unsupressed":
                         initpVLIndicator(indicator);
-                        p2 = false;
+                        p5 = false;
                         break;
                     case "TB_PREW":
                         initTB_PREWIndicator(indicator);
-                        p3 = false;
+                        p6 = false;
                         break;
                 }
             });
             if (p1) {
-                initPrEP_NewIndicator(null);
+                initTX_CurrIndicator(null);
             };
             if (p2) {
                 initPrEP_CurrIndicator(null);
             }
             if (p3) {
-                initPrEP_3MIndicator(null);
+                initMMDIndicator(null);
+            }
+            if (p4) {
+                initITIndicator(null);
+            };
+            if (p5) {
+                initpVLIndicator(null);
+            }
+            if (p6) {
+                initTB_PREWIndicator(null);
             }
         });
 }
@@ -721,4 +730,8 @@ function applyFilter() {
     month = $('#inputMonth').val();
     console.log(`filter with: province - ${provinceCode}; district - ${districtCode}; year - ${year}; quarter - ${quarter}; month - ${month}`);
     initIndicators();
+    createAgeGroupChart();
+    createGenderChart();
+    createKeyPopulationsChart();
+    createClinicsChart();
 }

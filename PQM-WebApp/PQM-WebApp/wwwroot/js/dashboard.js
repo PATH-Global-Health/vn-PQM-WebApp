@@ -379,6 +379,8 @@
         month = $('#inputMonth').val();
         console.log(`filter with: province - ${provinceCode}; district - ${districtCode}; year - ${year}; quarter - ${quarter}; month - ${month}`);
         initPrEPIndicators();
+        initTestingIndicators();
+        initTreatmentIndicators();
         return true;
     }
 }

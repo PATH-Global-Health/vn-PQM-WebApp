@@ -9,4 +9,8 @@
     <ProjectReference Include="..\PQM-WebApp.Data\PQM-WebApp.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NPOI" Version="2.5.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+  </ItemGroup>
 </Project>

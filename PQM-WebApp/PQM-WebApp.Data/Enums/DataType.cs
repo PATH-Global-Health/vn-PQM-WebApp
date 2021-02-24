@@ -6,6 +6,7 @@ namespace PQM_WebApp.Data.Enums
 {
     public enum DataType
     {
+        None,
         Number,
         Percent
     }

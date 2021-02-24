@@ -561,4 +561,8 @@ function applyFilter() {
     month = $('#inputMonth').val();
     console.log(`filter with: province - ${provinceCode}; district - ${districtCode}; year - ${year}; quarter - ${quarter}; month - ${month}`);
     initIndicators();
+    createAgeGroupChart();
+    createGenderChart();
+    createKeyPopulationsChart();
+    createClinicsChart();
 }
