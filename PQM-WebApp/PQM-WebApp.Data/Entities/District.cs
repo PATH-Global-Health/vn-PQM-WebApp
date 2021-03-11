@@ -16,6 +16,8 @@ namespace PQM_WebApp.Data.Entities
         public string Path { get; set; }
         public string PathWithType { get; set; }
         public string ParentCode { get; set; }
+        public double? Lat { get; set; }
+        public double? Lon { get; set; }
 
         public Guid ProvinceId { get; set; }
         [ForeignKey("ProvinceId")]

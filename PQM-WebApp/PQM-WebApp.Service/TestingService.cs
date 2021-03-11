@@ -10,6 +10,7 @@ namespace PQM_WebApp.Service
     public interface ITestingService
     {
         ResultModel GetIndicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null);
+        ResultModel GetHealthMap(int year, int quater, int? month, string provinceCode, string districtCode);
     }
 
     public class TestingService : ITestingService
@@ -20,6 +21,8 @@ namespace PQM_WebApp.Service
         {
             _dbContext = dbContext;
         }
+
+
 
         public ResultModel GetIndicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
         {
@@ -41,8 +44,8 @@ namespace PQM_WebApp.Service
                         && (lastMonth != null || fromLastMonth <= m.MonthNumOfYear && m.MonthNumOfYear <= toLastMonth)
                         && (lastMonth == null || m.MonthNumOfYear == lastMonth)).Select(m => m.Id);
 
-
-            var districts = _dbContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || d.Code == districtCode)).Select(s => s.Id);
+            var _districts = !string.IsNullOrEmpty(districtCode) ? districtCode.Split(',') : null;
+            var districts = _dbContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || _districts.Contains(d.Code))).Select(s => s.Id);
             var sites = _dbContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
             var aggregatedValues = _dbContext.AggregatedValues.Where(w => months.Contains(w.MonthId) && sites.Contains(w.SiteId) && w.Indicator.IndicatorGroup.Name == indicatorGroup);
             var lastAggregatedValues = _dbContext.AggregatedValues.Where(w => lastMonths.Contains(w.MonthId) && sites.Contains(w.SiteId) && w.Indicator.IndicatorGroup.Name == indicatorGroup);
@@ -140,12 +143,53 @@ namespace PQM_WebApp.Service
                 data.Add(item);
             }
 
+            data = data.OrderBy(s => s.Order).ToList();
 
             return new ResultModel()
             {
                 Succeed = true,
                 Data = data,
             };
+        }
+
+        public ResultModel GetHealthMap(int year, int quater, int? month, string provinceCode, string districtCode)
+        {
+            try
+            {
+                var indicatorName = "HTS Positive";
+
+                var fromMonth = quater == 1 ? 1 : quater == 2 ? 4 : quater == 3 ? 7 : 10;
+                var toMonth = quater == 1 ? 3 : quater == 2 ? 6 : quater == 3 ? 9 : 12;
+                var months = _dbContext.DimMonths.Where(m => m.Year.Year == year
+                            && (month != null || fromMonth <= m.MonthNumOfYear && m.MonthNumOfYear <= toMonth)
+                            && (month == null || m.MonthNumOfYear == month)).Select(m => m.Id);
+                var districts = _dbContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || d.Code == districtCode)).Select(s => s.Id);
+                var sites = _dbContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
+                var aggregatedValues = _dbContext.AggregatedValues.Where(w => months.Contains(w.MonthId)
+                                                                           && sites.Contains(w.SiteId)
+                                                                           && w.Indicator.Name == indicatorName).ToList();
+                var rs = aggregatedValues.GroupBy(f => f.Site.District)
+                    .Select(s => new
+                    {
+                        Lat = s.Key.Lat,
+                        Lon = s.Key.Lon,
+                        Count = s.Count(),
+                    })
+                    .ToList();
+                return new ResultModel()
+                {
+                    Succeed = true,
+                    Data = rs,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultModel()
+                {
+                    Succeed = false,
+                    ErrorMessage = ex.Message
+                };
+            }
         }
     }
 }

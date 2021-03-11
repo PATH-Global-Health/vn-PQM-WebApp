@@ -28,6 +28,8 @@ namespace PQM_WebApp.Service
         public ResultModel Create(IndicatorCreateModel model);
         public ResultModel Get();
         public ResultModel ImportExcel(IFormFile file, string type = "");
+        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, string type = "");
+        public ResultModel GetValue(int year, int quater, int? month, string provinceCode, string districtCode, string indicatorCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null);
     }
 
     public class IndicatorService : IIndicatorService
@@ -82,138 +84,157 @@ namespace PQM_WebApp.Service
 
         public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, string type = "")
         {
-            if (type == "VL")
+            try
             {
-                for (var i = 0; i < importValues.Count; i++)
+                var errorRows = new List<int>();
+                if (type == "VL")
                 {
-                    var value = importValues[i];
-                    var month = _dbContext.DimMonths.FirstOrDefault(m => m.Year.Year == value.Year && m.MonthNumOfYear == value.Month);
-                    var gender = _dbContext.Sex.FirstOrDefault(s => s.Name.Equals(value.Gender));
-                    var ageGroup = _dbContext.AgeGroups.FirstOrDefault(a => a.Name.Equals(value.AgeGroup));
-                    var keyPopulation = _dbContext.KeyPopulations.FirstOrDefault(k => k.Name.Equals(value.KeyPopulation));
-                    var site = _dbContext.Sites.FirstOrDefault(s => s.Name.Equals(value.Site));
-                    var indicator = _dbContext.Indicators.FirstOrDefault(i => i.Name.Equals(value.Indicator));
-                    var cIndicator = _dbContext.Indicators.FirstOrDefault(i => i.Name.Equals("TX_Curr"));
-
-                    if (month != null && gender != null && ageGroup != null && keyPopulation != null && site != null && indicator != null)
+                    for (var i = 0; i < importValues.Count; i++)
                     {
-                        var _v = _dbContext.AggregatedValues
-                            .FirstOrDefault(
-                            s => s.IndicatorId == indicator.Id
-                            && s.AgeGroupId == ageGroup.Id
-                            && s.KeyPopulationId == keyPopulation.Id
-                            && s.SexId == gender.Id
-                            && s.SiteId == site.Id
-                            && s.MonthId == month.Id);
-                        var _c = _dbContext.AggregatedValues
-                            .FirstOrDefault(
-                            s => s.IndicatorId == cIndicator.Id
-                            && s.AgeGroupId == ageGroup.Id
-                            && s.KeyPopulationId == keyPopulation.Id
-                            && s.SexId == gender.Id
-                            && s.SiteId == site.Id
-                            && s.MonthId == month.Id);
-                        if (_c == null)
+                        var value = importValues[i];
+                        var month = _dbContext.DimMonths.FirstOrDefault(m => m.Year.Year == value.Year && m.MonthNumOfYear == value.Month);
+                        var gender = _dbContext.Sex.FirstOrDefault(s => s.Name.Equals(value.Gender));
+                        var ageGroup = _dbContext.AgeGroups.FirstOrDefault(a => a.Name.Equals(value.AgeGroup));
+                        var keyPopulation = _dbContext.KeyPopulations.FirstOrDefault(k => k.Name.Equals(value.KeyPopulation));
+                        var site = _dbContext.Sites.FirstOrDefault(s => s.Name.Equals(value.Site));
+                        var indicator = _dbContext.Indicators.FirstOrDefault(i => i.Name.Equals(value.Indicator));
+                        var cIndicator = _dbContext.Indicators.FirstOrDefault(i => i.Name.Equals("TX_Curr"));
+
+                        if (month != null && gender != null && ageGroup != null && keyPopulation != null && site != null && indicator != null)
                         {
-                            continue;
-                        }
-                        if (_v == null)
-                        {
-                            var _value = new AggregatedValue
+                            var _v = _dbContext.AggregatedValues
+                                .FirstOrDefault(
+                                s => s.IndicatorId == indicator.Id
+                                && s.AgeGroupId == ageGroup.Id
+                                && s.KeyPopulationId == keyPopulation.Id
+                                && s.SexId == gender.Id
+                                && s.SiteId == site.Id
+                                && s.MonthId == month.Id);
+                            var _c = _dbContext.AggregatedValues
+                                .FirstOrDefault(
+                                s => s.IndicatorId == cIndicator.Id
+                                && s.AgeGroupId == ageGroup.Id
+                                && s.KeyPopulationId == keyPopulation.Id
+                                && s.SexId == gender.Id
+                                && s.SiteId == site.Id
+                                && s.MonthId == month.Id);
+                            if (_c == null)
                             {
-                                Id = Guid.NewGuid(),
-                                AgeGroupId = ageGroup.Id,
-                                SexId = gender.Id,
-                                KeyPopulationId = keyPopulation.Id,
-                                SiteId = site.Id,
-                                Numerator = value.Numerator,
-                                Denominator = _c.Value,
-                                Value = value.Value,
-                                DataType = value.ValueType == 1 ? Data.Enums.DataType.Number : Data.Enums.DataType.Percent,
-                                CreatedBy = "",
-                                DateId = null,
-                                MonthId = month.Id,
-                                IsDeleted = false,
-                                DateCreated = DateTime.Now,
-                                IndicatorId = indicator.Id,
-                            };
-                            _dbContext.AggregatedValues.Add(_value);
+                                continue;
+                            }
+                            if (_v == null)
+                            {
+                                var _value = new AggregatedValue
+                                {
+                                    Id = Guid.NewGuid(),
+                                    AgeGroupId = ageGroup.Id,
+                                    SexId = gender.Id,
+                                    KeyPopulationId = keyPopulation.Id,
+                                    SiteId = site.Id,
+                                    Numerator = value.Numerator,
+                                    Denominator = _c.Value,
+                                    Value = value.Value,
+                                    DataType = value.ValueType == 1 ? Data.Enums.DataType.Number : Data.Enums.DataType.Percent,
+                                    CreatedBy = "",
+                                    DateId = null,
+                                    MonthId = month.Id,
+                                    IsDeleted = false,
+                                    DateCreated = DateTime.Now,
+                                    IndicatorId = indicator.Id,
+                                };
+                                _dbContext.AggregatedValues.Add(_value);
+                            }
+                            else
+                            {
+                                _v.Value = value.Value;
+                                _v.Numerator = value.Numerator;
+                                _v.Denominator = _c.Value;
+                                _dbContext.AggregatedValues.Update(_v);
+                            }
                         }
                         else
                         {
-                            _v.Value = value.Value;
-                            _v.Numerator = value.Numerator;
-                            _v.Denominator = _c.Value;
-                            _dbContext.AggregatedValues.Update(_v);
+                            Console.WriteLine(JsonConvert.SerializeObject(value));
                         }
                     }
-                    else
-                    {
-                        Console.WriteLine(JsonConvert.SerializeObject(value));
-                    }
+                    _dbContext.SaveChanges();
+                    return new ResultModel();
                 }
-                _dbContext.SaveChanges();
-                return new ResultModel();
+                else
+                {
+                    for (var i = 0; i < importValues.Count; i++)
+                    {
+                        var value = importValues[i];
+                        var month = _dbContext.DimMonths.FirstOrDefault(m => m.Year.Year == value.Year && m.MonthNumOfYear == value.Month);
+                        var gender = _dbContext.Sex.FirstOrDefault(s => s.Name.Equals(value.Gender));
+                        var ageGroup = _dbContext.AgeGroups.FirstOrDefault(a => a.Name.Equals(value.AgeGroup));
+                        var keyPopulation = _dbContext.KeyPopulations.FirstOrDefault(k => k.Name.Equals(value.KeyPopulation));
+                        var site = _dbContext.Sites.FirstOrDefault(s => s.Name.Equals(value.Site));
+                        var indicator = _dbContext.Indicators.FirstOrDefault(i => i.Name.Equals(value.Indicator));
+
+                        if (month != null && gender != null && ageGroup != null && keyPopulation != null && site != null && indicator != null)
+                        {
+                            var _v = _dbContext.AggregatedValues
+                                .FirstOrDefault(
+                                s => s.IndicatorId == indicator.Id
+                                && s.AgeGroupId == ageGroup.Id
+                                && s.KeyPopulationId == keyPopulation.Id
+                                && s.SexId == gender.Id
+                                && s.SiteId == site.Id
+                                && s.MonthId == month.Id);
+                            if (_v == null)
+                            {
+                                var _value = new AggregatedValue
+                                {
+                                    Id = Guid.NewGuid(),
+                                    AgeGroupId = ageGroup.Id,
+                                    SexId = gender.Id,
+                                    KeyPopulationId = keyPopulation.Id,
+                                    SiteId = site.Id,
+                                    Numerator = value.Numerator,
+                                    Denominator = value.Denominator,
+                                    Value = value.Value,
+                                    DataType = value.ValueType == 1 ? Data.Enums.DataType.Number : Data.Enums.DataType.Percent,
+                                    CreatedBy = "",
+                                    DateId = null,
+                                    MonthId = month.Id,
+                                    IsDeleted = false,
+                                    DateCreated = DateTime.Now,
+                                    IndicatorId = indicator.Id,
+                                };
+                                _dbContext.AggregatedValues.Add(_value);
+                            }
+                            else
+                            {
+                                _v.Value = value.Value;
+                                _v.Numerator = value.Numerator;
+                                _v.Denominator = value.Denominator;
+                                _dbContext.AggregatedValues.Update(_v);
+                            }
+                        }
+                        else
+                        {
+                            errorRows.Add(i + 1);
+                        }
+                    }
+                    _dbContext.SaveChanges();
+                    return new ResultModel()
+                    {
+                        Succeed = true,
+                        Data = new
+                        {
+                            ErrorRows = errorRows,
+                        }
+                    };
+                }
             }
-            else
+            catch (Exception ex)
             {
-                for (var i = 0; i < importValues.Count; i++)
+                return new ResultModel()
                 {
-                    var value = importValues[i];
-                    var month = _dbContext.DimMonths.FirstOrDefault(m => m.Year.Year == value.Year && m.MonthNumOfYear == value.Month);
-                    var gender = _dbContext.Sex.FirstOrDefault(s => s.Name.Equals(value.Gender));
-                    var ageGroup = _dbContext.AgeGroups.FirstOrDefault(a => a.Name.Equals(value.AgeGroup));
-                    var keyPopulation = _dbContext.KeyPopulations.FirstOrDefault(k => k.Name.Equals(value.KeyPopulation));
-                    var site = _dbContext.Sites.FirstOrDefault(s => s.Name.Equals(value.Site));
-                    var indicator = _dbContext.Indicators.FirstOrDefault(i => i.Name.Equals(value.Indicator));
-
-                    if (month != null && gender != null && ageGroup != null && keyPopulation != null && site != null && indicator != null)
-                    {
-                        var _v = _dbContext.AggregatedValues
-                            .FirstOrDefault(
-                            s => s.IndicatorId == indicator.Id
-                            && s.AgeGroupId == ageGroup.Id
-                            && s.KeyPopulationId == keyPopulation.Id
-                            && s.SexId == gender.Id
-                            && s.SiteId == site.Id
-                            && s.MonthId == month.Id);
-                        if (_v == null)
-                        {
-                            var _value = new AggregatedValue
-                            {
-                                Id = Guid.NewGuid(),
-                                AgeGroupId = ageGroup.Id,
-                                SexId = gender.Id,
-                                KeyPopulationId = keyPopulation.Id,
-                                SiteId = site.Id,
-                                Numerator = value.Numerator,
-                                Denominator = value.Denominator,
-                                Value = value.Value,
-                                DataType = value.ValueType == 1 ? Data.Enums.DataType.Number : Data.Enums.DataType.Percent,
-                                CreatedBy = "",
-                                DateId = null,
-                                MonthId = month.Id,
-                                IsDeleted = false,
-                                DateCreated = DateTime.Now,
-                                IndicatorId = indicator.Id,
-                            };
-                            _dbContext.AggregatedValues.Add(_value);
-                        }
-                        else
-                        {
-                            _v.Value = value.Value;
-                            _v.Numerator = value.Numerator;
-                            _v.Denominator = value.Denominator;
-                            _dbContext.AggregatedValues.Update(_v);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine(JsonConvert.SerializeObject(value));
-                    }
-                }
-                _dbContext.SaveChanges();
-                return new ResultModel();
+                    Succeed = false,
+                    ErrorMessage = ex.Message,
+                };
             }
         }
 
@@ -259,6 +280,11 @@ namespace PQM_WebApp.Service
             }
 
             return ImportIndicator(importedValues, type);
+        }
+
+        public ResultModel GetValue(int year, int quater, int? month, string provinceCode, string districtCode, string indicatorCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }

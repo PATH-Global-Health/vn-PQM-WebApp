@@ -35,7 +35,7 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody]IndicatorCreateModel model)
+        public IActionResult Create([FromBody] IndicatorCreateModel model)
         {
             var rs = _indicatorService.Create(model);
             if (rs.Succeed) return Ok(rs.Data);
@@ -77,11 +77,21 @@ namespace PQM_WebApp.Controllers
 
         [HttpPut("ImportByExcel")]
         [Consumes("multipart/form-data")]
-        public IActionResult ImportByExcel([FromForm] IFormFile file, [FromQuery]string type)
+        public IActionResult ImportByExcel([FromForm] IFormFile file, [FromQuery] string type)
         {
             _indicatorService.ImportExcel(file, type);
             return Ok();
         }
 
+        [HttpPost("/api/AggregateData")]
+        public IActionResult ImportAggregateData([FromBody] List<IndicatorImportModel> aggregateData)
+        {
+            var rs = _indicatorService.ImportIndicator(aggregateData);
+            if (rs.Succeed)
+            {
+                return Ok(rs.Data);
+            }
+            return BadRequest(rs.ErrorMessage);
+        }
     }
 }

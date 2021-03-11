@@ -40,7 +40,8 @@ namespace PQM_WebApp.Service
             var result = new ResultModel();
             try
             {
-                var districts = _dBContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || d.Code == districtCode)).Select(s => s.Id);
+                var _districts = !string.IsNullOrEmpty(districtCode) ? districtCode.Split(',') : null;
+                var districts = _dBContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || _districts.Contains(d.Code))).Select(s => s.Id);
                 var sites = _dBContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
                 var fromMonth = quarter == 1 ? 1 : quarter == 2 ? 4 : quarter == 3 ? 7 : 10;
                 var toMonth = quarter == 1 ? 3 : quarter == 2 ? 6 : quarter == 3 ? 9 : 12;
@@ -50,8 +51,8 @@ namespace PQM_WebApp.Service
                                         .Where(_ => (month == null ||_.Month.MonthNumOfYear == month)
                                         && _.Month.Year.Year == year
                                         && (fromMonth <= _.Month.MonthNumOfYear && _.Month.MonthNumOfYear <= toMonth)
-                                        && _.Indicator.IndicatorGroup.Name == indicatorGroup
-                                        && (string.IsNullOrEmpty(indicatorCode) || _.Indicator.Code == indicatorCode)
+                                        && (string.IsNullOrEmpty(indicatorGroup) || _.Indicator.IndicatorGroup.Name == indicatorGroup)
+                                        && (string.IsNullOrEmpty(indicatorCode) || _.Indicator.Name == indicatorCode || _.Indicator.Code == indicatorCode)
                                         && sites.Contains(_.SiteId))
                                         .Include(_ => dimensionString)
                                         .ToList();
@@ -60,6 +61,7 @@ namespace PQM_WebApp.Service
                                     .Select(s => new {
                                                     (s.Key as DimensionGroup).Id,
                                                     (s.Key as DimensionGroup).Name,
+                                                    Code = groupBy == "Site" ? (s.Key as Site).Code : "",
                                                     Value = s.Sum(v => v.Value),
                                                     Numerator = s.Sum(n => n.Numerator),
                                                     Denominator = s.Sum(d => d.Denominator)

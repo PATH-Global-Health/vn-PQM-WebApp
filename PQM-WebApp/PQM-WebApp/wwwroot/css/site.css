@@ -191,12 +191,13 @@ hr {
 .variable-containter {
     background-color: whitesmoke;
     height: 40vh;
-    min-height: 470px
+    min-height: 470px;
+    padding-right: 5px;
 }
 
 @media (min-width: 992px) {
     .modal-lg {
         width: 800px;
-        min-width: 1868px;
+        min-width: 1600px;
     }
 }

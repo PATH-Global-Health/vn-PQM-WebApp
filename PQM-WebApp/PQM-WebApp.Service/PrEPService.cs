@@ -96,7 +96,8 @@ namespace PQM_WebApp.Service
             var fromMonth = quater == 1 ? 1 : quater == 2 ? 4 : quater == 3 ? 7 : 10;
             var toMonth = quater == 1 ? 3 : quater == 2 ? 6 : quater == 3 ? 9 : 12;
             var months = _dbContext.DimMonths.Where(m => m.Year.Year == year && (fromMonth <= m.MonthNumOfYear && m.MonthNumOfYear <= toMonth) && (month == null || m.MonthNumOfYear == month)).Select(m => m.Id);
-            var districts = _dbContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || d.Code == districtCode)).Select(s => s.Id);
+            var _districts = !string.IsNullOrEmpty(districtCode) ? districtCode.Split(',') : null;
+            var districts = _dbContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || _districts.Contains(d.Code))).Select(s => s.Id);
             var sites = _dbContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
             var aggregatedValues = _dbContext.AggregatedValues.Where(w => months.Contains(w.MonthId) && sites.Contains(w.SiteId) && w.Indicator.IndicatorGroup.Name == "PrEP");
             if (!string.IsNullOrEmpty(ageGroups))

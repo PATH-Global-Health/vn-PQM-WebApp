@@ -43,7 +43,8 @@ namespace PQM_WebApp.Service
                         && (lastMonth == null || m.MonthNumOfYear == lastMonth)).Select(m => m.Id);
 
 
-            var districts = _dbContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || d.Code == districtCode)).Select(s => s.Id);
+            var _districts = !string.IsNullOrEmpty(districtCode) ? districtCode.Split(',') : null;
+            var districts = _dbContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || _districts.Contains(d.Code))).Select(s => s.Id);
             var sites = _dbContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
             var aggregatedValues = _dbContext.AggregatedValues.Where(w => months.Contains(w.MonthId) && sites.Contains(w.SiteId) && w.Indicator.IndicatorGroup.Name == indicatorGroup);
             var lastAggregatedValues = _dbContext.AggregatedValues.Where(w => lastMonths.Contains(w.MonthId) && sites.Contains(w.SiteId) && w.Indicator.IndicatorGroup.Name == indicatorGroup);

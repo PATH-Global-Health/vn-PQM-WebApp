@@ -17,60 +17,6 @@
 </nav>
 <div class="container-fluid">
     <div class="row" style="background-color: whitesmoke; height: 200px; transition: height 1s; overflow: hidden" id="configPanel">
-        <div class="col-12 dashboard-container">
-            <div class="card dashboard-card" style="background-color: white; padding: 20px">
-                <form>
-
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="inputProvince">Province/City</label>
-                                <select id="inputProvince" class="form-control" onchange="onProvinceChange()" required>
-                                    <option value="79" selected>Ho Chi Minh City</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="inputDistrict">District</label>
-                                <select id="inputDistrict" class="form-control" required>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="k-content">
-                                <label for="year-picker">Year</label>
-                                <input class="form-control" id="year-picker" required/>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="inputQuarter">Quarter</label>
-                                <select id="inputQuarter" class="form-control" onchange="onQuarterChange()" required>
-                                    <option value="1">Quarter 1</option>
-                                    <option value="2">Quarter 2</option>
-                                    <option value="3">Quarter 3</option>
-                                    <option value="4">Quarter 4</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="inputMonth">Month</label>
-                                <select id="inputMonth" class="form-control">
-                                    
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col d-flex justify-content-end">
-                            <button type="button" class="btn btn-info" onclick="applyFilter()">Process</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
     <div class="row" style="background-color: whitesmoke; padding-top: 10px">
         <div class="col d-flex justify-content-end">
@@ -146,6 +92,7 @@
 
 @section Scripts {
     <script src="~/js/markerclustererplus.min.js"></script>
+    <script src="~/js/filterComponent.js"></script>
     <script src="~/js/dashboard.js"></script>
     <script defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_uYWyuQfE3qofErFoGnDl9PkjEF7xGbk&callback=initMap">
