@@ -88,7 +88,7 @@ body {
 }
 
 .dashboard-card {
-    margin: 10px
+    margin: 3px
 }
 
     .dashboard-card:hover {
@@ -96,11 +96,11 @@ body {
     }
 
 hr {
-    margin: 8px;
+    margin: 3px;
 }
 
 .dashboard-indicator {
-    padding: 10px;
+    padding: 5px;
     border-radius: 10px;
 }
 
@@ -109,15 +109,11 @@ hr {
     }
 
 .dashboard-map {
-    height: 35vh;
+    height: 30vh;
 }
 
 .dashboard-chart-25 {
     height: 25vh;
-}
-
-.dashboard-chart-30 {
-    height: 30vh;
 }
 
 .dashboard-row {
@@ -133,10 +129,7 @@ hr {
     font-weight: bold;
 }
 
-.indicator-value {
-    font-size: 70px;
-    font-weight: bold;
-}
+
 
 .indicator-percent {
     font-size: x-large;
@@ -169,8 +162,7 @@ hr {
 
 .indicator-container {
     background-color: white;
-    height: 40vh;
-    min-height: 470px;
+    height: 400px;
 }
 
     .indicator-container:hover {
@@ -178,15 +170,23 @@ hr {
         border: 1px solid whitesmoke;
     }
 
-.indicator-infor {
-    height: 20vh;
-    min-height: 235px
-}
+    .indicator-container > .indicator-title {
+        font-size: x-large;
+        font-weight: bold;
+    }
 
-.indicator-infor-chart {
-    height: 20vh;
-    min-height: 230px
-}
+    .indicator-container > .indicator-infor {
+        height: 200px
+    }
+
+        .indicator-container > .indicator-infor > .indicator-value {
+            font-size: 50px;
+            font-weight: bold;
+        }
+
+    .indicator-container > .indicator-infor-chart {
+        height: 200px
+    }
 
 .variable-containter {
     background-color: whitesmoke;
@@ -200,4 +200,8 @@ hr {
         width: 800px;
         min-width: 1600px;
     }
+}
+
+.b-card-body {
+    padding: 13px !important;
 }

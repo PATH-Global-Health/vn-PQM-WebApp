@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Nest;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using PQM_WebApp.Data;
+using PQM_WebApp.Data.Models;
 using PQM_WebApp.Service;
 using System;
 using System.Collections.Generic;
@@ -51,5 +53,34 @@ namespace PQM_WebApp.Extensions
             });
         }
 
+        private static void CreateIndex(IElasticClient client)
+        {
+            var getResponse = client.Indices.Get("indicatorvalue");
+            if (!getResponse.IsValid)
+            {
+                var createIndexResponse = client.Indices.Create("indicatorvalue",
+                                                                    index => index.Settings(s => s.Analysis(a => a.Analyzers(aa => aa.Standard("default", sa => sa.StopWords("_none_")))))
+                                                                                  .Map<IndicatorElasticModel>(x => x.AutoMap())
+                                                            );
+            }
+        }
+
+        public static void AddElasticsearch(this IServiceCollection services, string url, string username, string password)
+        {
+            var settings = new ConnectionSettings(new Uri(url))
+                .DefaultIndex("indicatorvalue")
+                .BasicAuthentication(username, password)
+                .PrettyJson()
+                .EnableDebugMode()
+                //.ThrowExceptions(alwaysThrow: true)
+                .ServerCertificateValidationCallback((o, certificate, arg3, arg4) => { return true; });
+
+
+            var client = new ElasticClient(settings);
+
+            services.AddSingleton(client);
+
+            CreateIndex(client);
+        }
     }
 }

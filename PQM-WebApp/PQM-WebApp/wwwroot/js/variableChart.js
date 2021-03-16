@@ -47,6 +47,9 @@ const _initAgeGroupChart = (response, htmlElement) => {
             name: "Age Group",
             data: response.map(m => m.value),
             color: "#62666e",
+            tooltip: {
+                visible: true
+            }
         }],
         valueAxis: {
             line: {
@@ -86,6 +89,9 @@ const _initGenderChart = (response, htmlElement) => {
             name: "Gender",
             data: response.map(m => m.value),
             color: "#62666e",
+            tooltip: {
+                visible: true
+            }
         }],
         valueAxis: {
             line: {
@@ -125,6 +131,9 @@ const _initKeyPopulationsChart = (response, htmlElement) => {
             name: "Key Populations",
             data: response.map(m => m.value),
             color: "#62666e",
+            tooltip: {
+                visible: true
+            }
         }],
         valueAxis: {
             line: {
@@ -164,6 +173,9 @@ const _initClinicsChart = (response, htmlElement) => {
             name: "Clinic",
             data: response.map(m => m.value),
             color: "#62666e",
+            tooltip: {
+                visible: true
+            }
         }],
         valueAxis: {
             line: {
@@ -202,4 +214,52 @@ const _initClinicsChart = (response, htmlElement) => {
             addVar({ name: `Clinnic: ${e.category}`, id: a.id, type: 'Clinnic' });
         }
     });
+}
+
+const initDataChart = (indicator, elementId, queries) => {
+    let ageGroupQuery = queries ? queries.filter(v => v.type === 'AgeGroup').map(s => s.id).join(',') : '';
+    let keyPopulationQuery = queries ? queries.filter(v => v.type === 'KeyPopulation').map(s => s.id).join(',') : '';
+    let genderQuery = queries ? queries.filter(v => v.type === 'Gender').map(s => s.id).join(',') : '';
+    let clinnicQuery = queries ? queries.filter(v => v.type === 'Clinnic').map(s => s.id).join(',') : '';
+    $(`#${elementId}`).html('');
+    $.get(`/api/AggregatedValues/ChartData?year=${year}&quater=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
+        + `&ageGroups=${ageGroupQuery}&genders=${genderQuery}&keyPopulations=${keyPopulationQuery}&clinnics=${clinnicQuery}&indicator=${indicator}`,
+        function (response) {
+            $(`#${elementId}`).kendoChart({
+                seriesDefaults: {
+                    type: "area",
+                    area: {
+                        line: {
+                            style: "smooth"
+                        }
+                    },
+                },
+                series: [{
+                    data: response.map(s => s.value),
+                    color: "#62666e",
+                    tooltip: {
+                        visible: true
+                    }
+                }],
+                categoryAxis: {
+                    title: {
+                    },
+                    majorGridLines: {
+                        visible: false
+                    },
+                    majorTicks: {
+                        visible: false
+                    }
+                },
+                valueAxis: {
+                    title: {
+                    },
+                    majorGridLines: {
+                        visible: false
+                    },
+                    visible: false
+                }
+            });
+        }
+    );
 }

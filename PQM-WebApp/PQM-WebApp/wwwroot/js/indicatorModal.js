@@ -68,44 +68,10 @@
 
 $('body').append(modal);
 
-const _createChart = () => {
-    $("#_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0.507, 1.943, 2.848, 0.284, 3.263, 4.801, 6.890, 8.238, 9, 4.552, 15.855, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
 
 const openIndicatorModal = (indicator, year, quarter, month, province, district, value) => {
-    let _indicator = indicator.split(' ').join('%20');
+    let _indicator = encodeURI(indicator);
+    initDataChart(_indicator, "_chart");
     $('#indicator-modal-title').html(indicator);
     $('#_title').html(indicator);
     $('#_value').html(value.dataType === 1 ? value.value : (Math.round(((value.numerator / value.denominator) + Number.EPSILON) * 100) + '%'));
@@ -129,7 +95,6 @@ const openIndicatorModal = (indicator, year, quarter, month, province, district,
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicator=${_indicator}&groupBy=Site`,
         function (response) {
             _initClinicsChart(response, '_clinics-chart');
-            _createChart();
         }
     );
 };

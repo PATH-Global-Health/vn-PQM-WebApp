@@ -79,186 +79,6 @@ function createTX_Curr_chart() {
     });
 }
 
-function createTX_New_chart() {
-    $("#TX_New_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0.507, 3.943, 2.848, 0.284, 7.263, 4.801, 7.890, 4.238, 9, 4.552, 15.855, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
-function createMMD_chart() {
-    $("#MMD_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
-function createIT_chart() {
-    $("#IT_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0.507, 1.943, 2.848, 0.284, 3.263, 4.801, 6.890, 8.238, 9, 4.552, 15.855, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
-function createpVL_chart() {
-    $("#pVL_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0.507, 3.943, 2.848, 0.284, 7.263, 4.801, 7.890, 4.238, 9, 4.552, 15.855, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
-function createTB_PREW_chart() {
-    $("#TB_PREW_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
 function trendElement(trend) {
     if (trend.direction === 0) return "";
     let trendDirection = trend.direction === 1 ?
@@ -276,7 +96,7 @@ function trendElement(trend) {
 
 function initTX_CurrIndicator(indicator) {
     if (indicator) {
-        createTX_Curr_chart();
+        initDataChart("TX_CURR", "TX_Curr_chart", variables);
         $("#TX_Curr-value").html(indicator.value.value);
         $("#TX_Curr-value").css("color", indicator.value.criticalInfo);
         $("#TX_Curr-percent").html(trendElement(indicator.trend));
@@ -290,7 +110,7 @@ function initTX_CurrIndicator(indicator) {
 
 function initTX_NewIndicator(indicator) {
     if (indicator) {
-        createTX_New_chart();
+        initDataChart("TX_NEW", "TX_New_chart", variables);
         $("#TX_New-value").html(indicator.value.value);
         $("#TX_New-value").css("color", indicator.value.criticalInfo);
         $("#TX_New-percent").html(trendElement(indicator.trend));
@@ -303,7 +123,7 @@ function initTX_NewIndicator(indicator) {
 
 function initMMDIndicator(indicator) {
     if (indicator) {
-        createMMD_chart();
+        initDataChart("MMD","MMD_chart")
         $("#MMD-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
         $("#MMD-value").css("color", indicator.value.criticalInfo);
         $("#MMD-percent").html(trendElement(indicator.trend));
@@ -316,7 +136,7 @@ function initMMDIndicator(indicator) {
 
 function initITIndicator(indicator) {
     if (indicator) {
-        createIT_chart();
+        initDataChart("Interruption%20in%20Treatment", "IT_chart")
         $("#IT-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
         $("#IT-value").css("color", indicator.value.criticalInfo);
         $("#IT-percent").html(trendElement(indicator.trend));
@@ -329,7 +149,7 @@ function initITIndicator(indicator) {
 
 function initpVLIndicator(indicator) {
     if (indicator) {
-        createpVL_chart();
+        initDataChart("%%20VL%20unsupressed", "pVL_chart")
         $("#pVL-value").html(indicator.value.dataType === 1 ? indicator.value.value : (customRound(indicator.value.numerator, indicator.value.denominator) * 100).toFixed(2) + '%');
         $("#pVL-value").css("color", indicator.value.criticalInfo);
         $("#pVL-percent").html(trendElement(indicator.trend));
@@ -342,7 +162,7 @@ function initpVLIndicator(indicator) {
 
 function initTB_PREWIndicator(indicator) {
     if (indicator) {
-        createTB_PREW_chart();
+        initDataChart("TB_PREW", "TB_PREW_chart")
         $("#TB_PREW-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
         $("#TB_PREW-value").css("color", indicator.value.criticalInfo);
         $("#TB_PREW-percent").html(trendElement(indicator.trend));
@@ -430,14 +250,11 @@ function checkURLParams() {
 $(document).ready(() => {
     checkURLParams();
     initIndicators();
-    initConfigPanel();
+    initFilterPanel();
     createAgeGroupChart();
     createGenderChart();
     createKeyPopulationsChart();
     createClinicsChart();
-
-    onProvinceChange();
-    onQuarterChange();
 });
 
 function applyFilter() {
@@ -446,10 +263,10 @@ function applyFilter() {
     year = $('#year-picker').val();
     quarter = $('#inputQuarter').val();
     month = $('#inputMonth').val();
-    console.log(`filter with: province - ${provinceCode}; district - ${districtCode}; year - ${year}; quarter - ${quarter}; month - ${month}`);
     initIndicators();
     createAgeGroupChart();
     createGenderChart();
     createKeyPopulationsChart();
     createClinicsChart();
+    updateFilterDetail();
 }

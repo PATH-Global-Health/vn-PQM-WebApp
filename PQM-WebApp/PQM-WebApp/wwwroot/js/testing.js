@@ -4,6 +4,12 @@ let quarter = 1;
 let provinceCode = '79';
 let districtCode = '768';
 let firstload = true;
+let indicators = [];
+
+function openModal(indicatorName) {
+    let value = indicators.find(f => f.name == indicatorName).value;
+    openIndicatorModal(indicatorName, year, quarter, month, provinceCode, districtCode, value);
+}
 
 function createAgeGroupChart() {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Testing&groupBy=AgeGroup`,
@@ -37,114 +43,6 @@ function createClinicsChart() {
     )
 }
 
-function createHTS_TEST_POS_chart() {
-    $("#HTS_TEST_POS_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0.507, 1.943, 2.848, 0.284, 3.263, 4.801, 6.890, 8.238, 9, 4.552, 15.855, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
-function createHTS_TEST_Recency_chart() {
-    $("#HTS_TEST-Recency_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0.507, 3.943, 2.848, 0.284, 7.263, 4.801, 7.890, 4.238, 9, 4.552, 15.855, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
-function createHTS_TEST_POS_refer_chart() {
-    $("#HTS_TEST_POS-refer_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
 function trendElement(trend) {
     let trendDirection = trend.direction === 1 ?
         `<svg xmlns="http://www.w3.org/2000/svg" color="${trend.criticalInfo}" width="35" height="35" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 20 20">
@@ -161,7 +59,7 @@ function trendElement(trend) {
 
 function initHTS_TEST_POSIndicator(indicator) {
     if (indicator) {
-        createHTS_TEST_POS_chart();
+        initDataChart("HTS%20Positive", "HTS_TEST_POS_chart", variables);
         $("#HTS_TEST_POS-value").html(indicator.value.value);
         $("#HTS_TEST_POS-value").css("color", indicator.value.criticalInfo);
         $("#HTS_TEST_POS-percent").html(trendElement(indicator.trend));
@@ -175,7 +73,7 @@ function initHTS_TEST_POSIndicator(indicator) {
 
 function init_pHTSreferredIndicator(indicator) {
     if (indicator) {
-        createHTS_TEST_Recency_chart();
+        initDataChart("%25HIV%2B%20referred", "HTS_TEST-Recency_chart", variables);
         $("#HTS_TEST-Recency-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
         $("#HTS_TEST-Recency-value").css("color", indicator.value.criticalInfo);
         $("#HTS_TEST-Recency-percent").html(trendElement(indicator.trend));
@@ -188,7 +86,7 @@ function init_pHTSreferredIndicator(indicator) {
 
 function init_pHTSrecentIndicator(indicator) {
     if (indicator) {
-        createHTS_TEST_POS_refer_chart();
+        initDataChart("%HTS%20recent", "HTS_TEST_POS-refer_chart", variables);
         $("#HTS_TEST_POS-refer-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
         $("#HTS_TEST_POS-refer-value").css("color", indicator.value.criticalInfo);
         $("#HTS_TEST_POS-refer-percent").html(trendElement(indicator.trend));
@@ -226,13 +124,16 @@ function initIndicators() {
                 }
             });
             if (p1) {
-                initPrEP_NewIndicator(null);
+                initHTS_TEST_POSIndicator(null);
             };
             if (p2) {
-                initPrEP_CurrIndicator(null);
-            }
+                init_pHTSreferredIndicator(null);
+            };
             if (p3) {
-                initPrEP_3MIndicator(null);
+                init_pHTSrecentIndicator(null);
+            };
+            if (variables.length === 0) {
+                this.indicators = data
             }
         });
 }
@@ -252,14 +153,11 @@ function checkURLParams() {
 $(document).ready(() => {
     checkURLParams();
     initIndicators();
-    initConfigPanel();
+    initFilterPanel();
     createAgeGroupChart();
     createGenderChart();
     createKeyPopulationsChart();
     createClinicsChart();
-
-    onProvinceChange();
-    onQuarterChange();
 });
 
 function applyFilter() {
@@ -268,10 +166,10 @@ function applyFilter() {
     year = $('#year-picker').val();
     quarter = $('#inputQuarter').val();
     month = $('#inputMonth').val();
-    console.log(`filter with: province - ${provinceCode}; district - ${districtCode}; year - ${year}; quarter - ${quarter}; month - ${month}`);
     initIndicators();
     createAgeGroupChart();
     createGenderChart();
     createKeyPopulationsChart();
     createClinicsChart();
+    updateFilterDetail();
 }

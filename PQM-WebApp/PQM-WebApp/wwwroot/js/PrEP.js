@@ -7,7 +7,6 @@ let firstload = true;
 let indicators = [];
 
 function openModal(indicatorName) {
-    console.log(indicators);
     let value = indicators.find(f => f.name == indicatorName).value;
     openIndicatorModal(indicatorName, year, quarter, month, provinceCode, districtCode, value);
 }
@@ -44,114 +43,6 @@ function createClinicsChart() {
     )
 }
 
-function createPrEP_NEW_chart() {
-    $("#PrEP_NEW_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0.507, 1.943, 2.848, 0.284, 3.263, 4.801, 6.890, 8.238, 9, 4.552, 15.855, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
-function createPrEP_CURR_chart() {
-    $("#PrEP_CURR_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0.507, 3.943, 2.848, 0.284, 7.263, 4.801, 7.890, 4.238, 9, 4.552, 15.855, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
-function createPrEP_3M_chart() {
-    $("#pPrEP_3M_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
 function trendElement(trend) {
     let trendDirection = trend.direction === 1 ?
         `<svg xmlns="http://www.w3.org/2000/svg" color="${trend.criticalInfo}" width="35" height="35" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 20 20">
@@ -168,7 +59,7 @@ function trendElement(trend) {
 
 function initPrEP_NewIndicator(indicator) {
     if (indicator) {
-        createPrEP_NEW_chart();
+        initDataChart("PrEP%20NEW", "PrEP_NEW_chart", variables);
         $("#PrEP_NEW-value").html(indicator.value.value);
         $("#PrEP_NEW-value").css("color", indicator.value.criticalInfo);
         $("#PrEP_NEW-percent").html(trendElement(indicator.trend));
@@ -182,7 +73,7 @@ function initPrEP_NewIndicator(indicator) {
 
 function initPrEP_CurrIndicator(indicator) {
     if (indicator) {
-        createPrEP_CURR_chart();
+        initDataChart("PrEP%20CURR", "PrEP_CURR_chart", variables);
         $("#PrEP_CURR-value").html(indicator.value.value);
         $("#PrEP_CURR-value").css("color", indicator.value.criticalInfo);
         $("#PrEP_CURR-percent").html(trendElement(indicator.trend));
@@ -195,7 +86,7 @@ function initPrEP_CurrIndicator(indicator) {
 
 function initPrEP_3MIndicator(indicator) {
     if (indicator) {
-        createPrEP_3M_chart();
+        initDataChart("%PrEP%203M", "pPrEP_3M_chart", variables);
         $("#pPrEP_3M-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
         $("#pPrEP_3M-value").css("color", indicator.value.criticalInfo);
         $("#pPrEP_3M-percent").html(trendElement(indicator.trend));
@@ -264,18 +155,13 @@ function checkURLParams() {
 $(document).ready(() => {
     checkURLParams();
     initIndicators();
-    initConfigPanel();
+    initFilterPanel();
     createAgeGroupChart();
     createGenderChart();
     createKeyPopulationsChart();
     createClinicsChart();
-
-    onProvinceChange();
-    onQuarterChange();
     $('body').append(modal);
 });
-$(document).bind("kendo:skinChange", createPrEP_NEW_chart);
-
 
 function applyFilter() {
     provinceCode = $('#inputProvince').val();
@@ -283,10 +169,10 @@ function applyFilter() {
     year = $('#year-picker').val();
     quarter = $('#inputQuarter').val();
     month = $('#inputMonth').val();
-    console.log(`filter with: province - ${provinceCode}; district - ${districtCode}; year - ${year}; quarter - ${quarter}; month - ${month}`);
     initIndicators();
     createAgeGroupChart();
     createGenderChart();
     createKeyPopulationsChart();
     createClinicsChart();
+    updateFilterDetail();
 }

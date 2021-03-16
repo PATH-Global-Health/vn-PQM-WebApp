@@ -4,38 +4,36 @@
 }
 
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>PQM Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.80.0">
+    <title>PQM - Signin</title>
+    <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="~/css/auth.css" rel="stylesheet" />
+    <!-- Favicons -->
+    <link rel="stylesheet" href="~/css/auth.css" />
 </head>
-<body>
-    <div class="wrapper fadeInDown">
-        <div id="formContent">
-            <!-- Tabs Titles -->
-            <!-- Icon -->
-            <div class="fadeIn first">
-
-            </div>
-
-            <!-- Login Form -->
-            <form>
-                <input type="text" id="username" class="fadeIn second" placeholder="Username">
-                <input type="password" id="password" class="fadeIn third" placeholder="Password">
-                <small id="user-error" class="form-text text-muted" style="color: red!important"></small>
-                <button type="button" id="btn-login" class="fadeIn fourth" onclick="onLogin()">Log In</button>
-            </form>
-
-            <!-- Remind Passowrd -->
-            <div id="formFooter">
-                <a class="underlineHover" href="#">Forgot Password?</a>
-            </div>
-
+<body class="text-center">
+    <form class="form-signin" onsubmit="return onLogin()">
+        <img src="/images/usaid-logo.PNG" alt="" width="250" height="auto">
+        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        <label for="inputUsername" class="sr-only">Email address</label>
+        <input type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        <span id="loginError" style="display: none; color: red">Please check username or password!!</span>
+        <div class="checkbox mb-3">
+            <label>
+                <input type="checkbox" value="remember-me" id="inputRememberMe"> Remember me
+            </label>
         </div>
-    </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        @*<p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>*@
+    </form>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/auth.js"></script>
 </body>
