@@ -24,4 +24,7 @@
 
 
 
+  <ItemGroup>
+    <Folder Include="Views\Setting\" />
+  </ItemGroup>
 </Project>

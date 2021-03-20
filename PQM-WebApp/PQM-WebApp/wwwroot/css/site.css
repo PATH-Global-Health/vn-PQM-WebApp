@@ -205,3 +205,7 @@ hr {
 .b-card-body {
     padding: 13px !important;
 }
+
+.indicator-group :hover {
+    cursor: pointer;
+}
