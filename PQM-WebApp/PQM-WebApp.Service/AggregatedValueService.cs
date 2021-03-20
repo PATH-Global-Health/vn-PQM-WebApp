@@ -146,7 +146,11 @@ namespace PQM_WebApp.Service
             var data = _dBContext.AggregatedValues
                                  .Where(w => w.Month.MonthNumOfYear == month && w.Month.Year.Year == year && w.Indicator.Name == indicator)
                                  .Select(s => new IndicatorElasticModel {
-                                    Name = s.Indicator.Name,
+                                    IndicatorName = s.Indicator.Name,
+                                    IndicatorGroup = s.Indicator.IndicatorGroup.Name,
+                                    Quarter = s.Month.MonthNumOfYear <= 3 ? 1 : s.Month.MonthNumOfYear <= 6 ? 2 : s.Month.MonthNumOfYear <= 9 ? 3: 4,
+                                    DistrictCode = s.Site.District.Code,
+                                    ProvinceCode = s.Site.District.Province.Code,
                                     ValueType = s.DataType == DataType.Number ? 1 : 2,
                                     Value = s.Value,
                                     Denominator = s.Denominator,
