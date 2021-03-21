@@ -25,6 +25,7 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<IAggregatedValueService, AggregatedValueService>();
             services.AddTransient<ITestingService, TestingService>();
             services.AddTransient<ITreatmentService, TreatmentService>();
+            services.AddTransient<IThresholdSettingService, ThresholdSettingService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)
