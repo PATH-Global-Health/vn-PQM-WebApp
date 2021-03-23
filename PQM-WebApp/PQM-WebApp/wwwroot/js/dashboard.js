@@ -142,7 +142,7 @@ function addMarkerClusterer(map, response) {
     let markers = [];
     for (var i = 0; i < response.data.length; i++) {
         var location = response.data[i];
-        if (location.lat != null && location.lon != null) {
+        if (location.lat !== null && location.lon !== null) {
             for (var j = 0; j < location.count; j++) {
                 markers.push(new google.maps.Marker({
                     position: {
