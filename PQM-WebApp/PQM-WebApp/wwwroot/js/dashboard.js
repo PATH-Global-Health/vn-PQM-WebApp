@@ -4,6 +4,7 @@ let year = '2020';
 let month = '';
 let quarter = '1';
 let firstload = true;
+let thresholdSettings = [];
 
 function drillDown(groupIndicator) {
     if (groupIndicator !== 'PrEP' && groupIndicator !== 'Testing' && groupIndicator !== 'Treatment') return;
@@ -38,14 +39,23 @@ function fakeIndicator(name, value, valueColor, info, trend, hrTag) {
 }
 
 function createIndicator(indicator, hrTag) {
+    let thresholdSetting = thresholdSettings
+        .find(s => s.indicatorName === indicator.name
+            && (s.provinceCode === provinceCode)
+            && ((indicator.value.dataType === 1 && s.from <= indicator.value.value && indicator.value.value <= s.to)
+            || (indicator.value.dataType === 2 && indicator.value))
+    );
+    if (thresholdSetting) {
+        indicator.value.criticalInfo = thresholdSetting.colorCode;
+    };
     let _trendElement = indicator.trend.direction === 1
-        ? `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.trend.criticalInfo}" width="20" height="20" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 20 20">
+        ? `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.trend.criticalInfo ? indicator.trend.criticalInfo : "black"}" width="20" height="20" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 20 20">
                        <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
                    </svg>`
-        : `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.trend.criticalInfo}" width="20" height="20" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 20 20">
+        : `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.trend.criticalInfo ? indicator.trend.criticalInfo : "black"}" width="20" height="20" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 20 20">
                        <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                    </svg>`;
-    let _infoElement = indicator.criticalInfo
+    let _infoElement = indicator.criticalInfo == true
         ? `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.criticalInfo}" width="20" height="20" fill="currentColor" class="bi bi-record-fill" viewBox="0 0 20 20">
                        <path fill-rule="evenodd" d="M8 13A5 5 0 1 0 8 3a5 5 0 0 0 0 10z" />
                    </svg>`
@@ -254,15 +264,26 @@ function checkURLParams() {
     console.log(`${year} - ${quarter} - ${month} - ${provinceCode} - ${districtCode}`);
 }
 
+const loadThresholdList = () => {
+    let token = `Bearer ${getToken()}`;
+    $.ajax({
+        url: "/api/ThresholdSettings",
+        type: "GET",
+        beforeSend: function (xhr) { xhr.setRequestHeader('Authorization', token); },
+        success: function (data) {
+            thresholdSettings = data;
+            initIndicators();
+        }
+    });
+}
+
 $(document).ready(() => {
     checkURLParams();
     initFilterPanel();
-    initIndicators();
+    loadThresholdList();
     initPersonTypeChart();
     initHTSchart();
 });
-
-$(document).bind("kendo:skinChange", initPersonTypeChart);
 
 function applyFilter() {
     provinceCode = $('#inputProvince').val();

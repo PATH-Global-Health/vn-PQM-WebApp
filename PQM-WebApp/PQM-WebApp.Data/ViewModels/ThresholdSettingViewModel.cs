@@ -6,7 +6,7 @@ namespace PQM_WebApp.Data.ViewModels
         public string Username { get; set; }
         public string DistrictCode { get; set; }
         public string ProvinceCode { get; set; }
-        public string IndicatorNamge { get; set; }
+        public string IndicatorName { get; set; }
         public double From { get; set; }
         public double To { get; set; }
         public string ColorCode { get; set; }
