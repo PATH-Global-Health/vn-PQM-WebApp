@@ -5,7 +5,7 @@
 }
 
 function getToken() {
-    return `${sessionStorage.getItem('token')}${localStorage.getItem('token')}`;
+    return sessionStorage.getItem('token') !== null ? sessionStorage.getItem('token') : localStorage.getItem('token');
 }
 
 function setToken(token, remember) {

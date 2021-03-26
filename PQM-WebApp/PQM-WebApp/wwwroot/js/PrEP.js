@@ -7,7 +7,7 @@ let firstload = true;
 let indicators = [];
 
 function openModal(indicatorName) {
-    let value = indicators.find(f => f.name == indicatorName).value;
+    let value = indicators.find(f => f.name === indicatorName).value;
     openIndicatorModal(indicatorName, year, quarter, month, provinceCode, districtCode, value);
 }
 

@@ -4,6 +4,7 @@ let year = '2020';
 let month = '';
 let quarter = '1';
 let firstload = true;
+let thresholdSettings = [];
 
 function drillDown(groupIndicator) {
     if (groupIndicator !== 'PrEP' && groupIndicator !== 'Testing' && groupIndicator !== 'Treatment') return;
@@ -42,7 +43,7 @@ function createIndicator(indicator, hrTag) {
         ? `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.trend.criticalInfo}" width="20" height="20" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 20 20">
                        <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
                    </svg>`
-        : `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.trend.criticalInfo}" width="20" height="20" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 20 20">
+        : `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.trend.criticalInfo ? indicator.trend.criticalInfo : "black"}" width="20" height="20" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 20 20">
                        <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                    </svg>`) : '';
     let _infoElement = indicator.criticalInfo
@@ -171,7 +172,7 @@ function addMarkerClusterer(map, response) {
     let markers = [];
     for (var i = 0; i < response.data.length; i++) {
         var location = response.data[i];
-        if (location.lat != null && location.lon != null) {
+        if (location.lat !== null && location.lon !== null) {
             for (var j = 0; j < location.count; j++) {
                 markers.push(new google.maps.Marker({
                     position: {
@@ -283,15 +284,26 @@ function checkURLParams() {
     console.log(`${year} - ${quarter} - ${month} - ${provinceCode} - ${districtCode}`);
 }
 
+const loadThresholdList = () => {
+    let token = `Bearer ${getToken()}`;
+    $.ajax({
+        url: "/api/ThresholdSettings",
+        type: "GET",
+        beforeSend: function (xhr) { xhr.setRequestHeader('Authorization', token); },
+        success: function (data) {
+            thresholdSettings = data;
+            initIndicators();
+        }
+    });
+}
+
 $(document).ready(() => {
     checkURLParams();
     initFilterPanel();
-    initIndicators();
+    loadThresholdList();
     initPersonTypeChart();
     initHTSchart();
 });
-
-$(document).bind("kendo:skinChange", initPersonTypeChart);
 
 function applyFilter() {
     provinceCode = $('#inputProvince').val();
