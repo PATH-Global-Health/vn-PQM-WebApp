@@ -172,7 +172,7 @@ namespace PQM_WebApp.Service
                     .Select(s => new
                     {
                         Lat = s.Key.Lat,
-                        Lon = s.Key.Lon,
+                        Lon = s.Key.Lng,
                         Count = s.Count(),
                     })
                     .ToList();

@@ -38,13 +38,13 @@ function fakeIndicator(name, value, valueColor, info, trend, hrTag) {
 }
 
 function createIndicator(indicator, hrTag) {
-    let _trendElement = indicator.trend.direction === 1
+    let _trendElement = indicator.trend !== null ? (indicator.trend.direction === 1
         ? `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.trend.criticalInfo}" width="20" height="20" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 20 20">
                        <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
                    </svg>`
         : `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.trend.criticalInfo}" width="20" height="20" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 20 20">
                        <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                   </svg>`;
+                   </svg>`) : '';
     let _infoElement = indicator.criticalInfo
         ? `<svg xmlns="http://www.w3.org/2000/svg" color="${indicator.criticalInfo}" width="20" height="20" fill="currentColor" class="bi bi-record-fill" viewBox="0 0 20 20">
                        <path fill-rule="evenodd" d="M8 13A5 5 0 1 0 8 3a5 5 0 0 0 0 10z" />
@@ -113,12 +113,41 @@ function initServiceQualityIndicators() {
 
 function initIndicators() {
     console.log('init indicators...');
-    initTestingIndicators();
-    initPrEPIndicators();
-    initTreatmentIndicators();
-    initDrugsIndicators();
-    initSHIIndicators();
-    initServiceQualityIndicators();
+    $("#testing").html('');
+    $("#prep").html('');
+    $("#treatment").html('');
+    $("#drugs").html('');
+    $("#shi").html('');
+    $("#service-quality").html('');
+    $.get(`/api/AggregatedValues/IndicatorValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`, function (data) {
+        let prep = [];
+        let testing = [];
+        let treatment = [];
+        data.forEach(e => {
+            if (e.group === "PrEP") {
+                prep.push(e);
+            } else if (e.group === "Testing") {
+                testing.push(e);
+            } else if (e.group === "Treatment") {
+                treatment.push(e);
+            }
+        })
+        console.log(prep);
+        console.log(testing);
+        console.log(treatment);
+        prep.forEach((indicator, idx, array) => {
+            $("#prep").append(createIndicator(indicator, idx !== array.length - 1));
+        })
+        testing.forEach((indicator, idx, array) => {
+            $("#testing").append(createIndicator(indicator, idx !== array.length - 1));
+        })
+        treatment.forEach((indicator, idx, array) => {
+            $("#treatment").append(createIndicator(indicator, idx !== array.length - 1));
+        })
+        initDrugsIndicators();
+        initSHIIndicators();
+        initServiceQualityIndicators();
+    });
 }
 
 function getHCMboundaries() {
@@ -271,9 +300,7 @@ function applyFilter() {
     quarter = $('#inputQuarter').val();
     month = $('#inputMonth').val();
     console.log(`filter with: province - ${provinceCode}; district - ${districtCode}; year - ${year}; quarter - ${quarter}; month - ${month}`);
-    initPrEPIndicators();
-    initTestingIndicators();
-    initTreatmentIndicators();
+    initIndicators();
     initPersonTypeChart();
     initMap();
     updateFilterDetail();
