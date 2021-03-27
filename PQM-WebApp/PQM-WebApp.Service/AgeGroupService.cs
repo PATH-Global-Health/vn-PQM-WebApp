@@ -4,6 +4,7 @@ using PQM_WebApp.Data;
 using PQM_WebApp.Data.Entities;
 using PQM_WebApp.Data.Models;
 using PQM_WebApp.Data.ViewModels;
+using PQM_WebApp.Service.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,9 @@ namespace PQM_WebApp.Service
     public interface IAgeGroupService
     {
         public ResultModel Create(AgeGroupCreateModel model);
-        public ResultModel Get();
+        //public ResultModel Get();
+
+        public PagingModel Get(int pageIndex, int pageSize);
         public ResultModel Update(AgeGroupViewModel model);
         public ResultModel Delete(AgeGroupViewModel model);
     }
@@ -51,13 +54,15 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public ResultModel Get()
+        /*public ResultModel Get()
         {
             var rs = new ResultModel();
             try
             {
                 rs.Succeed = true;
-                rs.Data = _dbContext.AgeGroups.Select(s => s.Adapt<AgeGroupViewModel>()).ToList();
+                rs.Data = _dbContext.AgeGroups
+                    .Where(s => s.IsDeleted == false)
+                    .Select(s => s.Adapt<AgeGroupViewModel>()).ToList();
                 return rs;
             }
             catch (Exception e)
@@ -66,6 +71,23 @@ namespace PQM_WebApp.Service
                 rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
+        }*/
+
+        public PagingModel Get(int pageIndex, int pageSize)
+        {
+            var result = new PagingModel();
+            try
+            {
+                var filter = _dbContext.AgeGroups.Where(_ => _.IsDeleted == false);
+                result.PageCount = filter.PageCount(pageSize);
+                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize);
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                e.Adapt(result);
+            }
+            return result;
         }
 
         public ResultModel Update(AgeGroupViewModel model)

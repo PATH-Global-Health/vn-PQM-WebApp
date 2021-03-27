@@ -19,10 +19,19 @@ namespace PQM_WebApp.Controllers
             _ageGroupService = ageGroupService;
         }
 
-        [HttpGet]
+        /*[HttpGet]
         public IActionResult Get()
         {
             var rs = _ageGroupService.Get();
+            if (rs.Succeed)
+                return Ok(rs.Data);
+            return BadRequest(rs.ErrorMessage);
+        }*/
+
+        [HttpGet]
+        public IActionResult Get(int pageIndex = 0, int pageSize = int.MaxValue)
+        {
+            var rs = _ageGroupService.Get(pageIndex, pageSize);
             if (rs.Succeed)
                 return Ok(rs.Data);
             return BadRequest(rs.ErrorMessage);
