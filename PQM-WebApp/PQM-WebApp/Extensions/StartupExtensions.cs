@@ -26,6 +26,7 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<ITestingService, TestingService>();
             services.AddTransient<ITreatmentService, TreatmentService>();
             services.AddTransient<IAgeGroupService, AgeGroupService>();
+            services.AddTransient<IKeyPopulationService, KeyPopulationService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)
