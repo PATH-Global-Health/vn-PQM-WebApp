@@ -58,7 +58,7 @@ namespace PQM_WebApp.Service
             {
                 var filter = _dbContext.KeyPopulations.Where(_ => _.IsDeleted == false);
                 result.PageCount = filter.PageCount(pageSize);
-                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize);
+                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<KeyPopulationViewModel>>();
                 result.Succeed = true;
             }
             catch (Exception e)

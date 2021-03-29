@@ -50,7 +50,7 @@ namespace PQM_WebApp.Service
                 result.Succeed = true;*/
                 var filter = _dbContext.Provinces.Where(_ => _.IsDeleted == false);
                 result.PageCount = filter.PageCount(pageSize);
-                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize);
+                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<ProvinceModel>>();
                 result.Succeed = true;
             }
             catch (Exception e)

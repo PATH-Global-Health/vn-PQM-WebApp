@@ -80,7 +80,7 @@ namespace PQM_WebApp.Service
             {
                 var filter = _dbContext.AgeGroups.Where(_ => _.IsDeleted == false);
                 result.PageCount = filter.PageCount(pageSize);
-                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize);
+                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<AgeGroupViewModel>>();
                 result.Succeed = true;
             }
             catch (Exception e)
