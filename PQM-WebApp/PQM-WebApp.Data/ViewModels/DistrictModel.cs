@@ -15,6 +15,7 @@ namespace PQM_WebApp.Data.ViewModels
         public string PathWithType { get; set; }
         public string ParentCode { get; set; }
         public string CreatedBy { get; set; }
+        public ICollection<SiteViewModel> Sites { get; set; }
     }
 
     public class DistrictModel : DistrictCreateModel
