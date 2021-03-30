@@ -178,6 +178,7 @@ namespace PQM_WebApp.Service
                 }
 
                 district.ProvinceId = province.Id;
+                district.Province = province;
                 district.Id = Guid.NewGuid();
                 district.DateCreated = DateTime.Now;
                 _dbContext.Districts.Add(district);
@@ -218,6 +219,7 @@ namespace PQM_WebApp.Service
                         throw new Exception("No province for reference.");
                     }
                     district.ProvinceId = province.Id;
+                    district.Province = province;
 
                     _dbContext.Districts.Update(district);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
@@ -300,6 +302,7 @@ namespace PQM_WebApp.Service
 
                 site.Id = Guid.NewGuid();
                 site.DateCreated = DateTime.Now;
+                site.District = district;
                 _dbContext.Sites.Add(site);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)
@@ -337,7 +340,7 @@ namespace PQM_WebApp.Service
                     {
                         throw new Exception("No district for reference.");
                     }
-
+                    site.District = district;
                     _dbContext.Sites.Update(site);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)

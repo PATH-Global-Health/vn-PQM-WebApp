@@ -56,7 +56,7 @@ namespace PQM_WebApp.Service
                 {
                     throw new Exception("No indicator group for reference.");
                 }
-
+                indicator.IndicatorGroup = indicatorGroup;
                 _dbContext.Indicators.Add(indicator);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)

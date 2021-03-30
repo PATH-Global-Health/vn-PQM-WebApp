@@ -35,6 +35,7 @@ namespace PQM_WebApp.Service
             {
                 var keyPopulation = model.Adapt<KeyPopulation>();
                 keyPopulation.Id = Guid.NewGuid();
+                keyPopulation.DateCreated = DateTime.Now;
                 _dbContext.KeyPopulations.Add(keyPopulation);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)

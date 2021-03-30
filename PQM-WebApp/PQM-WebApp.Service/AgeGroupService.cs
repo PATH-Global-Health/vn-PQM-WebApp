@@ -38,6 +38,7 @@ namespace PQM_WebApp.Service
             {
                 var ageGroup = model.Adapt<AgeGroup>();
                 ageGroup.Id = Guid.NewGuid();
+                ageGroup.DateCreated = DateTime.Now;
                 _dbContext.AgeGroups.Add(ageGroup);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)

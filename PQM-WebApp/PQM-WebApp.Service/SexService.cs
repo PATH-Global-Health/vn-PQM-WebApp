@@ -35,6 +35,7 @@ namespace PQM_WebApp.Service
             {
                 var sex = model.Adapt<Sex>();
                 sex.Id = Guid.NewGuid();
+                sex.DateCreated = DateTime.Now;
                 _dbContext.Sex.Add(sex);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)
