@@ -27,9 +27,9 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get(int pageIndex = 0, int pageSize = int.MaxValue)
         {
-            var rs = _indicatorService.Get();
+            var rs = _indicatorService.Get(pageIndex, pageSize);
             if (rs.Succeed) return Ok(rs.Data);
             return BadRequest(rs.ErrorMessage);
         }
@@ -39,6 +39,24 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _indicatorService.Create(model);
             if (rs.Succeed) return Ok(rs.Data);
+            return BadRequest(rs.ErrorMessage);
+        }
+
+        [HttpPut]
+        public IActionResult Update(IndicatorViewModel model)
+        {
+            var rs = _indicatorService.Update(model);
+            if (rs.Succeed)
+                return Ok(rs.Data);
+            return BadRequest(rs.ErrorMessage);
+        }
+
+        [HttpDelete]
+        public IActionResult Delete(IndicatorViewModel model)
+        {
+            var rs = _indicatorService.Delete(model);
+            if (rs.Succeed)
+                return Ok(rs.Data);
             return BadRequest(rs.ErrorMessage);
         }
 
