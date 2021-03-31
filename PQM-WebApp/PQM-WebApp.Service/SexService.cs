@@ -57,7 +57,7 @@ namespace PQM_WebApp.Service
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.Sex.Where(_ => _.IsDeleted == false);
+                var filter = _dbContext.Sex.AsSoftDelete(false);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<SexViewModel>>();
                 result.Succeed = true;
@@ -74,7 +74,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var sex = _dbContext.Sex.Find(model.Id);
+                var sex = _dbContext.Sex.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (sex == null)
                 {
                     rs.Succeed = false;
@@ -106,7 +106,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var sex = _dbContext.Sex.Find(model.Id);
+                var sex = _dbContext.Sex.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (sex == null)
                 {
                     rs.Succeed = false;

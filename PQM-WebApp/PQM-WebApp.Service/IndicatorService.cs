@@ -50,8 +50,7 @@ namespace PQM_WebApp.Service
                 var indicator = model.Adapt<Indicator>();
                 indicator.Id = Guid.NewGuid();
                 indicator.DateCreated = DateTime.Now;
-                var indicatorGroups = _dbContext.IndicatorGroups.AsEnumerable();
-                var indicatorGroup = indicatorGroups.FirstOrDefault(s => s.Id == indicator.IndicatorGroupId && s.IsDeleted == false);
+                var indicatorGroup = _dbContext.IndicatorGroups.AsSoftDelete(false).FirstOrDefault(s => s.Id == indicator.IndicatorGroupId);
                 if (indicatorGroup == null)
                 {
                     throw new Exception("No indicator group for reference.");
@@ -79,7 +78,7 @@ namespace PQM_WebApp.Service
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.Indicators.Where(_ => _.IsDeleted == false);
+                var filter = _dbContext.Indicators.AsSoftDelete(false);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<IndicatorViewModel>>();
                 result.Succeed = true;
@@ -96,7 +95,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var indicator = _dbContext.Indicators.Find(model.Id);
+                var indicator = _dbContext.Indicators.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (indicator == null)
                 {
                     rs.Succeed = false;
@@ -135,7 +134,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var indicator = _dbContext.Indicators.Find(model.Id);
+                var indicator = _dbContext.Indicators.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (indicator == null)
                 {
                     rs.Succeed = false;
