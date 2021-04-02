@@ -54,6 +54,10 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<ITestingService, TestingService>();
             services.AddTransient<ITreatmentService, TreatmentService>();
             services.AddTransient<IThresholdSettingService, ThresholdSettingService>();
+            services.AddTransient<IAgeGroupService, AgeGroupService>();
+            services.AddTransient<IKeyPopulationService, KeyPopulationService>();
+            services.AddTransient<ISexService, SexService>();
+            services.AddTransient<IIndicatorGroupService, IndicatorGroupService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)

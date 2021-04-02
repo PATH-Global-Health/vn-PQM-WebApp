@@ -1,47 +1,46 @@
-﻿using Mapster;
-using PQM_WebApp.Data;
+﻿using PQM_WebApp.Data;
 using PQM_WebApp.Data.Entities;
 using PQM_WebApp.Data.Models;
 using PQM_WebApp.Data.ViewModels;
 using PQM_WebApp.Service.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
+using Mapster;
 
 namespace PQM_WebApp.Service
 {
-    public interface IIndicatorGroupService
+    public interface ISexService
     {
-        public ResultModel Create(IndicatorGroupCreateModel model);
-        public ResultModel Get(int pageIndex, int pageSize);
-        public ResultModel Update(IndicatorGroupViewModel model);
-        public ResultModel Delete(IndicatorGroupViewModel model);
+        ResultModel Create(SexCreateModel model);
+        PagingModel Get(int pageIndex, int pageSize);
+        ResultModel Update(SexViewModel model);
+        ResultModel Delete(SexViewModel model);
     }
 
-    public class IndicatorGroupService : IIndicatorGroupService
+    public class SexService : ISexService
     {
         private readonly AppDBContext _dbContext;
 
-        public IndicatorGroupService(AppDBContext dbContext)
+        public SexService(AppDBContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public ResultModel Create(IndicatorGroupCreateModel model)
+        public ResultModel Create(SexCreateModel model)
         {
             var rs = new ResultModel();
             try
             {
-                var indicatorGroup = model.Adapt<IndicatorGroup>();
-                indicatorGroup.Id = Guid.NewGuid();
-                indicatorGroup.DateCreated = DateTime.Now;
-                _dbContext.IndicatorGroups.Add(indicatorGroup);
+                var sex = model.Adapt<Sex>();
+                sex.Id = Guid.NewGuid();
+                sex.DateCreated = DateTime.Now;
+                _dbContext.Sex.Add(sex);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)
                 {
-                    rs.Data = indicatorGroup.Adapt<IndicatorGroupViewModel>();
-                    return rs;
+                    rs.Data = sex.Adapt<SexViewModel>();
                 }
                 return rs;
             }
@@ -53,14 +52,14 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public ResultModel Get(int pageIndex, int pageSize)
+        public PagingModel Get(int pageIndex, int pageSize)
         {
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.IndicatorGroups.Where(_ => _.IsDeleted == false);
+                var filter = _dbContext.Sex.Where(_ => _.IsDeleted == false);
                 result.PageCount = filter.PageCount(pageSize);
-                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<IndicatorGroupViewModel>>();
+                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<SexViewModel>>();
                 result.Succeed = true;
             }
             catch (Exception e)
@@ -70,26 +69,26 @@ namespace PQM_WebApp.Service
             return result;
         }
 
-        public ResultModel Update(IndicatorGroupViewModel model)
+        public ResultModel Update(SexViewModel model)
         {
             var rs = new ResultModel();
             try
             {
-                var indicatorGroup = _dbContext.IndicatorGroups.Find(model.Id);
-                if (indicatorGroup == null)
+                var sex = _dbContext.Sex.Find(model.Id);
+                if (sex == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
+                    rs.ErrorMessage = string.Format("Not found sex: {0}", model.Name);
                 }
                 else
                 {
-                    Copy(model, indicatorGroup);
-                    indicatorGroup.DateUpdated = DateTime.Now;
-                    _dbContext.IndicatorGroups.Update(indicatorGroup);
+                    Copy(model, sex);
+                    sex.DateUpdated = DateTime.Now;
+                    _dbContext.Sex.Update(sex);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
                     {
-                        rs.Data = indicatorGroup.Adapt<IndicatorGroupViewModel>();
+                        rs.Data = sex.Adapt<SexViewModel>();
                     }
                 }
                 return rs;
@@ -102,26 +101,26 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public ResultModel Delete(IndicatorGroupViewModel model)
+        public ResultModel Delete(SexViewModel model)
         {
             var rs = new ResultModel();
             try
             {
-                var indicatorGroup = _dbContext.IndicatorGroups.Find(model.Id);
-                if (indicatorGroup == null)
+                var sex = _dbContext.Sex.Find(model.Id);
+                if (sex == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
+                    rs.ErrorMessage = string.Format("Not found sex: {0}", model.Name);
                 }
                 else
                 {
-                    indicatorGroup.IsDeleted = true;
-                    indicatorGroup.DateUpdated = DateTime.Now;
-                    _dbContext.IndicatorGroups.Update(indicatorGroup);
+                    sex.IsDeleted = true;
+                    sex.DateUpdated = DateTime.Now;
+                    _dbContext.Sex.Update(sex);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
                     {
-                        rs.Data = indicatorGroup.Adapt<IndicatorGroupViewModel>();
+                        rs.Data = sex.Adapt<SexViewModel>();
                     }
                 }
                 return rs;
@@ -134,10 +133,11 @@ namespace PQM_WebApp.Service
             }
         }
 
-        private void Copy(IndicatorGroupViewModel source, IndicatorGroup dest)
+        private void Copy(SexViewModel source, Sex dest)
         {
             dest.Name = source.Name;
             dest.CreatedBy = source.CreatedBy;
+            dest.Order = source.Order;
         }
     }
 }

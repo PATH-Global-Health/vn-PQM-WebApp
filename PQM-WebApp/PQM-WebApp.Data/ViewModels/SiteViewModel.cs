@@ -4,17 +4,18 @@ using System.Text;
 
 namespace PQM_WebApp.Data.ViewModels
 {
-    public class IndicatorCreateModel
+    public class SiteCreateModel
     {
-        public string Code { get; set; }
         public string Name { get; set; }
         public int Order { get; set; }
+        public string Code { get; set; }
+        public Guid DistrictId { get; set; }
+        public DateTime? DateCreated { get; set; }
+        public DateTime? DateUpdated { get; set; }
         public string CreatedBy { get; set; }
-        public bool IsTotal { get; set; }
-        public Guid IndicatorGroupId { get; set; }
     }
 
-    public class IndicatorViewModel : IndicatorCreateModel
+    public class SiteViewModel : SiteCreateModel
     {
         public Guid Id { get; set; }
     }

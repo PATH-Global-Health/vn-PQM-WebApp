@@ -1,47 +1,46 @@
-﻿using Mapster;
-using PQM_WebApp.Data;
+﻿using PQM_WebApp.Data;
 using PQM_WebApp.Data.Entities;
 using PQM_WebApp.Data.Models;
 using PQM_WebApp.Data.ViewModels;
 using PQM_WebApp.Service.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
+using Mapster;
 
 namespace PQM_WebApp.Service
 {
-    public interface IIndicatorGroupService
+    public interface IKeyPopulationService
     {
-        public ResultModel Create(IndicatorGroupCreateModel model);
-        public ResultModel Get(int pageIndex, int pageSize);
-        public ResultModel Update(IndicatorGroupViewModel model);
-        public ResultModel Delete(IndicatorGroupViewModel model);
+        ResultModel Create(KeyPopulationCreateModel model);
+        PagingModel Get(int pageIndex, int pageSize);
+        ResultModel Update(KeyPopulationViewModel model);
+        ResultModel Delete(KeyPopulationViewModel model);
     }
 
-    public class IndicatorGroupService : IIndicatorGroupService
+    public class KeyPopulationService : IKeyPopulationService
     {
         private readonly AppDBContext _dbContext;
 
-        public IndicatorGroupService(AppDBContext dbContext)
+        public KeyPopulationService(AppDBContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public ResultModel Create(IndicatorGroupCreateModel model)
+        public ResultModel Create(KeyPopulationCreateModel model)
         {
             var rs = new ResultModel();
             try
             {
-                var indicatorGroup = model.Adapt<IndicatorGroup>();
-                indicatorGroup.Id = Guid.NewGuid();
-                indicatorGroup.DateCreated = DateTime.Now;
-                _dbContext.IndicatorGroups.Add(indicatorGroup);
+                var keyPopulation = model.Adapt<KeyPopulation>();
+                keyPopulation.Id = Guid.NewGuid();
+                keyPopulation.DateCreated = DateTime.Now;
+                _dbContext.KeyPopulations.Add(keyPopulation);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)
                 {
-                    rs.Data = indicatorGroup.Adapt<IndicatorGroupViewModel>();
-                    return rs;
+                    rs.Data = keyPopulation.Adapt<KeyPopulationViewModel>();
                 }
                 return rs;
             }
@@ -53,14 +52,14 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public ResultModel Get(int pageIndex, int pageSize)
+        public PagingModel Get(int pageIndex, int pageSize)
         {
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.IndicatorGroups.Where(_ => _.IsDeleted == false);
+                var filter = _dbContext.KeyPopulations.Where(_ => _.IsDeleted == false);
                 result.PageCount = filter.PageCount(pageSize);
-                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<IndicatorGroupViewModel>>();
+                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<KeyPopulationViewModel>>();
                 result.Succeed = true;
             }
             catch (Exception e)
@@ -70,26 +69,26 @@ namespace PQM_WebApp.Service
             return result;
         }
 
-        public ResultModel Update(IndicatorGroupViewModel model)
+        public ResultModel Update(KeyPopulationViewModel model)
         {
             var rs = new ResultModel();
             try
             {
-                var indicatorGroup = _dbContext.IndicatorGroups.Find(model.Id);
-                if (indicatorGroup == null)
+                var keyPopulation = _dbContext.KeyPopulations.Find(model.Id);
+                if (keyPopulation == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
+                    rs.ErrorMessage = string.Format("Not found key population: {0}", model.Name);
                 }
                 else
                 {
-                    Copy(model, indicatorGroup);
-                    indicatorGroup.DateUpdated = DateTime.Now;
-                    _dbContext.IndicatorGroups.Update(indicatorGroup);
+                    Copy(model, keyPopulation);
+                    keyPopulation.DateUpdated = DateTime.Now;
+                    _dbContext.KeyPopulations.Update(keyPopulation);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
                     {
-                        rs.Data = indicatorGroup.Adapt<IndicatorGroupViewModel>();
+                        rs.Data = keyPopulation.Adapt<KeyPopulationViewModel>();
                     }
                 }
                 return rs;
@@ -102,26 +101,26 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public ResultModel Delete(IndicatorGroupViewModel model)
+        public ResultModel Delete(KeyPopulationViewModel model)
         {
             var rs = new ResultModel();
             try
             {
-                var indicatorGroup = _dbContext.IndicatorGroups.Find(model.Id);
-                if (indicatorGroup == null)
+                var keyPopulation = _dbContext.KeyPopulations.Find(model.Id);
+                if (keyPopulation == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
+                    rs.ErrorMessage = string.Format("Not found key population: {0}", model.Name);
                 }
                 else
                 {
-                    indicatorGroup.IsDeleted = true;
-                    indicatorGroup.DateUpdated = DateTime.Now;
-                    _dbContext.IndicatorGroups.Update(indicatorGroup);
+                    keyPopulation.IsDeleted = true;
+                    keyPopulation.DateUpdated = DateTime.Now;
+                    _dbContext.KeyPopulations.Update(keyPopulation);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
                     {
-                        rs.Data = indicatorGroup.Adapt<IndicatorGroupViewModel>();
+                        rs.Data = keyPopulation.Adapt<KeyPopulationViewModel>();
                     }
                 }
                 return rs;
@@ -134,10 +133,11 @@ namespace PQM_WebApp.Service
             }
         }
 
-        private void Copy(IndicatorGroupViewModel source, IndicatorGroup dest)
+        private void Copy(KeyPopulationViewModel source, KeyPopulation dest)
         {
             dest.Name = source.Name;
             dest.CreatedBy = source.CreatedBy;
+            dest.Order = source.Order;
         }
     }
 }
