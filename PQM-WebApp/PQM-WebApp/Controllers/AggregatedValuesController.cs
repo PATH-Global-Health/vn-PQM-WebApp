@@ -26,5 +26,32 @@ namespace PQM_WebApp.Controllers
             if (rs.Succeed) return Ok(rs.Data);
             return BadRequest(rs.ErrorMessage);
         }
+
+        [HttpPost]
+        public IActionResult PopulateData(string indicator, int year, int month, int? day = null, bool all = false)
+        {
+            return Ok(_aggregatedService.PopulateData(indicator, year, month, day, all));
+        }
+
+        [HttpGet("ChartData")]
+        public IActionResult GetChartData(string indicator, int year, int quarter, string provinceCode, string districtCode, int? month = null, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
+        {
+            var rs = _aggregatedService.GetChartData(indicator, year, quarter, provinceCode, districtCode, month, ageGroups, keyPopulations, genders, clinnics);
+            if (rs.Succeed)
+            {
+                return Ok(rs.Data);
+            }
+            return BadRequest(rs.ErrorMessage);
+        }
+        [HttpGet("IndicatorValues")]
+        public IActionResult GetIndicatorValues(string provinceCode, string districtCode, string indicatorGroup, string indicatorCode, int year, int? quarter = null, int? month = null)
+        {
+            var rs = _aggregatedService.GetIndicatorValues(provinceCode, districtCode, indicatorGroup, indicatorCode, year, quarter, month);
+            if (rs.Succeed)
+            {
+                return Ok(rs.Data);
+            }
+            return BadRequest(rs.ErrorMessage);
+        }
     }
 }

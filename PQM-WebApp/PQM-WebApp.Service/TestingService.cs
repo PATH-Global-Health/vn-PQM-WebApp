@@ -152,14 +152,14 @@ namespace PQM_WebApp.Service
             };
         }
 
-        public ResultModel GetHealthMap(int year, int quater, int? month, string provinceCode, string districtCode)
+        public ResultModel GetHealthMap(int year, int quarter, int? month, string provinceCode, string districtCode)
         {
             try
             {
-                var indicatorName = "HTS Positive";
+                var indicatorName = "HTS_TST_Recency";
 
-                var fromMonth = quater == 1 ? 1 : quater == 2 ? 4 : quater == 3 ? 7 : 10;
-                var toMonth = quater == 1 ? 3 : quater == 2 ? 6 : quater == 3 ? 9 : 12;
+                var fromMonth = quarter == 1 ? 1 : quarter == 2 ? 4 : quarter == 3 ? 7 : 10;
+                var toMonth = quarter == 1 ? 3 : quarter == 2 ? 6 : quarter == 3 ? 9 : 12;
                 var months = _dbContext.DimMonths.Where(m => m.Year.Year == year
                             && (month != null || fromMonth <= m.MonthNumOfYear && m.MonthNumOfYear <= toMonth)
                             && (month == null || m.MonthNumOfYear == month)).Select(m => m.Id);
@@ -172,8 +172,8 @@ namespace PQM_WebApp.Service
                     .Select(s => new
                     {
                         Lat = s.Key.Lat,
-                        Lon = s.Key.Lon,
-                        Count = s.Count(),
+                        Lon = s.Key.Lng,
+                        Count = s.Sum(f => f.Value),
                     })
                     .ToList();
                 return new ResultModel()

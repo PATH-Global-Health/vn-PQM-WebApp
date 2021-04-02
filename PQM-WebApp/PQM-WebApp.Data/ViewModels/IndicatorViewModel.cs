@@ -8,6 +8,9 @@ namespace PQM_WebApp.Data.ViewModels
     {
         public string Code { get; set; }
         public string Name { get; set; }
+        public int Order { get; set; }
+        public string CreatedBy { get; set; }
+        public bool IsTotal { get; set; }
         public Guid IndicatorGroupId { get; set; }
     }
 

@@ -1,18 +1,48 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Nest;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using PQM_WebApp.Data;
+using PQM_WebApp.Data.Models;
 using PQM_WebApp.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace PQM_WebApp.Extensions
 {
     public static class StartupExtensions
     {
+        public static void ConfigJwt(this IServiceCollection services, string key, string issuer, string audience)
+        {
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(jwtconfig =>
+                {
+                    jwtconfig.SaveToken = true;
+                    jwtconfig.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = false,
+                        RequireSignedTokens = true,
+                        ValidIssuer = issuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                        ValidAudience = string.IsNullOrEmpty(audience) ? issuer : audience,
+                    };
+
+                });
+        }
+
         public static void AddBusinessServices(this IServiceCollection services)
         {
             services.AddTransient<IPrEPService, PrEPService>();
@@ -23,6 +53,11 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<IAggregatedValueService, AggregatedValueService>();
             services.AddTransient<ITestingService, TestingService>();
             services.AddTransient<ITreatmentService, TreatmentService>();
+            services.AddTransient<IThresholdSettingService, ThresholdSettingService>();
+            services.AddTransient<IAgeGroupService, AgeGroupService>();
+            services.AddTransient<IKeyPopulationService, KeyPopulationService>();
+            services.AddTransient<ISexService, SexService>();
+            services.AddTransient<IIndicatorGroupService, IndicatorGroupService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)
@@ -51,5 +86,34 @@ namespace PQM_WebApp.Extensions
             });
         }
 
+        private static void CreateIndex(IElasticClient client)
+        {
+            var getResponse = client.Indices.Get("indicatorvalue");
+            if (!getResponse.IsValid)
+            {
+                var createIndexResponse = client.Indices.Create("indicatorvalue",
+                                                                    index => index.Settings(s => s.Analysis(a => a.Analyzers(aa => aa.Standard("default", sa => sa.StopWords("_none_")))))
+                                                                                  .Map<IndicatorElasticModel>(x => x.AutoMap())
+                                                            );
+            }
+        }
+
+        public static void AddElasticsearch(this IServiceCollection services, string url, string username, string password)
+        {
+            var settings = new ConnectionSettings(new Uri(url))
+                .DefaultIndex("indicatorvalue")
+                .BasicAuthentication(username, password)
+                .PrettyJson()
+                .EnableDebugMode()
+                //.ThrowExceptions(alwaysThrow: true)
+                .ServerCertificateValidationCallback((o, certificate, arg3, arg4) => { return true; });
+
+
+            var client = new ElasticClient(settings);
+
+            services.AddSingleton(client);
+
+            CreateIndex(client);
+        }
     }
 }

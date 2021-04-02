@@ -1,6 +1,10 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+html {
+    scroll-behavior: smooth;
+}
+
 a.navbar-brand {
     white-space: normal;
     text-align: center;
@@ -84,40 +88,33 @@ body {
 
 .dashboard-container {
     padding: 0px !important;
-    font-size: 20px
+    height: calc(100vh - 80px);
+    font-size: 20px;
 }
 
 .dashboard-card {
-    margin: 10px
+    margin: 3px
 }
 
-    .dashboard-card:hover {
-        background-color: whitesmoke;
-    }
-
 hr {
-    margin: 8px;
+    margin: 3px;
 }
 
 .dashboard-indicator {
-    padding: 10px;
+    padding: 5px;
     border-radius: 10px;
 }
 
     .dashboard-indicator:hover {
-        background-color: whitesmoke;
     }
 
 .dashboard-map {
-    height: 35vh;
+    height: calc(100vh - 168px);
+    margin-top: 10px;
 }
 
 .dashboard-chart-25 {
     height: 25vh;
-}
-
-.dashboard-chart-30 {
-    height: 30vh;
 }
 
 .dashboard-row {
@@ -133,10 +130,7 @@ hr {
     font-weight: bold;
 }
 
-.indicator-value {
-    font-size: 70px;
-    font-weight: bold;
-}
+
 
 .indicator-percent {
     font-size: x-large;
@@ -169,8 +163,9 @@ hr {
 
 .indicator-container {
     background-color: white;
-    height: 40vh;
-    min-height: 470px;
+    height: 400px;
+    max-height: 400px;
+    max-width: 450px!important;
 }
 
     .indicator-container:hover {
@@ -178,15 +173,23 @@ hr {
         border: 1px solid whitesmoke;
     }
 
-.indicator-infor {
-    height: 20vh;
-    min-height: 235px
-}
+    .indicator-container > .indicator-title {
+        font-size: x-large;
+        font-weight: bold;
+    }
 
-.indicator-infor-chart {
-    height: 20vh;
-    min-height: 230px
-}
+    .indicator-container > .indicator-infor {
+        height: 200px
+    }
+
+        .indicator-container > .indicator-infor > .indicator-value {
+            font-size: 50px;
+            font-weight: bold;
+        }
+
+    .indicator-container > .indicator-infor-chart {
+        height: 200px
+    }
 
 .variable-containter {
     background-color: whitesmoke;
@@ -201,3 +204,19 @@ hr {
         min-width: 1600px;
     }
 }
+
+.b-card-body {
+    padding: 13px !important;
+}
+
+.pqm-btn {
+    border: none;
+    background-color: transparent;
+    width: 35px;
+    height: 35px;
+}
+
+    .pqm-btn:hover {
+        border: 1px black solid;
+        border-radius: 5px;
+    }

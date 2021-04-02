@@ -20,9 +20,9 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get(int year, int quater, int? month, string provinceCode, string districtCode)
+        public IActionResult Get(int year, int quarter, int? month, string provinceCode, string districtCode)
         {
-            return Ok(_testingService.GetHealthMap(year, quater, month, provinceCode, districtCode));
+            return Ok(_testingService.GetHealthMap(year, quarter, month, provinceCode, districtCode));
         }
     }
 }

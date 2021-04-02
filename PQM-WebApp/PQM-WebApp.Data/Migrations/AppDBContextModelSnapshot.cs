@@ -236,6 +236,12 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<double?>("Lat")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Lon")
+                        .HasColumnType("float");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -461,6 +467,50 @@ namespace PQM_WebApp.Data.Migrations
                     b.HasIndex("DistrictId");
 
                     b.ToTable("Sites");
+                });
+
+            modelBuilder.Entity("PQM_WebApp.Data.Entities.ThresholdSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ColorCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DistrictCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("From")
+                        .HasColumnType("float");
+
+                    b.Property<string>("IndicatorNamge")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ProvinceCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("To")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ThresholdSettings");
                 });
 
             modelBuilder.Entity("PQM_WebApp.Data.Entities.AggregatedValue", b =>
