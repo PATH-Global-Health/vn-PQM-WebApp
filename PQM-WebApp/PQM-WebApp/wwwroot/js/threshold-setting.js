@@ -78,7 +78,6 @@ let provinces = [
 ];
 
 const initProvinceSelect = () => {
-    
     $('#inputProvince').kendoMultiSelect({
         dataTextField: "text",
         dataValueField: "value",

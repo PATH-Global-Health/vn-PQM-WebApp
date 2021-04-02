@@ -34,6 +34,7 @@ const removeVar = (name) => {
 
 
 const _initAgeGroupChart = (response, htmlElement) => {
+    console.log('here');
     ageGroups = response;
     $(htmlElement ? `#${htmlElement}` : "#age-group-chart").kendoChart({
         theme: "bootstrap",
@@ -222,17 +223,13 @@ const initDataChart = (indicator, elementId, queries) => {
     let genderQuery = queries ? queries.filter(v => v.type === 'Gender').map(s => s.id).join(',') : '';
     let clinnicQuery = queries ? queries.filter(v => v.type === 'Clinnic').map(s => s.id).join(',') : '';
     $(`#${elementId}`).html('');
-    $.get(`/api/AggregatedValues/ChartData?year=${year}&quater=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
+    $.get(`/api/AggregatedValues/ChartData?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
         + `&ageGroups=${ageGroupQuery}&genders=${genderQuery}&keyPopulations=${keyPopulationQuery}&clinnics=${clinnicQuery}&indicator=${indicator}`,
         function (response) {
             $(`#${elementId}`).kendoChart({
                 seriesDefaults: {
-                    type: "area",
-                    area: {
-                        line: {
-                            style: "smooth"
-                        }
-                    },
+                    type: "line",
+                    style: "smooth"
                 },
                 series: [{
                     data: response.map(s => s.value),
@@ -242,8 +239,7 @@ const initDataChart = (indicator, elementId, queries) => {
                     }
                 }],
                 categoryAxis: {
-                    title: {
-                    },
+                    categories: response.map(s => s.name),
                     majorGridLines: {
                         visible: false
                     },
@@ -257,7 +253,12 @@ const initDataChart = (indicator, elementId, queries) => {
                     majorGridLines: {
                         visible: false
                     },
-                    visible: false
+                    visible: true
+                },
+                tooltip: {
+                    visible: true,
+                    format: "{0}%",
+                    template: "#= category #: #= value #"
                 }
             });
         }

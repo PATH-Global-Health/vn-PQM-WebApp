@@ -20,7 +20,7 @@ function createAgeGroupChart() {
 }
 
 function createGenderChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Treatment&groupBy=Sex`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Treatment&groupBy=Gender`,
         function (response) {
             _initGenderChart(response);
         }
@@ -90,14 +90,14 @@ function trendElement(trend) {
                          <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                      </svg>`;
     return `${trendDirection}
-                         ${trend.comparePercent}%
+                         ${(Math.round(trend.comparePercent * 10000) / 100).toLocaleString('vi-VN')}%
                         `;
 }
 
 function initTX_CurrIndicator(indicator) {
     if (indicator) {
         initDataChart("TX_CURR", "TX_Curr_chart", variables);
-        $("#TX_Curr-value").html(indicator.value.value);
+        $("#TX_Curr-value").html(indicator.value.value.toLocaleString('vi-VN'));
         $("#TX_Curr-value").css("color", indicator.value.criticalInfo);
         $("#TX_Curr-percent").html(trendElement(indicator.trend));
     }
@@ -111,7 +111,7 @@ function initTX_CurrIndicator(indicator) {
 function initTX_NewIndicator(indicator) {
     if (indicator) {
         initDataChart("TX_NEW", "TX_New_chart", variables);
-        $("#TX_New-value").html(indicator.value.value);
+        $("#TX_New-value").html(indicator.value.value.toLocaleString('vi-VN'));
         $("#TX_New-value").css("color", indicator.value.criticalInfo);
         $("#TX_New-percent").html(trendElement(indicator.trend));
     } else {
@@ -124,7 +124,7 @@ function initTX_NewIndicator(indicator) {
 function initMMDIndicator(indicator) {
     if (indicator) {
         initDataChart("MMD","MMD_chart")
-        $("#MMD-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
+        $("#MMD-value").html(indicator.value.dataType === 1 ? indicator.value.value.toLocaleString('vi-VN') : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%').toLocaleString('vi-VN'));
         $("#MMD-value").css("color", indicator.value.criticalInfo);
         $("#MMD-percent").html(trendElement(indicator.trend));
     } else {
@@ -137,7 +137,7 @@ function initMMDIndicator(indicator) {
 function initITIndicator(indicator) {
     if (indicator) {
         initDataChart("Interruption%20in%20Treatment", "IT_chart")
-        $("#IT-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
+        $("#IT-value").html(indicator.value.dataType === 1 ? indicator.value.value.toLocaleString('vi-VN') : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%').toLocaleString('vi-VN'));
         $("#IT-value").css("color", indicator.value.criticalInfo);
         $("#IT-percent").html(trendElement(indicator.trend));
     } else {
@@ -150,7 +150,7 @@ function initITIndicator(indicator) {
 function initpVLIndicator(indicator) {
     if (indicator) {
         initDataChart("%%20VL%20unsupressed", "pVL_chart")
-        $("#pVL-value").html(indicator.value.dataType === 1 ? indicator.value.value : (customRound(indicator.value.numerator, indicator.value.denominator) * 100).toFixed(2) + '%');
+        $("#pVL-value").html(indicator.value.dataType === 1 ? indicator.value.value : (customRound(indicator.value.numerator, indicator.value.denominator) * 100).toLocaleString('vi-VN') + '%');
         $("#pVL-value").css("color", indicator.value.criticalInfo);
         $("#pVL-percent").html(trendElement(indicator.trend));
     } else {
@@ -178,7 +178,7 @@ function initIndicators() {
     let keyPopulationQuery = variables.filter(v => v.type === 'KeyPopulation').map(s => s.id).join(',');
     let genderQuery = variables.filter(v => v.type === 'Gender').map(s => s.id).join(',');
     let clinnicQuery = variables.filter(v => v.type === 'Clinnic').map(s => s.id).join(',');
-    $.get(`/api/Treatment/indicators?year=${year}&quater=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
+    $.get(`/api/AggregatedValues/IndicatorValues?year=${year}&quarter=${quarter}&month=${month}&indicatorGroup=Treatment&provinceCode=${provinceCode}&districtCode=${districtCode}`
         + `&ageGroups=${ageGroupQuery}&genders=${genderQuery}&keyPopulations=${keyPopulationQuery}&clinnics=${clinnicQuery}`, function (data) {
             let p1 = true;
             let p2 = true;

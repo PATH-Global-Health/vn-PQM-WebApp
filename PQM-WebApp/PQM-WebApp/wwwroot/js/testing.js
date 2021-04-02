@@ -14,13 +14,15 @@ function openModal(indicatorName) {
 function createAgeGroupChart() {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Testing&groupBy=AgeGroup`,
         function (response) {
+            console.log(response);
             _initAgeGroupChart(response);
+
         }
     );
 }
 
 function createGenderChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Testing&groupBy=Sex`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Testing&groupBy=Gender`,
         function (response) {
             _initGenderChart(response);
         }
@@ -44,6 +46,9 @@ function createClinicsChart() {
 }
 
 function trendElement(trend) {
+    if (!trend) {
+        return '';
+    }
     let trendDirection = trend.direction === 1 ?
         `<svg xmlns="http://www.w3.org/2000/svg" color="${trend.criticalInfo}" width="35" height="35" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 20 20">
                         <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
@@ -53,47 +58,46 @@ function trendElement(trend) {
                          <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                      </svg>`;
     return `${trendDirection}
-                         ${trend.comparePercent}%
-                        `;
+            ${Math.round(trend.comparePercent * 10000)/100}%`;
 }
 
 function initHTS_TEST_POSIndicator(indicator) {
     if (indicator) {
-        initDataChart("HTS%20Positive", "HTS_TEST_POS_chart", variables);
-        $("#HTS_TEST_POS-value").html(indicator.value.value);
-        $("#HTS_TEST_POS-value").css("color", indicator.value.criticalInfo);
-        $("#HTS_TEST_POS-percent").html(trendElement(indicator.trend));
+        initDataChart("HTS_TST_Positive", "HTS_TST_Positive_chart", variables);
+        $("#HTS_TST_Positive-value").html(indicator.value.value.toLocaleString('vi-VN'));
+        $("#HTS_TST_Positive-value").css("color", indicator.value.criticalInfo);
+        $("#HTS_TST_Positive-percent").html(trendElement(indicator.trend));
     }
     else {
-        $("#HTS_TEST_POS-value").html('N/A');
-        $("#HTS_TEST_POS-percent").html('');
-        $("#HTS_TEST_POS_chart").html('');
+        $("#HTS_TST_Positive-value").html('N/A');
+        $("#HTS_TST_Positive-percent").html('');
+        $("#HTS_TST_Positive_chart").html('');
     }
 }
 
 function init_pHTSreferredIndicator(indicator) {
     if (indicator) {
-        initDataChart("%25HIV%2B%20referred", "HTS_TEST-Recency_chart", variables);
-        $("#HTS_TEST-Recency-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
-        $("#HTS_TEST-Recency-value").css("color", indicator.value.criticalInfo);
-        $("#HTS_TEST-Recency-percent").html(trendElement(indicator.trend));
+        initDataChart("HTS_TST_Recency", "HTS_TST_Recency_chart", variables);
+        $("#HTS_TST_Recency-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
+        $("#HTS_TST_Recency-value").css("color", indicator.value.criticalInfo);
+        $("#HTS_TST_Recency-percent").html(trendElement(indicator.trend));
     } else {
-        $("#HTS_TEST-Recency-value").html('N/A');
-        $("#HTS_TEST-Recency-percent").html('');
-        $("#HTS_TEST-Recency_chart").html('');
+        $("#HTS_TST_Recency-value").html('N/A');
+        $("#HTS_TST_Recency-percent").html('');
+        $("#HTS_TST_Recency_chart").html('');
     }
 }
 
 function init_pHTSrecentIndicator(indicator) {
     if (indicator) {
-        initDataChart("%HTS%20recent", "HTS_TEST_POS-refer_chart", variables);
-        $("#HTS_TEST_POS-refer-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
-        $("#HTS_TEST_POS-refer-value").css("color", indicator.value.criticalInfo);
-        $("#HTS_TEST_POS-refer-percent").html(trendElement(indicator.trend));
+        initDataChart("POS_TO_ART", "POS_TO_ART_chart", variables);
+        $("#POS_TO_ART-value").html(indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%'));
+        $("#POS_TO_ART-value").css("color", indicator.value.criticalInfo);
+        $("#POS_TO_ART-percent").html(trendElement(indicator.trend));
     } else {
-        $("#HTS_TEST_POS-refer-value").html('N/A');
-        $("#HTS_TEST_POS-refer-percent").html('');
-        $("#HTS_TEST_POS-refer").html('');
+        $("#POS_TO_ART-value").html('N/A');
+        $("#POS_TO_ART-percent").html('');
+        $("#POS_TO_ART_chart").html('');
     }
 }
 
@@ -102,22 +106,22 @@ function initIndicators() {
     let keyPopulationQuery = variables.filter(v => v.type === 'KeyPopulation').map(s => s.id).join(',');
     let genderQuery = variables.filter(v => v.type === 'Gender').map(s => s.id).join(',');
     let clinnicQuery = variables.filter(v => v.type === 'Clinnic').map(s => s.id).join(',');
-    $.get(`/api/Testing/indicators?year=${year}&quater=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
+    $.get(`/api/AggregatedValues/IndicatorValues?year=${year}&quarter=${quarter}&month=${month}&indicatorGroup=Testing&provinceCode=${provinceCode}&districtCode=${districtCode}`
         + `&ageGroups=${ageGroupQuery}&genders=${genderQuery}&keyPopulations=${keyPopulationQuery}&clinnics=${clinnicQuery}`, function (data) {
             let p1 = true;
             let p2 = true;
             let p3 = true;
             data.forEach(indicator => {
                 switch (indicator.name) {
-                    case "HTS Positive":
+                    case "HTS_TST_Positive":
                         initHTS_TEST_POSIndicator(indicator);
                         p1 = false;
                         break;
-                    case "%HIV+ referred":
+                    case "HTS_TST_Recency":
                         init_pHTSreferredIndicator(indicator);
                         p2 = false;
                         break;
-                    case "%HTS recent":
+                    case "POS_TO_ART":
                         init_pHTSrecentIndicator(indicator);
                         p3 = false;
                         break;

@@ -1,12 +1,4 @@
 ﻿
-let configPanelOpen = false;
-let closeIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-caret-up" viewBox="0 0 16 16">
-                          <path d="M3.204 11h9.592L8 5.519 3.204 11zm-.753-.659l4.796-5.48a1 1 0 0 1 1.506 0l4.796 5.48c.566.647.106 1.659-.753 1.659H3.204a1 1 0 0 1-.753-1.659z"/>
-                     </svg>`;
-let openIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
-                        <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
-                    </svg>`
-
 const filterDetail = (label, value, tooltip) => {
     return `<div class="card" data-toggle="tooltip" data-placement="top" title="${tooltip}" style="padding: 8px;display: inline;font-size: 17px;background-color: whitesmoke; margin-right: 5px">
                 <span>${label}</span>
@@ -16,8 +8,8 @@ const filterDetail = (label, value, tooltip) => {
 
 const initFilterPanel = () => {
     let _html =
-        `<div class="col-12 dashboard-container">
-            <div class="card dashboard-card" style="background-color: white; padding: 10px">
+        `<div class="col-12" style="padding: 0px !important">
+            <div class="card" style="background-color: white; padding: 10px">
                 <div class="row">
                     <div class="col-1 d-flex justify-content-center">
                         <img src="/images/usaid-logo.PNG" style="height: 50px" />
@@ -26,65 +18,67 @@ const initFilterPanel = () => {
                     </div>
                     <div class="col-1 d-flex flex-row-reverse">
                         <button type="button" class="btn" onclick="openFilterPanel()" id="filter-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
                                 <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
                             </svg>
                         </button>
                     </div>
                 </div>
             </div>
-            <div id="filterContainer" class="collapse">
-                <div class="card dashboard-card" style="background-color: white; padding: 10px;">
-                    <form>
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="inputProvince">Province/City</label>
-                                    <select id="inputProvince" class="form-control" onchange="onProvinceChange()" required>
-                                        <option value="79" selected>Ho Chi Minh City</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="inputDistrict">District</label>
-                                    <select id="inputDistrict" class="form-control">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="k-content">
-                                    <label for="year-picker">Year</label>
-                                    <input class="form-control" id="year-picker" required />
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="inputQuarter">Quarter</label>
-                                    <select id="inputQuarter" class="form-control" onchange="onQuarterChange()" required>
-                                        <option value="1">Quarter 1</option>
-                                        <option value="2">Quarter 2</option>
-                                        <option value="3">Quarter 3</option>
-                                        <option value="4">Quarter 4</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="inputMonth">Month</label>
-                                    <select id="inputMonth" class="form-control">
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col d-flex justify-content-end">
-                                <button type="button" class="btn btn-info" onclick="applyFilter()">Process</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+        </div>
+        <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Filter by</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="form-group">
+                    <label for="inputProvince">Province/City</label>
+                    <select id="inputProvince" class="form-control" onchange="onProvinceChange()" required>
+                        <option value="79" selected>Ho Chi Minh City</option>
+                        <option value="82">Tien Giang</option>
+                        <option value="75">Dong Nai</option>
+                        <option value="72">Tay Ninh</option>
+                    </select>
+                  </div>
+                  <div class="form-group" id="inputDistrictContainer">
+                    <label for="inputDistrict">District</label>
+                    <select id="inputDistrict" class="form-control">
+                    </select>
+                  </div>
+                  <hr/>
+                  <div class="form-group">
+                    <div class="k-content">
+                        <label for="year-picker">Year</label>
+                        <input class="form-control" id="year-picker" required />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputQuarter">Quarter</label>
+                    <select id="inputQuarter" class="form-control" onchange="onQuarterChange()" required>
+                        <option value="1">Quarter 1</option>
+                        <option value="2">Quarter 2</option>
+                        <option value="3">Quarter 3</option>
+                        <option value="4">Quarter 4</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputMonth">Month</label>
+                    <select id="inputMonth" class="form-control">
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="onApplyFilter()">Process</button>
+              </div>
             </div>
+          </div>
         </div>`
     $("#filterPanel").html(_html);
     $("#year-picker").kendoDatePicker({
@@ -95,18 +89,15 @@ const initFilterPanel = () => {
     });
     onProvinceChange();
     onQuarterChange();
-    openFilterPanel();
+}
+
+const onApplyFilter = () => {
+    $('#filterModal').modal('hide')
+    applyFilter();
 }
 
 const openFilterPanel = () => {
-    if (configPanelOpen) {
-        $("#filterContainer").collapse('hide');
-        $("#filter-btn").html(openIcon);
-    } else {
-        $("#filterContainer").collapse('show');
-        $("#filter-btn").html(closeIcon);
-    }
-    configPanelOpen = !configPanelOpen;
+    $('#filterModal').modal('show')
 }
 
 const onProvinceChange = () => {
@@ -114,6 +105,10 @@ const onProvinceChange = () => {
     $.get(`/api/Locations/Districts?provinceCode=${provinceCode}`,
         function (districts) {
             let data = districts.map(u => { text = u.nameWithType, value = u.code });
+            $('#inputDistrictContainer')
+                .html(`<label for="inputDistrict">Quận huyện</label>
+                        <select id="inputDistrict" class="form-control">
+                        </select>`);
             $('#inputDistrict').kendoMultiSelect({
                 dataTextField: "nameWithType",
                 dataValueField: "code",
@@ -123,7 +118,6 @@ const onProvinceChange = () => {
             if (firstload) {
                 firstload = false;
                 var multiselect = $("#inputDistrict").data("kendoMultiSelect");
-
                 multiselect.value(districtCode.split(','));
                 multiselect.trigger("change");
                 updateFilterDetail();

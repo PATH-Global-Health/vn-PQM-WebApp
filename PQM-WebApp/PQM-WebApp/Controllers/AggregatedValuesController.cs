@@ -34,9 +34,9 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet("ChartData")]
-        public IActionResult GetChartData(string indicator, int year, int quater, string provinceCode, string districtCode, int? month = null, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
+        public IActionResult GetChartData(string indicator, int year, int quarter, string provinceCode, string districtCode, int? month = null, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
         {
-            var rs = _aggregatedService.GetChartData(indicator, year, quater, provinceCode, districtCode, month, ageGroups, keyPopulations, genders, clinnics);
+            var rs = _aggregatedService.GetChartData(indicator, year, quarter, provinceCode, districtCode, month, ageGroups, keyPopulations, genders, clinnics);
             if (rs.Succeed)
             {
                 return Ok(rs.Data);

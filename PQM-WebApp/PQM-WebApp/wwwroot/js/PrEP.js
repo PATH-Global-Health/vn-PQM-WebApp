@@ -20,7 +20,7 @@ function createAgeGroupChart() {
 }
 
 function createGenderChart() {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Sex`,
+    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Gender`,
         function (response) {
             _initGenderChart(response);
         }
@@ -53,7 +53,7 @@ function trendElement(trend) {
                          <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                      </svg>`;
     return `${trendDirection}
-                         ${trend.comparePercent}%
+                         ${Math.round(trend.comparePercent * 10000) / 100}%
                         `;
 }
 
@@ -104,7 +104,7 @@ function initIndicators() {
     let keyPopulationQuery = variables.filter(v => v.type === 'KeyPopulation').map(s => s.id).join(',');
     let genderQuery = variables.filter(v => v.type === 'Gender').map(s => s.id).join(',');
     let clinnicQuery = variables.filter(v => v.type === 'Clinnic').map(s => s.id).join(',');
-    $.get(`/api/PrEP/indicators?year=${year}&quater=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
+    $.get(`/api/AggregatedValues/IndicatorValues?year=${year}&quater=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
         + `&ageGroups=${ageGroupQuery}&genders=${genderQuery}&keyPopulations=${keyPopulationQuery}&clinnics=${clinnicQuery}`, function (data) {
             let p1 = true;
             let p2 = true;

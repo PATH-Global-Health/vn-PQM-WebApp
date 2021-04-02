@@ -7,6 +7,7 @@ namespace PQM_WebApp.Data.Models
         public string IndicatorGroup { get; set; }
         public string IndicatorName { get; set; }
         public string IndicatorCode { get; set; }
+        public bool IsTotal { get; set; }
         //group by
         public string AgeGroup { get; set; }
         public string KeyPopulation { get; set; }
