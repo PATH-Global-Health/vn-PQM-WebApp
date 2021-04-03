@@ -29,6 +29,7 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<IKeyPopulationService, KeyPopulationService>();
             services.AddTransient<ISexService, SexService>();
             services.AddTransient<IIndicatorGroupService, IndicatorGroupService>();
+            services.AddTransient<ISiteTypeService, SiteTypeService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)

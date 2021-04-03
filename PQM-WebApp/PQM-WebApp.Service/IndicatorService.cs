@@ -371,6 +371,7 @@ namespace PQM_WebApp.Service
         {
             dest.Code = source.Code;
             dest.Name = source.Name;
+            dest.Description = source.Description;
             dest.Order = source.Order;
             dest.IsTotal = source.IsTotal;
             dest.CreatedBy = source.CreatedBy;

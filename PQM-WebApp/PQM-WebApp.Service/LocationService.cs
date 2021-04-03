@@ -319,9 +319,16 @@ namespace PQM_WebApp.Service
                     throw new Exception("No district for reference.");
                 }
 
+                var siteType = _dbContext.SiteTypes.AsSoftDelete(false).FirstOrDefault(s => s.Id == site.SiteTypeId);
+                if (siteType == null)
+                {
+                    throw new Exception("No site type for reference.");
+                }
+
                 site.Id = Guid.NewGuid();
                 site.DateCreated = DateTime.Now;
                 site.District = district;
+                site.SiteType = siteType;
                 _dbContext.Sites.Add(site);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)
@@ -358,7 +365,14 @@ namespace PQM_WebApp.Service
                     {
                         throw new Exception("No district for reference.");
                     }
+
+                    var siteType = _dbContext.SiteTypes.AsSoftDelete(false).FirstOrDefault(s => s.Id == site.SiteTypeId);
+                    if (siteType == null)
+                    {
+                        throw new Exception("No site type for reference.");
+                    }
                     site.District = district;
+                    site.SiteType = siteType;
                     _dbContext.Sites.Update(site);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
@@ -437,6 +451,7 @@ namespace PQM_WebApp.Service
             site.Code = source.Code;
             site.Order = source.Order;
             site.DistrictId = source.DistrictId;
+            site.SiteTypeId = source.SiteTypeId;
         }
     }
 }

@@ -26,6 +26,8 @@ namespace PQM_WebApp.Data
         public DbSet<Sex> Sex { get; set; }
         public DbSet<Site> Sites { get; set; }
 
+        public DbSet<SiteType> SiteTypes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
