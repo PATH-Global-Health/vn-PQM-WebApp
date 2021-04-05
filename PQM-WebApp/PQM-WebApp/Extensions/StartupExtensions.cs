@@ -115,5 +115,10 @@ namespace PQM_WebApp.Extensions
 
             CreateIndex(client);
         }
+
+        public static void ConfigCors(this IServiceCollection services)
+        {
+            services.AddCors(options => options.AddPolicy("AllowAll", builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
+        }
     }
 }

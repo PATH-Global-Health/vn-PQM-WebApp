@@ -29,6 +29,7 @@ namespace PQM_WebApp
             services.ConfigJwt(Configuration["Jwt:Key"], Configuration["Jwt:Issuer"], Configuration["Jwt:Issuer"]);
             services.ConfigSwagger();
             services.AddElasticsearch(Configuration["elasticsearch:url"], Configuration["elasticsearch:username"], Configuration["elasticsearch:password"]);
+            services.ConfigCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +43,8 @@ namespace PQM_WebApp
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.UseCors("AllowAll");
+
             app.UseStaticFiles();
 
             app.UseRouting();
