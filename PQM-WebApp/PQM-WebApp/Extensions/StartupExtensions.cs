@@ -30,6 +30,7 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<ISexService, SexService>();
             services.AddTransient<IIndicatorGroupService, IndicatorGroupService>();
             services.AddTransient<ISiteTypeService, SiteTypeService>();
+            services.AddTransient<ICategoryAliasService, CategoryAliasService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)

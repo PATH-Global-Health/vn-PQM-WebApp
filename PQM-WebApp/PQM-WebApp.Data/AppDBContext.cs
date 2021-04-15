@@ -25,8 +25,8 @@ namespace PQM_WebApp.Data
         public DbSet<Province> Provinces { get; set; }
         public DbSet<Sex> Sex { get; set; }
         public DbSet<Site> Sites { get; set; }
-
         public DbSet<SiteType> SiteTypes { get; set; }
+        public DbSet<CategoryAlias> CategoryAliases { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
