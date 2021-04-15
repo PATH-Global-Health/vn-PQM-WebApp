@@ -4,8 +4,6 @@ let year = '2020';
 let month = '';
 let quarter = '1';
 let firstload = true;
-let thresholdSettings = [];
-
 
 function drillDown(groupIndicator) {
     if (groupIndicator !== 'PrEP' && groupIndicator !== 'Testing' && groupIndicator !== 'Treatment') return;
@@ -248,15 +246,6 @@ const loadThresholdList = () => {
     });
 }
 
-const findPos = (obj) => {
-    var curtop = 0;
-    if (obj.offsetParent) {
-        do {
-            curtop += obj.offsetTop;
-        } while (obj = obj.offsetParent);
-        return [curtop];
-    }
-}
 
 const fixContainerHeight = () => {
     let containerHeight = $('.dashboard-container').height();
@@ -266,6 +255,9 @@ const fixContainerHeight = () => {
     let gap = containerHeight - testing.outerHeight(true) - prep.outerHeight(true) - treatment.outerHeight(true);
     let m = gap % 3;
     let g = (gap - m) / 3;
+    if (g < 0) {
+        return;
+    }
     testing.height(testing.height() + g);
     prep.height(prep.height() + g);
     treatment.height(treatment.height() + g + m);
@@ -280,15 +272,15 @@ const fixContainerHeight = () => {
     sq.height(sq.height() + g + m);
 }
 
+$(window).resize(() => {
+    fixContainerHeight();
+});
+
 $(document).ready(() => {
     checkURLParams();
     initFilterPanel();
     loadThresholdList();
-
-    setTimeout(() => {
-        window.scroll(0, findPos(document.getElementById("filterPanel")));
-    }, 1000);
-});
+}); 
 
 const applyFilter = () => {
     provinceCode = $('#inputProvince').val();

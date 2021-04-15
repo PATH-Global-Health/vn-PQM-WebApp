@@ -14,3 +14,63 @@ const getBoundary = (key) => {
     }
     return [];
 }
+
+const customRound = (numerator, denominator) => {
+    let d = numerator / denominator;
+    let r = Math.round(d * 10000) / 10000;
+    return r;
+}
+
+const findPos = (obj) => {
+    var curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+        return [curtop];
+    }
+}
+
+const getToken = () => {
+    return sessionStorage.getItem('token') !== null ? sessionStorage.getItem('token') : localStorage.getItem('token');
+}
+
+const setToken = (token, remember) => {
+    if (remember) {
+        localStorage.setItem('token', token);
+    } else {
+        sessionStorage.setItem('token', token);
+    }
+}
+
+const httpClient = {
+    callApi: async ({
+        method = 'GET',
+        contentType = 'application/json',
+        url,
+        data,
+        params,
+        onUploadProgress,
+        responseType,
+        cancelToken: isCancel,
+    }) => {
+        const token = getToken(); // token
+        const headerToken = token ? { Authorization: `bearer ${token}` } : null;
+        if (typeof cancelToken !== typeof undefined) {
+            cancelToken.cancel('Operation canceled due to new request.');
+        }
+        cancelToken = axios.CancelToken.source();
+
+        return axios({
+            method,
+            contentType,
+            url,
+            headers: { ...headerToken },
+            data,
+            params,
+            onUploadProgress,
+            responseType,
+            cancelToken: isCancel && cancelToken.token,
+        });
+    },
+};

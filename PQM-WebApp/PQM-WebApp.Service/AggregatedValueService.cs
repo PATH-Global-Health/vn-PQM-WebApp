@@ -140,11 +140,11 @@ namespace PQM_WebApp.Service
                     Denominator = s.Sum(_ => _.Denominator),
                     DataType = s.FirstOrDefault().DataType,
                 },
-            }
-            ).OrderBy(o => o.Order).Select(s => new
+            }).OrderBy(o => o.Order).Select(s => new
             {
                 s.Name,
                 Value = s.Value.DataType == DataType.Number ? s.Value.Value : (double)s.Value.Numerator / s.Value.Denominator,
+                s.Value.DataType,
             }).ToList();
             var skip = data.Count > 6 ? data.Count - 6 : 0;
             return new ResultModel()

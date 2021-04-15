@@ -139,13 +139,13 @@ hr {
 .chip {
     display: inline-block;
     padding: 0 20px;
-    height: 40px;
-    font-size: 16px;
-    line-height: 40px;
-    border-radius: 20px;
+    height: 30px;
+    font-size: 14px;
+    line-height: 30px;
+    border-radius: 15px;
     background-color: darkgray;
-    margin-right: 5px;
-    margin-bottom: 10px;
+    margin: 5px;
+
 }
 
 .closebtn {
@@ -163,14 +163,15 @@ hr {
 
 .indicator-container {
     background-color: white;
-    height: 400px;
-    max-height: 400px;
-    max-width: 450px!important;
+    height: 380px;
+    max-height: 380px;
+    max-width: 420px!important;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
     .indicator-container:hover {
         cursor: pointer;
-        border: 1px solid whitesmoke;
     }
 
     .indicator-container > .indicator-title {
@@ -179,7 +180,7 @@ hr {
     }
 
     .indicator-container > .indicator-infor {
-        height: 200px
+        height: 185px
     }
 
         .indicator-container > .indicator-infor > .indicator-value {
@@ -188,7 +189,12 @@ hr {
         }
 
     .indicator-container > .indicator-infor-chart {
-        height: 200px
+        height: 185px
+    }
+
+    .selected-indicator-container {
+        border: 2px solid black;
+        border-radius: 15px;
     }
 
 .variable-containter {

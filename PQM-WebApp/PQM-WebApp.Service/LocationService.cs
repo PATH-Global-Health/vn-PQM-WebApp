@@ -154,7 +154,7 @@ namespace PQM_WebApp.Service
             {
                 var filter = _dbContext.Districts.Where(_ => _.IsDeleted == false)
                                                  .Where(_ => _.ParentCode == provinceCode);
-                result.Data = filter.AsNoTracking().AsEnumerable().Adapt<IEnumerable<DistrictModel>>();
+                result.Data = filter.AsEnumerable().Adapt<IEnumerable<DistrictModel>>();
                 result.Succeed = true;
             }
             catch (Exception e)

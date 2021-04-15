@@ -5,12 +5,6 @@ let provinceCode = '79';
 let districtCode = '768';
 let firstload = true;
 
-function customRound(numerator, denominator) {
-    let d = numerator / denominator;
-    let r = Math.round(d * 10000) / 10000;
-    return r;
-}
-
 function createAgeGroupChart() {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=Treatment&groupBy=AgeGroup`,
         function (response) {
@@ -43,44 +37,8 @@ function createClinicsChart() {
     )
 }
 
-function createTX_Curr_chart() {
-    $("#TX_Curr_chart").kendoChart({
-        seriesDefaults: {
-            type: "area",
-            area: {
-                line: {
-                    style: "smooth"
-                }
-            },
-        },
-        series: [{
-            data: [0.507, 1.943, 2.848, 0.284, 3.263, 4.801, 6.890, 8.238, 9, 4.552, 15.855, 25],
-            color: "#62666e"
-        }],
-        categoryAxis: {
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            majorTicks: {
-                visible: false
-            }
-        },
-        valueAxis: {
-            max: 25,
-            title: {
-            },
-            majorGridLines: {
-                visible: false
-            },
-            visible: false
-        }
-    });
-}
-
 function trendElement(trend) {
-    if (trend.direction === 0) return "";
+    if (!trend || trend.direction === 0) return "";
     let trendDirection = trend.direction === 1 ?
         `<svg xmlns="http://www.w3.org/2000/svg" color="${trend.criticalInfo}" width="35" height="35" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 20 20">
                         <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />

@@ -8,7 +8,7 @@
     <link href="~/lib/kendo-ui/Bootstrap/kendo.bootstrap-v4.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body style="display: none">
+<body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand" href="#">@ViewData["Title"]</a>
@@ -50,13 +50,14 @@
         </nav>
     </header>
     <div>
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3" style="overflow: hidden">
             @RenderBody()
         </main>
     </div>
     <footer class="d-flex justify-content-center" style="padding: 20px">
         <img src="~/images/footer.PNG" />
     </footer>
+    <script src="~/lib/axios/axios.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/utility.js"></script>
     <script src="~/js/auth.js"></script>

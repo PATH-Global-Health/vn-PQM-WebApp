@@ -1,6 +1,6 @@
 ﻿
 const filterDetail = (label, value, tooltip) => {
-    return `<div class="card" data-toggle="tooltip" data-placement="top" title="${tooltip}" style="padding: 8px;display: inline;font-size: 17px;background-color: whitesmoke; margin-right: 5px">
+    return `<div class="card" data-toggle="tooltip" data-placement="top" title="${tooltip}" style="padding: 8px;display: inline;font-size: 17px;background-color: whitesmoke; margin-right: 5px; min-width: max-content">
                 <span>${label}</span>
                 <spanl style="font-weight: bold">${value}</span>
             </div>`
@@ -9,19 +9,25 @@ const filterDetail = (label, value, tooltip) => {
 const initFilterPanel = () => {
     let _html =
         `<div class="col-12" style="padding: 0px !important">
-            <div class="card" style="background-color: white; padding: 10px">
-                <div class="row">
-                    <div class="col-1 d-flex justify-content-center">
-                        <img src="/images/usaid-logo.PNG" style="height: 50px" />
+            <div class="card px-2" style="background-color: white">
+                <div class="container-fluid"> 
+                    <div class="row">
+                        <div class="col-lg-1 col-3 d-flex justify-content-center">
+                            <img src="/images/usaid-logo.png" style="height: 50px" />
+                        </div>
+                        <div class="col-lg-10 col-7 d-flex align-items-center" style="overflow: scroll" id="filterDisplay">
+                        </div>
+                        <div class="col-lg-1 col-2 d-flex flex-row-reverse">
+                            <button type="button" class="btn" onclick="openFilterPanel()" id="filter-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
+                                    <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-10 d-flex align-items-center" id="filterDisplay">
-                    </div>
-                    <div class="col-1 d-flex flex-row-reverse">
-                        <button type="button" class="btn" onclick="openFilterPanel()" id="filter-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
-                                <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
-                            </svg>
-                        </button>
+                </div>
+                <div class="d-block d-sm-none row">
+                    <div class="col-12" id="filterDisplayMobile">
                     </div>
                 </div>
             </div>
@@ -89,6 +95,9 @@ const initFilterPanel = () => {
     });
     onProvinceChange();
     onQuarterChange();
+    setTimeout(() => {
+        window.scroll(0, findPos(document.getElementById("filterPanel")));
+    }, 1000);
 }
 
 const onApplyFilter = () => {
@@ -115,13 +124,6 @@ const onProvinceChange = () => {
                 dataSource: districts,
                 filter: "contains",
             });
-            if (firstload) {
-                firstload = false;
-                var multiselect = $("#inputDistrict").data("kendoMultiSelect");
-                multiselect.value(districtCode.split(','));
-                multiselect.trigger("change");
-                updateFilterDetail();
-            }
         }
     );
 }

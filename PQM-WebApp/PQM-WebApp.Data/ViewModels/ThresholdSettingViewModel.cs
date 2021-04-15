@@ -10,6 +10,7 @@ namespace PQM_WebApp.Data.ViewModels
         public double From { get; set; }
         public double To { get; set; }
         public string ColorCode { get; set; }
+        public int Type { get; set; }
     }
 
     public class ThresholdSettingViewModel : ThresholdSettingCreateModel

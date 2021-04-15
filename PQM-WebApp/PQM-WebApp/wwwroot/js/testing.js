@@ -162,6 +162,10 @@ $(document).ready(() => {
     createGenderChart();
     createKeyPopulationsChart();
     createClinicsChart();
+
+    setTimeout(() => {
+        window.scroll(0, findPos(document.getElementById("filterPanel")));
+    }, 1000);
 });
 
 function applyFilter() {
