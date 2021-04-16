@@ -6,6 +6,11 @@ namespace PQM_WebApp.Data.ViewModels
 {
     public class CategoryAliasCreateModel
     {
+        protected CategoryAliasCreateModel()
+        {
+            DateCreated = DateTime.Now;
+        }
+
         public string Name { get; set; }
         public string Alias { get; set; }
         public string Category { get; set; }

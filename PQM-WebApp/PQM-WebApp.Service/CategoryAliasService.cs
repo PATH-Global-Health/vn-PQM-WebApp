@@ -14,7 +14,7 @@ namespace PQM_WebApp.Service
     public interface ICategoryAliasService
     {
         ResultModel Create(CategoryAliasCreateModel model);
-        PagingModel Get(int pageIndex, int pageSize);
+        PagingModel Get(string name, string category, int pageIndex, int pageSize);
         ResultModel Update(CategoryAliasViewModel model);
         ResultModel Delete(CategoryAliasViewModel model);
     }
@@ -34,8 +34,6 @@ namespace PQM_WebApp.Service
             try
             {
                 var categoryAlias = model.Adapt<CategoryAlias>();
-                categoryAlias.Id = Guid.NewGuid();
-                categoryAlias.DateCreated = DateTime.Now;
                 _dbContext.CategoryAliases.Add(categoryAlias);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)
@@ -52,12 +50,26 @@ namespace PQM_WebApp.Service
             }
         }
         
-        public PagingModel Get(int pageIndex, int pageSize)
+        public PagingModel Get(string name, string category, int pageIndex, int pageSize)
         {
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.CategoryAliases.AsSoftDelete(false);
+                IQueryable<CategoryAlias> filter;
+
+                if (name == null && category == null)
+                {
+                    filter = _dbContext.CategoryAliases.AsSoftDelete(false);
+                }
+                else if (name != null && category != null)
+                {
+                    filter = _dbContext.CategoryAliases.AsSoftDelete(false).Where(s => s.Name == name && s.Category == category);
+                }
+                else
+                {
+                    filter = _dbContext.CategoryAliases.AsSoftDelete(false).Where(s => name != null ? s.Name == name : s.Category == category);
+                }
+                
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.PageData(pageIndex, pageSize).Adapt<IEnumerable<CategoryAliasViewModel>>();
                 result.Succeed = true;
@@ -82,7 +94,7 @@ namespace PQM_WebApp.Service
                 }
                 else
                 {
-                    Copy(model, categoryAlias);
+                    model.Adapt(categoryAlias);
                     categoryAlias.DateUpdated = DateTime.Now;
                     _dbContext.CategoryAliases.Update(categoryAlias);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
@@ -131,14 +143,6 @@ namespace PQM_WebApp.Service
                 rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
-        }
-
-        private void Copy(CategoryAliasViewModel source, CategoryAlias dest)
-        {
-            dest.Name = source.Name;
-            dest.CreatedBy = source.CreatedBy;
-            dest.Alias = source.Alias;
-            dest.Category = source.Category;
         }
     }
 }
