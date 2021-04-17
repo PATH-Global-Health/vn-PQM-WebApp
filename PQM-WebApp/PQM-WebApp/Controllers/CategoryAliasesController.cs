@@ -21,9 +21,9 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get(string name = null, string category = null, int pageIndex = 0, int pageSize = int.MaxValue)
+        public IActionResult Get(Guid categoryId = default(Guid), string category = null, int pageIndex = 0, int pageSize = int.MaxValue)
         {
-            var rs = _categoryAliasService.Get(name, category, pageIndex, pageSize);
+            var rs = _categoryAliasService.Get(categoryId, category, pageIndex, pageSize);
             if (rs.Succeed)
                 return Ok(rs.Data);
             return BadRequest(rs.ErrorMessage);

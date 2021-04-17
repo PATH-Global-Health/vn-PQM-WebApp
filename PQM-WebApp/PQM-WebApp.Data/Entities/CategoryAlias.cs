@@ -6,7 +6,7 @@ namespace PQM_WebApp.Data.Entities
 {
     public class CategoryAlias : BaseEntity
     {
-        public string Name { get; set; }
+        public Guid CategoryId { get; set; }
         public string Alias { get; set; }
         public string Category { get; set; }
     }

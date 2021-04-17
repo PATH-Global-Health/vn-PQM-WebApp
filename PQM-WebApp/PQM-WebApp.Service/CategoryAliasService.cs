@@ -14,7 +14,7 @@ namespace PQM_WebApp.Service
     public interface ICategoryAliasService
     {
         ResultModel Create(CategoryAliasCreateModel model);
-        PagingModel Get(string name, string category, int pageIndex, int pageSize);
+        PagingModel Get(Guid categoryId, string category, int pageIndex, int pageSize);
         ResultModel Update(CategoryAliasViewModel model);
         ResultModel Delete(CategoryAliasViewModel model);
     }
@@ -50,24 +50,24 @@ namespace PQM_WebApp.Service
             }
         }
         
-        public PagingModel Get(string name, string category, int pageIndex, int pageSize)
+        public PagingModel Get(Guid categoryId, string category, int pageIndex, int pageSize)
         {
             var result = new PagingModel();
             try
             {
                 IQueryable<CategoryAlias> filter;
 
-                if (name == null && category == null)
+                if (categoryId == Guid.Empty && category == null)
                 {
                     filter = _dbContext.CategoryAliases.AsSoftDelete(false);
                 }
-                else if (name != null && category != null)
+                else if (categoryId != Guid.Empty && category != null)
                 {
-                    filter = _dbContext.CategoryAliases.AsSoftDelete(false).Where(s => s.Name == name && s.Category == category);
+                    filter = _dbContext.CategoryAliases.AsSoftDelete(false).Where(s => s.CategoryId == categoryId && s.Category == category);
                 }
                 else
                 {
-                    filter = _dbContext.CategoryAliases.AsSoftDelete(false).Where(s => name != null ? s.Name == name : s.Category == category);
+                    filter = _dbContext.CategoryAliases.AsSoftDelete(false).Where(s => categoryId != Guid.Empty ? s.CategoryId == categoryId : s.Category == category);
                 }
                 
                 result.PageCount = filter.PageCount(pageSize);
@@ -90,7 +90,7 @@ namespace PQM_WebApp.Service
                 if (categoryAlias == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found category alias: {0}", model.Name);
+                    rs.ErrorMessage = string.Format("Not found alias {0}", model.Alias);
                 }
                 else
                 {
@@ -122,7 +122,7 @@ namespace PQM_WebApp.Service
                 if (categoryAlias == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found category alias: {0}", model.Name);
+                    rs.ErrorMessage = string.Format("Not found alias {0}", model.Alias);
                 }
                 else
                 {

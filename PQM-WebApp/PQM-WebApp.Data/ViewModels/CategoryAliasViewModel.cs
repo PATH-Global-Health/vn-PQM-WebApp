@@ -11,7 +11,7 @@ namespace PQM_WebApp.Data.ViewModels
             DateCreated = DateTime.Now;
         }
 
-        public string Name { get; set; }
+        public Guid CategoryId { get; set; }
         public string Alias { get; set; }
         public string Category { get; set; }
         public DateTime? DateCreated { get; set; }
