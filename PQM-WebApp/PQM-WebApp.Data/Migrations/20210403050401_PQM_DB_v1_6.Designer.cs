@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PQM_WebApp.Data;
 
 namespace PQM_WebApp.Data.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210403050401_PQM_DB_v1_6")]
+    partial class PQM_DB_v1_6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,38 +124,6 @@ namespace PQM_WebApp.Data.Migrations
                     b.HasIndex("SiteId");
 
                     b.ToTable("AggregatedValues");
-                });
-
-            modelBuilder.Entity("PQM_WebApp.Data.Entities.CategoryAlias", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Alias")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Category")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CategoryAliases");
                 });
 
             modelBuilder.Entity("PQM_WebApp.Data.Entities.DimDate", b =>
@@ -271,7 +241,6 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<double?>("Lat")
                         .HasColumnType("float");
 
-                    b.Property<double?>("Lon")
                     b.Property<double?>("Lng")
                         .HasColumnType("float");
 
@@ -519,15 +488,11 @@ namespace PQM_WebApp.Data.Migrations
                     b.ToTable("Sites");
                 });
 
-            modelBuilder.Entity("PQM_WebApp.Data.Entities.ThresholdSetting", b =>
             modelBuilder.Entity("PQM_WebApp.Data.Entities.SiteType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ColorCode")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -538,25 +503,6 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<DateTime?>("DateUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("DistrictCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("From")
-                        .HasColumnType("float");
-
-                    b.Property<string>("IndicatorNamge")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ProvinceCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("To")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Username")
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -565,7 +511,6 @@ namespace PQM_WebApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ThresholdSettings");
                     b.ToTable("SiteTypes");
                 });
 

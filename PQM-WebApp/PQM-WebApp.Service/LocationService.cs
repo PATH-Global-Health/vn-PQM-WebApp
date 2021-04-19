@@ -48,7 +48,7 @@ namespace PQM_WebApp.Service
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.PageData(pageIndex, pageSize).Adapt<IEnumerable<ProvinceModel>>();
                 result.Succeed = true;*/
-                var filter = _dbContext.Provinces.Where(_ => _.IsDeleted == false);
+                var filter = _dbContext.Provinces.AsSoftDelete(false);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<ProvinceModel>>();
                 result.Succeed = true;
@@ -88,7 +88,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var province = _dbContext.Provinces.Find(model.Id);
+                var province = _dbContext.Provinces.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (province == null)
                 {
                     rs.Succeed = false;
@@ -120,7 +120,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var province = _dbContext.Provinces.Find(model.Id);
+                var province = _dbContext.Provinces.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (province == null)
                 {
                     rs.Succeed = false;
@@ -130,6 +130,20 @@ namespace PQM_WebApp.Service
                 {
                     province.IsDeleted = true;
                     province.DateUpdated = DateTime.Now;
+                    if (province.Districts != null)
+                    {
+                        foreach(var district in province.Districts)
+                        {
+                            district.IsDeleted = true;
+                            if (district.Sites != null)
+                            {
+                                foreach(var site in district.Sites)
+                                {
+                                    site.IsDeleted = true;
+                                }
+                            }
+                        }
+                    }
                     _dbContext.Provinces.Update(province);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
@@ -152,7 +166,7 @@ namespace PQM_WebApp.Service
             var result = new ResultModel();
             try
             {
-                var filter = _dbContext.Districts.Where(_ => _.IsDeleted == false)
+                var filter = _dbContext.Districts.AsSoftDelete(false)
                                                  .Where(_ => _.ParentCode == provinceCode);
                 result.Data = filter.AsEnumerable().Adapt<IEnumerable<DistrictModel>>();
                 result.Succeed = true;
@@ -170,8 +184,7 @@ namespace PQM_WebApp.Service
             try
             {
                 var district = model.Adapt<District>();
-                var provinces = _dbContext.Provinces.AsEnumerable();
-                var province = provinces.FirstOrDefault(s => s.Code == district.ParentCode && s.IsDeleted == false);
+                var province = _dbContext.Provinces.AsSoftDelete(false).FirstOrDefault(s => s.Code == district.ParentCode);
                 if (province == null)
                 {
                     throw new Exception("No province for reference.");
@@ -202,7 +215,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var district = _dbContext.Districts.Find(model.Id);
+                var district = _dbContext.Districts.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (district == null)
                 {
                     rs.Succeed = false;
@@ -212,8 +225,8 @@ namespace PQM_WebApp.Service
                 {
                     CopyDistrict(model, district);
                     district.DateUpdated = DateTime.Now;
-                    var provinces = _dbContext.Provinces.AsEnumerable();
-                    var province = provinces.FirstOrDefault(s => s.Code == district.ParentCode && s.IsDeleted == false);
+                    var provinces = _dbContext.Provinces.AsSoftDelete(false).AsEnumerable();
+                    var province = provinces.FirstOrDefault(s => s.Code == district.ParentCode);
                     if (province == null)
                     {
                         throw new Exception("No province for reference.");
@@ -243,7 +256,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var district = _dbContext.Districts.Find(model.Id);
+                var district = _dbContext.Districts.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (district == null)
                 {
                     rs.Succeed = false;
@@ -253,6 +266,13 @@ namespace PQM_WebApp.Service
                 {
                     district.IsDeleted = true;
                     district.DateUpdated = DateTime.Now;
+                    if (district.Sites != null)
+                    {
+                        foreach(var site in district.Sites)
+                        {
+                            site.IsDeleted = true;
+                        }
+                    }
                     _dbContext.Districts.Update(district);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
@@ -275,9 +295,9 @@ namespace PQM_WebApp.Service
             var result = new ResultModel();
             try
             {
-                var filter = _dbContext.Sites.Where(_ => _.IsDeleted == false)
+                var filter = _dbContext.Sites.AsSoftDelete(false)
                                                  .Where(_ => _.DistrictId == districtId);
-                result.Data = filter.AsNoTracking().AsEnumerable().Adapt<IEnumerable<SiteViewModel>>();
+                result.Data = filter.AsEnumerable().Adapt<IEnumerable<SiteViewModel>>();
                 result.Succeed = true;
             }
             catch (Exception e)
@@ -293,16 +313,22 @@ namespace PQM_WebApp.Service
             try
             {
                 var site = model.Adapt<Site>();
-                var districts = _dbContext.Districts.AsEnumerable();
-                var district = districts.FirstOrDefault(s => s.Id == site.DistrictId && s.IsDeleted == false);
+                var district = _dbContext.Districts.AsSoftDelete(false).FirstOrDefault(s => s.Id == site.DistrictId);
                 if (district == null)
                 {
                     throw new Exception("No district for reference.");
                 }
 
+                var siteType = _dbContext.SiteTypes.AsSoftDelete(false).FirstOrDefault(s => s.Id == site.SiteTypeId);
+                if (siteType == null)
+                {
+                    throw new Exception("No site type for reference.");
+                }
+
                 site.Id = Guid.NewGuid();
                 site.DateCreated = DateTime.Now;
                 site.District = district;
+                site.SiteType = siteType;
                 _dbContext.Sites.Add(site);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)
@@ -324,7 +350,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var site = _dbContext.Sites.Find(model.Id);
+                var site = _dbContext.Sites.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (site == null)
                 {
                     rs.Succeed = false;
@@ -334,13 +360,19 @@ namespace PQM_WebApp.Service
                 {
                     CopySite(model, site);
                     site.DateUpdated = DateTime.Now;
-                    var districts = _dbContext.Districts.AsEnumerable();
-                    var district = districts.FirstOrDefault(s => s.Id == site.DistrictId && s.IsDeleted == false);
+                    var district = _dbContext.Districts.AsSoftDelete(false).FirstOrDefault(s => s.Id == site.DistrictId);
                     if (district == null)
                     {
                         throw new Exception("No district for reference.");
                     }
+
+                    var siteType = _dbContext.SiteTypes.AsSoftDelete(false).FirstOrDefault(s => s.Id == site.SiteTypeId);
+                    if (siteType == null)
+                    {
+                        throw new Exception("No site type for reference.");
+                    }
                     site.District = district;
+                    site.SiteType = siteType;
                     _dbContext.Sites.Update(site);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
@@ -363,7 +395,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var site = _dbContext.Sites.Find(model.Id);
+                var site = _dbContext.Sites.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (site == null)
                 {
                     rs.Succeed = false;
@@ -419,6 +451,7 @@ namespace PQM_WebApp.Service
             site.Code = source.Code;
             site.Order = source.Order;
             site.DistrictId = source.DistrictId;
+            site.SiteTypeId = source.SiteTypeId;
         }
     }
 }

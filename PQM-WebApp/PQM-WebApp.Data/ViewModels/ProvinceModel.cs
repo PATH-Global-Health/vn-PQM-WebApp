@@ -11,8 +11,6 @@ namespace PQM_WebApp.Data.ViewModels
         public string Type { get; set; }
         public string NameWithType { get; set; }
         public string Code { get; set; }
-
-        public ICollection<DistrictModel> Districts { get; set; }
     }
 
     public class ProvinceModel : ProvinceCreateModel

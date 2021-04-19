@@ -79,7 +79,7 @@ namespace PQM_WebApp.Service
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.AgeGroups.Where(_ => _.IsDeleted == false);
+                var filter = _dbContext.AgeGroups.AsSoftDelete(false);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<AgeGroupViewModel>>();
                 result.Succeed = true;
@@ -96,7 +96,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var ageGroup = _dbContext.AgeGroups.Find(model.Id);
+                var ageGroup = _dbContext.AgeGroups.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (ageGroup == null)
                 {
                     rs.Succeed = false;
@@ -128,7 +128,7 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var ageGroup = _dbContext.AgeGroups.Find(model.Id);
+                var ageGroup = _dbContext.AgeGroups.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (ageGroup == null)
                 {
                     rs.Succeed = false;

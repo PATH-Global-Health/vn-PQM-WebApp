@@ -1,46 +1,46 @@
-﻿using PQM_WebApp.Data;
+﻿using Mapster;
+using PQM_WebApp.Data;
 using PQM_WebApp.Data.Entities;
 using PQM_WebApp.Data.Models;
 using PQM_WebApp.Data.ViewModels;
 using PQM_WebApp.Service.Utils;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using Mapster;
+using System.Text;
 
 namespace PQM_WebApp.Service
 {
-    public interface IKeyPopulationService
+    public interface ISiteTypeService
     {
-        ResultModel Create(KeyPopulationCreateModel model);
+        ResultModel Create(SiteTypeCreateModel model);
         PagingModel Get(int pageIndex, int pageSize);
-        ResultModel Update(KeyPopulationViewModel model);
-        ResultModel Delete(KeyPopulationViewModel model);
+        ResultModel Update(SiteTypeViewModel model);
+        ResultModel Delete(SiteTypeViewModel model);
     }
 
-    public class KeyPopulationService : IKeyPopulationService
+    public class SiteTypeService : ISiteTypeService
     {
         private readonly AppDBContext _dbContext;
 
-        public KeyPopulationService(AppDBContext dbContext)
+        public SiteTypeService(AppDBContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public ResultModel Create(KeyPopulationCreateModel model)
+        public ResultModel Create(SiteTypeCreateModel model)
         {
             var rs = new ResultModel();
             try
             {
-                var keyPopulation = model.Adapt<KeyPopulation>();
-                keyPopulation.Id = Guid.NewGuid();
-                keyPopulation.DateCreated = DateTime.Now;
-                _dbContext.KeyPopulations.Add(keyPopulation);
+                var siteType = model.Adapt<SiteType>();
+                siteType.Id = Guid.NewGuid();
+                siteType.DateCreated = DateTime.Now;
+                _dbContext.SiteTypes.Add(siteType);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)
                 {
-                    rs.Data = keyPopulation.Adapt<KeyPopulationViewModel>();
+                    rs.Data = siteType.Adapt<SiteTypeViewModel>();
                 }
                 return rs;
             }
@@ -57,9 +57,9 @@ namespace PQM_WebApp.Service
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.KeyPopulations.AsSoftDelete(false);
+                var filter = _dbContext.SiteTypes.AsSoftDelete(false);
                 result.PageCount = filter.PageCount(pageSize);
-                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<KeyPopulationViewModel>>();
+                result.Data = filter.PageData(pageIndex, pageSize).Adapt<IEnumerable<SiteTypeViewModel>>();
                 result.Succeed = true;
             }
             catch (Exception e)
@@ -69,26 +69,26 @@ namespace PQM_WebApp.Service
             return result;
         }
 
-        public ResultModel Update(KeyPopulationViewModel model)
+        public ResultModel Update(SiteTypeViewModel model)
         {
             var rs = new ResultModel();
             try
             {
-                var keyPopulation = _dbContext.KeyPopulations.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
-                if (keyPopulation == null)
+                var siteType = _dbContext.SiteTypes.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
+                if (siteType == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found key population: {0}", model.Name);
+                    rs.ErrorMessage = string.Format("Not found site type: {0}", model.Name);
                 }
                 else
                 {
-                    Copy(model, keyPopulation);
-                    keyPopulation.DateUpdated = DateTime.Now;
-                    _dbContext.KeyPopulations.Update(keyPopulation);
+                    Copy(model, siteType);
+                    siteType.DateUpdated = DateTime.Now;
+                    _dbContext.SiteTypes.Update(siteType);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
                     {
-                        rs.Data = keyPopulation.Adapt<KeyPopulationViewModel>();
+                        rs.Data = siteType.Adapt<SiteTypeViewModel>();
                     }
                 }
                 return rs;
@@ -101,26 +101,26 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public ResultModel Delete(KeyPopulationViewModel model)
+        public ResultModel Delete(SiteTypeViewModel model)
         {
             var rs = new ResultModel();
             try
             {
-                var keyPopulation = _dbContext.KeyPopulations.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
-                if (keyPopulation == null)
+                var siteType = _dbContext.SiteTypes.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
+                if (siteType == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found key population: {0}", model.Name);
+                    rs.ErrorMessage = string.Format("Not found site type: {0}", model.Name);
                 }
                 else
                 {
-                    keyPopulation.IsDeleted = true;
-                    keyPopulation.DateUpdated = DateTime.Now;
-                    _dbContext.KeyPopulations.Update(keyPopulation);
+                    siteType.IsDeleted = true;
+                    siteType.DateUpdated = DateTime.Now;
+                    _dbContext.SiteTypes.Update(siteType);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
                     {
-                        rs.Data = keyPopulation.Adapt<KeyPopulationViewModel>();
+                        rs.Data = siteType.Adapt<SiteTypeViewModel>();
                     }
                 }
                 return rs;
@@ -133,11 +133,10 @@ namespace PQM_WebApp.Service
             }
         }
 
-        private void Copy(KeyPopulationViewModel source, KeyPopulation dest)
+        private void Copy(SiteTypeViewModel source, SiteType dest)
         {
             dest.Name = source.Name;
             dest.CreatedBy = source.CreatedBy;
-            dest.Order = source.Order;
         }
     }
 }

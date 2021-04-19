@@ -16,7 +16,7 @@ namespace PQM_WebApp.Service.Utils
 
         public static IEnumerable<T> PageData<T>(this IQueryable<T> data, int pageIndex, int pageSize) where T : class
         {
-            return data.Skip((pageIndex - 1) * pageSize).Take(pageSize).AsNoTracking().AsEnumerable();
+            return data.Skip(pageIndex * pageSize).Take(pageSize);
         }
     }
 }
