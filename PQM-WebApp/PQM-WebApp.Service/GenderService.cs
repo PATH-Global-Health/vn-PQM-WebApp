@@ -11,36 +11,36 @@ using Mapster;
 
 namespace PQM_WebApp.Service
 {
-    public interface ISexService
+    public interface IGenderService
     {
-        ResultModel Create(SexCreateModel model);
+        ResultModel Create(GenderCreateModel model);
         PagingModel Get(int pageIndex, int pageSize);
-        ResultModel Update(SexViewModel model);
-        ResultModel Delete(SexViewModel model);
+        ResultModel Update(GenderViewModel model);
+        ResultModel Delete(GenderViewModel model);
     }
 
-    public class SexService : ISexService
+    public class GenderService : IGenderService
     {
         private readonly AppDBContext _dbContext;
 
-        public SexService(AppDBContext dbContext)
+        public GenderService(AppDBContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public ResultModel Create(SexCreateModel model)
+        public ResultModel Create(GenderCreateModel model)
         {
             var rs = new ResultModel();
             try
             {
-                var sex = model.Adapt<Sex>();
-                sex.Id = Guid.NewGuid();
-                sex.DateCreated = DateTime.Now;
-                _dbContext.Sex.Add(sex);
+                var Gender = model.Adapt<Gender>();
+                Gender.Id = Guid.NewGuid();
+                Gender.DateCreated = DateTime.Now;
+                _dbContext.Gender.Add(Gender);
                 rs.Succeed = _dbContext.SaveChanges() > 0;
                 if (rs.Succeed)
                 {
-                    rs.Data = sex.Adapt<SexViewModel>();
+                    rs.Data = Gender.Adapt<GenderViewModel>();
                 }
                 return rs;
             }
@@ -57,9 +57,9 @@ namespace PQM_WebApp.Service
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.Sex.AsSoftDelete(false);
+                var filter = _dbContext.Gender.Where(_ => _.IsDeleted == false);
                 result.PageCount = filter.PageCount(pageSize);
-                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<SexViewModel>>();
+                result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<GenderViewModel>>();
                 result.Succeed = true;
             }
             catch (Exception e)
@@ -69,7 +69,7 @@ namespace PQM_WebApp.Service
             return result;
         }
 
-        public ResultModel Update(SexViewModel model)
+        public ResultModel Update(GenderViewModel model)
         {
             var rs = new ResultModel();
             try
@@ -78,17 +78,17 @@ namespace PQM_WebApp.Service
                 if (sex == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found sex: {0}", model.Name);
+                    rs.ErrorMessage = string.Format("Not found Gender: {0}", model.Name);
                 }
                 else
                 {
-                    Copy(model, sex);
-                    sex.DateUpdated = DateTime.Now;
-                    _dbContext.Sex.Update(sex);
+                    Copy(model, Gender);
+                    Gender.DateUpdated = DateTime.Now;
+                    _dbContext.Gender.Update(Gender);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
                     {
-                        rs.Data = sex.Adapt<SexViewModel>();
+                        rs.Data = Gender.Adapt<GenderViewModel>();
                     }
                 }
                 return rs;
@@ -101,7 +101,7 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public ResultModel Delete(SexViewModel model)
+        public ResultModel Delete(GenderViewModel model)
         {
             var rs = new ResultModel();
             try
@@ -110,17 +110,17 @@ namespace PQM_WebApp.Service
                 if (sex == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found sex: {0}", model.Name);
+                    rs.ErrorMessage = string.Format("Not found Gender: {0}", model.Name);
                 }
                 else
                 {
-                    sex.IsDeleted = true;
-                    sex.DateUpdated = DateTime.Now;
-                    _dbContext.Sex.Update(sex);
+                    Gender.IsDeleted = true;
+                    Gender.DateUpdated = DateTime.Now;
+                    _dbContext.Gender.Update(Gender);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
                     {
-                        rs.Data = sex.Adapt<SexViewModel>();
+                        rs.Data = Gender.Adapt<GenderViewModel>();
                     }
                 }
                 return rs;
@@ -133,7 +133,7 @@ namespace PQM_WebApp.Service
             }
         }
 
-        private void Copy(SexViewModel source, Sex dest)
+        private void Copy(GenderViewModel source, Gender dest)
         {
             dest.Name = source.Name;
             dest.CreatedBy = source.CreatedBy;

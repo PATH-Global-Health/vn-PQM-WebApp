@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PQM_WebApp.Data.Entities
 {
-    public class Sex : DimensionGroup
+    public class Gender : DimensionGroup
     {
         public virtual ICollection<AggregatedValue> AggregatedValues { get; set; }
     }

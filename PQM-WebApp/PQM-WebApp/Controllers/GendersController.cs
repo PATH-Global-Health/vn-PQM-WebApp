@@ -11,46 +11,46 @@ namespace PQM_WebApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SexsController : ControllerBase
+    public class GendersController : ControllerBase
     {
-        private readonly ISexService _sexService;
+        private readonly IGenderService _GenderService;
 
-        public SexsController(ISexService sexService)
+        public GendersController(IGenderService GenderService)
         {
-            _sexService = sexService;
+            _GenderService = GenderService;
         }
 
         [HttpGet]
         public IActionResult Get(int pageIndex = 0, int pageSize = int.MaxValue)
         {
-            var rs = _sexService.Get(pageIndex, pageSize);
+            var rs = _GenderService.Get(pageIndex, pageSize);
             if (rs.Succeed)
                 return Ok(rs.Data);
             return BadRequest(rs.ErrorMessage);
         }
 
         [HttpPost]
-        public IActionResult Create(SexCreateModel model)
+        public IActionResult Create(GenderCreateModel model)
         {
-            var rs = _sexService.Create(model);
+            var rs = _GenderService.Create(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
             return BadRequest(rs.ErrorMessage);
         }
 
         [HttpPut]
-        public IActionResult Update(SexViewModel model)
+        public IActionResult Update(GenderViewModel model)
         {
-            var rs = _sexService.Update(model);
+            var rs = _GenderService.Update(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
             return BadRequest(rs.ErrorMessage);
         }
 
         [HttpDelete]
-        public IActionResult Delete(SexViewModel model)
+        public IActionResult Delete(GenderViewModel model)
         {
-            var rs = _sexService.Delete(model);
+            var rs = _GenderService.Delete(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
             return BadRequest(rs.ErrorMessage);
