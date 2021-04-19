@@ -92,24 +92,5 @@ namespace PQM_WebApp.Controllers
             }
             return BadRequest(rs.ErrorMessage);
         }
-
-        [HttpPut("ImportByExcel")]
-        [Consumes("multipart/form-data")]
-        public IActionResult ImportByExcel([FromForm] IFormFile file, [FromQuery] string type)
-        {
-            _indicatorService.ImportExcel(file, type);
-            return Ok();
-        }
-
-        [HttpPost("/api/AggregateData")]
-        public IActionResult ImportAggregateData([FromBody] List<IndicatorImportModel> aggregateData)
-        {
-            var rs = _indicatorService.ImportIndicator(aggregateData);
-            if (rs.Succeed)
-            {
-                return Ok(rs.Data);
-            }
-            return BadRequest(rs.ErrorMessage);
-        }
     }
 }

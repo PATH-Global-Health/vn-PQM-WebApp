@@ -56,7 +56,7 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<IThresholdSettingService, ThresholdSettingService>();
             services.AddTransient<IAgeGroupService, AgeGroupService>();
             services.AddTransient<IKeyPopulationService, KeyPopulationService>();
-            services.AddTransient<ISexService, SexService>();
+            services.AddTransient<IGenderService, GenderService>();
             services.AddTransient<IIndicatorGroupService, IndicatorGroupService>();
             services.AddTransient<ISiteTypeService, SiteTypeService>();
             services.AddTransient<ICategoryAliasService, CategoryAliasService>();

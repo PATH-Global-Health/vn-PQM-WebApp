@@ -17,13 +17,12 @@ namespace PQM_WebApp.Data.Models
         public string ProvinceCode { get; set; } //province of site
         //time dimensions
         public int Year { get; set; }
-        public int Quarter { get; set; }
-        public int Month { get; set; }
+        public int? Quarter { get; set; }
+        public int? Month { get; set; }
         public int? Day { get; set; }
         //value
         public int ValueType { get; set; } //1: number; 2: percent
-        public int? Value { get; set; }
-        public int? Denominator { get; set; }
-        public int? Numerator { get; set; }
+        public int Denominator { get; set; }
+        public int Numerator { get; set; }
     }
 }

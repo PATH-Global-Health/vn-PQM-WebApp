@@ -74,21 +74,21 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var sex = _dbContext.Sex.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
-                if (sex == null)
+                var gender = _dbContext.Gender.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
+                if (gender == null)
                 {
                     rs.Succeed = false;
                     rs.ErrorMessage = string.Format("Not found Gender: {0}", model.Name);
                 }
                 else
                 {
-                    Copy(model, Gender);
-                    Gender.DateUpdated = DateTime.Now;
-                    _dbContext.Gender.Update(Gender);
+                    Copy(model, gender);
+                    gender.DateUpdated = DateTime.Now;
+                    _dbContext.Gender.Update(gender);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
                     {
-                        rs.Data = Gender.Adapt<GenderViewModel>();
+                        rs.Data = gender.Adapt<GenderViewModel>();
                     }
                 }
                 return rs;
@@ -106,21 +106,21 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var sex = _dbContext.Sex.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
-                if (sex == null)
+                var gender = _dbContext.Gender.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
+                if (gender == null)
                 {
                     rs.Succeed = false;
                     rs.ErrorMessage = string.Format("Not found Gender: {0}", model.Name);
                 }
                 else
                 {
-                    Gender.IsDeleted = true;
-                    Gender.DateUpdated = DateTime.Now;
-                    _dbContext.Gender.Update(Gender);
+                    gender.IsDeleted = true;
+                    gender.DateUpdated = DateTime.Now;
+                    _dbContext.Gender.Update(gender);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
                     {
-                        rs.Data = Gender.Adapt<GenderViewModel>();
+                        rs.Data = gender.Adapt<GenderViewModel>();
                     }
                 }
                 return rs;
