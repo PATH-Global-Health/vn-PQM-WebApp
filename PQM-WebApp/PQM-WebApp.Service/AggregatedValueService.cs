@@ -43,6 +43,7 @@ namespace PQM_WebApp.Service
 
         ResultModel ImportExcel(IFormFile file);
         ResultModel ImportIndicator(List<IndicatorImportModel> importValues);
+        ResultModel ImportIndicator(AggregatedData aggregatedData);
     }
 
     public class AggregatedValueService : IAggregatedValueService
@@ -527,6 +528,7 @@ namespace PQM_WebApp.Service
                 int succeed = 0;
                 int succeedWithUndefinedDimValue = 0;
                 int updated = 0;
+                var undefinedDimValues = new List<UndefinedDimValue>();
                 for (int i = 0; i < importValues.Count; i++)
                 {
                     var data = importValues[i];
@@ -569,12 +571,15 @@ namespace PQM_WebApp.Service
                                                                                && f.Quarter == data.Quarter
                                                                                && f.Year == data.Year
                                                                                && f.PeriodType == data.PeriodType);
-                    if (current != null && localUndefinedDimValues.Count == 0)
+                    if (current != null)
                     {
-                        current.Numerator = data.Numerator;
-                        current.Denominator = data.Denominator;
-                        _dBContext.AggregatedValues.Update(current);
-                        updated++;
+                        if (current.UnsolvedDimValues != null && current.UnsolvedDimValues.Count == 0 && localUndefinedDimValues.Count == 0)
+                        {
+                            current.Numerator = data.Numerator;
+                            current.Denominator = data.Denominator;
+                            _dBContext.AggregatedValues.Update(current);
+                            updated++;
+                        }
                     }
                     else
                     {
@@ -617,6 +622,7 @@ namespace PQM_WebApp.Service
                                     UndefinedDimValueId = undefinedDimValue.Id,
                                 });
                             });
+                            undefinedDimValues = undefinedDimValues.Union(localUndefinedDimValues.Select(u => u.Value).ToList()).ToList();
                         }
                         else
                         {
@@ -635,6 +641,11 @@ namespace PQM_WebApp.Service
                         SucceedWithUndefinedDimValue = succeedWithUndefinedDimValue,
                         Updated = updated,
                         ErrorRows = errorRows,
+                        UndefinedDimValues = undefinedDimValues.Select(s => new
+                        {
+                            s.Dimension,
+                            s.UndefinedValue,
+                        })
                     }
                 };
             }
@@ -817,6 +828,10 @@ namespace PQM_WebApp.Service
                     ErrorMessage = "No existed"
                 };
             }
+            foreach (var u in aggregatedValue.UnsolvedDimValues)
+            {
+                _dBContext.UnsolvedDimValues.Remove(u);
+            }
             _dBContext.AggregatedValues.Remove(aggregatedValue);
             var rs = new ResultModel()
             {
@@ -893,6 +908,35 @@ namespace PQM_WebApp.Service
             }
             #endregion
             rs.Succeed = _dBContext.SaveChanges() > 0;
+            return rs;
+        }
+
+        private int GetQuarter(int month)
+        {
+            return month < 4 ? 1 : month < 7 ? 2 : month < 10 ? 3 : 4;
+        }
+
+        public ResultModel ImportIndicator(AggregatedData aggregatedData)
+        {
+            var rs = new ResultModel();
+            var importData = new List<IndicatorImportModel>();
+            aggregatedData.datas.ForEach(row =>
+            {
+                var data = new IndicatorImportModel()
+                {
+                    AgeGroup = row.data.age_group,
+                    KeyPopulation = row.data.key_population,
+                    Gender = row.data.sex,
+                    Site = row.site_code,
+                    Numerator = row.data.value,
+                    PeriodType = row.data.type,
+                    Year = aggregatedData.year,
+                    Quarter = GetQuarter(aggregatedData.month),
+                    Month = row.data.type == "month" ? aggregatedData.month : null,
+                    Day = null,
+
+                };
+            });
             return rs;
         }
     }

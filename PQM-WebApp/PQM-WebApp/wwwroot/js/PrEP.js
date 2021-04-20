@@ -5,7 +5,7 @@ let provinceCode = '79';
 let districtCode = '768';
 
 
-function createAgeGroupChart() {
+const createAgeGroupChart = () => {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=AgeGroup`,
         function (response) {
             _initAgeGroupChart(response);
@@ -13,7 +13,7 @@ function createAgeGroupChart() {
     );
 }
 
-function createGenderChart() {
+const createGenderChart = () => {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Gender`,
         function (response) {
             _initGenderChart(response);
@@ -21,7 +21,7 @@ function createGenderChart() {
     )
 }
 
-function createKeyPopulationsChart() {
+const createKeyPopulationsChart = () => {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=KeyPopulation`,
         function (response) {
             _initKeyPopulationsChart(response);
@@ -29,7 +29,7 @@ function createKeyPopulationsChart() {
     )
 }
 
-function createClinicsChart() {
+const createClinicsChart = () => {
     $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Site`,
         function (response) {
             _initClinicsChart(response);

@@ -78,6 +78,18 @@ namespace PQM_WebApp.Controllers
             }
             return BadRequest(rs.ErrorMessage);
         }
+
+        [HttpPost("ImportV2")]
+        public IActionResult ImportAggregateDataV2([FromBody] AggregatedData aggregateData)
+        {
+            var rs = _aggregatedService.ImportIndicator(aggregateData);
+            if (rs.Succeed)
+            {
+                return Ok(rs.Data);
+            }
+            return BadRequest(rs.ErrorMessage);
+        }
+
         [HttpPost("PopulateData")]
         public IActionResult PopulateData(string indicator, int year, int month, int? day = null, bool all = false)
         {
