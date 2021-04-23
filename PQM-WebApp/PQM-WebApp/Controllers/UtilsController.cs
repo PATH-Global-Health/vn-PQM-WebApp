@@ -25,7 +25,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _utilsService.ImportProvince(models);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPost("District")]
@@ -33,7 +33,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _utilsService.ImportDistrict(models);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

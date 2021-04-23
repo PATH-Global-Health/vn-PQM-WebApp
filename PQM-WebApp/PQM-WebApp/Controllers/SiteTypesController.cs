@@ -26,7 +26,7 @@ namespace PQM_WebApp.Controllers
             var rs = _siteTypeService.Get(pageIndex, pageSize);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPost]
@@ -35,7 +35,7 @@ namespace PQM_WebApp.Controllers
             var rs = _siteTypeService.Create(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPut]
@@ -44,7 +44,7 @@ namespace PQM_WebApp.Controllers
             var rs = _siteTypeService.Update(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpDelete]
@@ -53,7 +53,7 @@ namespace PQM_WebApp.Controllers
             var rs = _siteTypeService.Delete(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

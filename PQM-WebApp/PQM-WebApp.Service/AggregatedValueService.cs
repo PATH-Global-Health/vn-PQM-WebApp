@@ -42,7 +42,7 @@ namespace PQM_WebApp.Service
             , int? quarter = null, int? month = null, string ageGroups = "", string keyPopulations = "", string genders = "", string sites = "");
 
         ResultModel ImportExcel(IFormFile file);
-        ResultModel ImportIndicator(List<IndicatorImportModel> importValues);
+        ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRow = null);
         ResultModel ImportIndicator(AggregatedData aggregatedData);
     }
 
@@ -445,33 +445,36 @@ namespace PQM_WebApp.Service
         private IndicatorImportModel VerifyTime(IndicatorImportModel data, out string error)
         {
             error = "";
-            if (data.PeriodType == "Year")
+            if (data.PeriodType.Equals("Year", StringComparison.OrdinalIgnoreCase))
             {
                 data.Quarter = null;
                 data.Month = null;
                 data.Day = null;
             } //no need quarter, month and day when period is year
-            else if (data.PeriodType == "Quarter")
+            else if (data.PeriodType.Equals("Quarter", StringComparison.OrdinalIgnoreCase))
             {
                 data.Month = null;
                 data.Day = null;
             } //no need month and day when period is quarter
-            else if (data.PeriodType == "Month")
+            else if (data.PeriodType.Equals("Month", StringComparison.OrdinalIgnoreCase))
             {
                 data.Day = null;
             } //no need day when period is month
             var hasQuarter = data.Quarter != null;
-            if ((data.PeriodType == "Quarter" || data.PeriodType == "Month" || data.PeriodType == "Day") && !hasQuarter)
+            if ((data.PeriodType.Equals("Quarter", StringComparison.OrdinalIgnoreCase)
+                || data.PeriodType.Equals("Month", StringComparison.OrdinalIgnoreCase)
+                || data.PeriodType.Equals("Day", StringComparison.OrdinalIgnoreCase)) && !hasQuarter)
             {
                 error = "No quarter";
             } //check quarter is not null
             var hasMonth = data.Month != null && hasQuarter;
-            if ((data.PeriodType == "Month" || data.PeriodType == "Day") && !hasMonth)
+            if ((data.PeriodType.Equals("Month", StringComparison.OrdinalIgnoreCase)
+                || data.PeriodType.Equals("Day", StringComparison.OrdinalIgnoreCase)) && !hasMonth)
             {
                 error = "No month";
             } //check month is not null
             var hasDay = data.Day != null && hasMonth;
-            if ((data.PeriodType == "Day") && !hasDay)
+            if ((data.PeriodType.Equals("Day", StringComparison.OrdinalIgnoreCase)) && !hasDay)
             {
                 error = "No day";
             } //check day is not null
@@ -520,11 +523,59 @@ namespace PQM_WebApp.Service
             return definedDimValue;
         }
 
-        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues)
+        private int? FindDenominator(List<IndicatorImportModel> importValues, IndicatorImportModel value, Dictionary<string, Guid> definedDimValue)
+        {
+            var indicator = _dBContext.Indicators.FirstOrDefault(s => s.Name == value.Indicator || s.Code == value.Indicator);
+            if (indicator == null)
+            {
+                return null;
+            }
+            var deIndicator = _dBContext.Indicators.FirstOrDefault(s => s.Id == indicator.DenominatorIndicatorId);
+            if (deIndicator == null)
+            {
+                return null;
+            }
+
+            var denominator = importValues.FirstOrDefault(f => f.Site == value.Site
+                                                            && f.KeyPopulation == value.KeyPopulation
+                                                            && f.AgeGroup == value.AgeGroup
+                                                            && f.Gender == value.Gender
+                                                            && (f.Indicator == deIndicator.Name || f.Indicator == deIndicator.Code)
+                                                            && f.Day == value.Day
+                                                            && f.Month == value.Month
+                                                            && f.Quarter == value.Quarter
+                                                            && f.Year == value.Year
+                                                            && f.PeriodType == value.PeriodType);
+            if (denominator != null)
+            {
+                return denominator.Numerator;
+            }
+            Guid ageGroupId; definedDimValue.TryGetValue("AgeGroup", out ageGroupId);
+            Guid siteId; definedDimValue.TryGetValue("Site", out siteId);
+            Guid keyPopulationId; definedDimValue.TryGetValue("KeyPopulation", out keyPopulationId);
+            Guid genderId; definedDimValue.TryGetValue("Gender", out genderId);
+            var _denominator = _dBContext.AggregatedValues.FirstOrDefault(f => f.SiteId == siteId
+                                                                               && f.KeyPopulationId == keyPopulationId
+                                                                               && f.AgeGroupId == ageGroupId
+                                                                               && f.GenderId == genderId
+                                                                               && f.IndicatorId == deIndicator.Id
+                                                                               && f.Day == value.Day
+                                                                               && f.Month == value.Month
+                                                                               && f.Quarter == value.Quarter
+                                                                               && f.Year == value.Year
+                                                                               && f.PeriodType == value.PeriodType);
+            if (_denominator == null)
+            {
+                return null;
+            }
+            return _denominator.Numerator;
+        }
+
+        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRows = null)
         {
             try
             {
-                var errorRows = new List<object>();
+                errorRows = errorRows != null ? errorRows : new List<object>();
                 int succeed = 0;
                 int succeedWithUndefinedDimValue = 0;
                 int updated = 0;
@@ -532,6 +583,7 @@ namespace PQM_WebApp.Service
                 for (int i = 0; i < importValues.Count; i++)
                 {
                     var data = importValues[i];
+                    var _index = data.RowIndex != null ? data.RowIndex.Value + 1 : i + 1;
                     #region check time
                     string error;
                     data = VerifyTime(data, out error);
@@ -539,7 +591,7 @@ namespace PQM_WebApp.Service
                     {
                         errorRows.Add(new
                         {
-                            Row = i + 1,
+                            Row = _index,
                             Error = error,
                         });
                         continue;
@@ -548,13 +600,40 @@ namespace PQM_WebApp.Service
                     #region map category alias name and add unsolved dimension value
                     var localUndefinedDimValues = new Dictionary<string, UndefinedDimValue>();
                     var errors = new List<object>();
-                    var definedDimValue = GetDimensionValues(data, i, out localUndefinedDimValues, out errors);
+                    var definedDimValue = GetDimensionValues(data, _index, out localUndefinedDimValues, out errors);
                     errorRows.AddRange(errors);
                     if (errors.Count > 0)
                     {
                         continue;
                     }
                     var indicator = _dBContext.Indicators.FirstOrDefault(f => f.Name.Equals(data.Indicator));
+                    #endregion
+                    #region check denominator
+                    if (data.ValueType == 2)
+                    {
+                        data.Denominator = data.Denominator != null ? data.Denominator : FindDenominator(importValues, data, definedDimValue);
+                        if (data.Denominator == null)
+                        {
+                            errorRows.Add(new
+                            {
+                                Row = _index,
+                                Error = "Can not calculate the denominator of indicator",
+                            });
+                            continue;
+                        }
+                        if (data.Denominator < data.Numerator)
+                        {
+                            errorRows.Add(new
+                            {
+                                Row = _index,
+                                Error = "Invalid denominator data (numerator > denominator)",
+                            });
+                            continue;
+                        }
+                    } else
+                    {
+                        data.Denominator = 1;
+                    }
                     #endregion
                     #region add aggregated value to database
                     Guid ageGroupId; definedDimValue.TryGetValue("AgeGroup", out ageGroupId);
@@ -576,7 +655,7 @@ namespace PQM_WebApp.Service
                         if (current.UnsolvedDimValues != null && current.UnsolvedDimValues.Count == 0 && localUndefinedDimValues.Count == 0)
                         {
                             current.Numerator = data.Numerator;
-                            current.Denominator = data.Denominator;
+                            current.Denominator = data.Denominator.Value;
                             _dBContext.AggregatedValues.Update(current);
                             updated++;
                         }
@@ -591,7 +670,7 @@ namespace PQM_WebApp.Service
                             KeyPopulationId = keyPopulationId,
                             SiteId = siteId,
                             Numerator = data.Numerator,
-                            Denominator = data.Denominator,
+                            Denominator = data.Denominator.Value,
                             DataType = data.ValueType == 1 ? Data.Enums.DataType.Number : Data.Enums.DataType.Percent,
                             CreatedBy = "",
                             IsDeleted = false,
@@ -635,6 +714,7 @@ namespace PQM_WebApp.Service
                 return new ResultModel()
                 {
                     Succeed = true,
+                    Error = null,
                     Data = new
                     {
                         Succeed = succeed,
@@ -654,7 +734,10 @@ namespace PQM_WebApp.Service
                 return new ResultModel()
                 {
                     Succeed = false,
-                    ErrorMessage = ex.Message,
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = ex.Message
+                    },
                 };
             }
         }
@@ -739,7 +822,10 @@ namespace PQM_WebApp.Service
                 return new ResultModel
                 {
                     Succeed = false,
-                    ErrorMessage = error,
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = error
+                    },
                 };
             }
             #endregion
@@ -752,7 +838,10 @@ namespace PQM_WebApp.Service
                 return new ResultModel
                 {
                     Succeed = false,
-                    ErrorMessage = JsonConvert.SerializeObject(errors),
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = JsonConvert.SerializeObject(errors)
+                    },
                 };
             }
             if (localUndefinedDimValues.Count > 0)
@@ -760,7 +849,10 @@ namespace PQM_WebApp.Service
                 return new ResultModel
                 {
                     Succeed = false,
-                    ErrorMessage = JsonConvert.SerializeObject(localUndefinedDimValues.Select(s => string.Format("Category {0} does not have value: {1}", s.Key, s.Value.UndefinedValue))),
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = JsonConvert.SerializeObject(localUndefinedDimValues.Select(s => string.Format("Category {0} does not have value: {1}", s.Key, s.Value.UndefinedValue))),
+                    }
                 };
             }
             #endregion
@@ -785,7 +877,10 @@ namespace PQM_WebApp.Service
                 return new ResultModel
                 {
                     Succeed = false,
-                    ErrorMessage = "existed aggregated value",
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = "existed aggregated value",
+                    }
                 };
             }
             else
@@ -798,7 +893,7 @@ namespace PQM_WebApp.Service
                     KeyPopulationId = keyPopulationId,
                     SiteId = siteId,
                     Numerator = aggregatedValue.Numerator,
-                    Denominator = aggregatedValue.Denominator,
+                    Denominator = aggregatedValue.Denominator.Value,
                     DataType = aggregatedValue.ValueType == 1 ? Data.Enums.DataType.Number : Data.Enums.DataType.Percent,
                     CreatedBy = "",
                     IsDeleted = false,
@@ -825,7 +920,10 @@ namespace PQM_WebApp.Service
                 return new ResultModel
                 {
                     Succeed = false,
-                    ErrorMessage = "No existed"
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = "No existed"
+                    },
                 };
             }
             foreach (var u in aggregatedValue.UnsolvedDimValues)
@@ -851,7 +949,10 @@ namespace PQM_WebApp.Service
                 return new ResultModel
                 {
                     Succeed = false,
-                    ErrorMessage = error,
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = error,
+                    }
                 };
             }
             #endregion
@@ -864,7 +965,10 @@ namespace PQM_WebApp.Service
                 return new ResultModel
                 {
                     Succeed = false,
-                    ErrorMessage = JsonConvert.SerializeObject(errors),
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = JsonConvert.SerializeObject(errors),
+                    }
                 };
             }
             if (localUndefinedDimValues.Count > 0)
@@ -872,7 +976,10 @@ namespace PQM_WebApp.Service
                 return new ResultModel
                 {
                     Succeed = false,
-                    ErrorMessage = JsonConvert.SerializeObject(localUndefinedDimValues.Select(s => string.Format("Category {0} does not have value: {1}", s.Key, s.Value.UndefinedValue))),
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = JsonConvert.SerializeObject(localUndefinedDimValues.Select(s => string.Format("Category {0} does not have value: {1}", s.Key, s.Value.UndefinedValue))),
+                    }
                 };
             }
             #endregion
@@ -897,13 +1004,16 @@ namespace PQM_WebApp.Service
                 return new ResultModel
                 {
                     Succeed = false,
-                    ErrorMessage = "no existed aggregated value",
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = "no existed aggregated value",
+                    }
                 };
             }
             else
             {
                 current.Numerator = aggregatedValue.Numerator;
-                current.Denominator = aggregatedValue.Denominator;
+                current.Denominator = aggregatedValue.Denominator.Value;
                 _dBContext.AggregatedValues.Update(current);
             }
             #endregion
@@ -920,24 +1030,77 @@ namespace PQM_WebApp.Service
         {
             var rs = new ResultModel();
             var importData = new List<IndicatorImportModel>();
-            aggregatedData.datas.ForEach(row =>
+            var _indicators = _dBContext.Indicators;
+            var _errorRows = new List<object>();
+            int month, year;
+            if (!int.TryParse(aggregatedData.year, out year))
             {
+                return new ResultModel()
+                {
+                    Succeed = false,
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = "Year is not defined"
+                    }
+                };
+            }
+            if (!int.TryParse(aggregatedData.month, out month))
+            {
+                return new ResultModel()
+                {
+                    Succeed = false,
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = "Month is not defined"
+                    }
+                };
+            }
+            for (int i = 0; i < aggregatedData.datas.Count; i++)
+            {
+                var row = aggregatedData.datas[i];
+                var indicator = _indicators.FirstOrDefault(s => s.Code == row.indicator_code || s.Name == row.indicator_code);
+                if (indicator == null)
+                {
+                    _errorRows.Add(new
+                    {
+                        Row = i + 1,
+                        Error = string.Format("No {0} indicator data", row.indicator_code)
+                    });
+                    continue;
+                }
+                if (!int.TryParse(row.data.value, out int _value))
+                {
+                    _errorRows.Add(new
+                    {
+                        Row = i + 1,
+                        Error = string.Format("Value is not defined")
+                    });
+                    continue;
+                }
                 var data = new IndicatorImportModel()
                 {
+                    RowIndex = i,
                     AgeGroup = row.data.age_group,
                     KeyPopulation = row.data.key_population,
                     Gender = row.data.sex,
                     Site = row.site_code,
-                    Numerator = row.data.value,
+                    Numerator = int.Parse(row.data.value),
                     PeriodType = row.data.type,
-                    Year = aggregatedData.year,
-                    Quarter = GetQuarter(aggregatedData.month),
-                    Month = row.data.type == "month" ? aggregatedData.month : null,
+                    Year = year,
+                    Quarter = GetQuarter(month),
                     Day = null,
-
+                    ValueType = indicator.DataType == DataType.Number ? 1 : 2,
+                    Indicator = indicator.Name,
+                    Denominator = row.data.denominatorValue,
+                    Month = null,
                 };
-            });
-            return rs;
+                if (row.data.type == "month")
+                {
+                    data.Month = month;
+                }
+                importData.Add(data);
+            };
+            return ImportIndicator(importData, _errorRows);
         }
     }
 }

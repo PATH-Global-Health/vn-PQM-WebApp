@@ -28,7 +28,7 @@ namespace PQM_WebApp.Controllers
             {
                 return Ok(rs.Data);
             }
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

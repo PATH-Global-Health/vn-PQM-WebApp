@@ -58,7 +58,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -82,7 +82,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }

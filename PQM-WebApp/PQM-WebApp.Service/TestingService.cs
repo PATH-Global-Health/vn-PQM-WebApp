@@ -187,7 +187,10 @@ namespace PQM_WebApp.Service
                 return new ResultModel()
                 {
                     Succeed = false,
-                    ErrorMessage = ex.Message
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = ex.Message
+                    }
                 };
             }
         }

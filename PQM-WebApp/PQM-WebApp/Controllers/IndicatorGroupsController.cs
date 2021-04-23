@@ -25,7 +25,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _indicatorGroupService.Get(pageIndex, pageSize);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPost]
@@ -33,7 +33,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _indicatorGroupService.Create(model);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPut]
@@ -42,7 +42,7 @@ namespace PQM_WebApp.Controllers
             var rs = _indicatorGroupService.Update(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpDelete]
@@ -51,7 +51,7 @@ namespace PQM_WebApp.Controllers
             var rs = _indicatorGroupService.Delete(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

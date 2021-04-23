@@ -9,7 +9,8 @@ namespace PQM_WebApp.Data.ViewModels
         public string age_group { get; set; }
         public string key_population { get; set; }
         public string type { get; set; }
-        public int value { get; set; }
+        public string value { get; set; }
+        public int? denominatorValue { get; set; }
     }
 
     public class ProvinceIndicatorObject
@@ -23,8 +24,8 @@ namespace PQM_WebApp.Data.ViewModels
     public class AggregatedData
     {
         public string province_code { get; set; }
-        public int month { get; set; }
-        public int year { get; set; }
+        public string month { get; set; }
+        public string year { get; set; }
         public List<ProvinceIndicatorObject> datas { get; set; }
     }
 }

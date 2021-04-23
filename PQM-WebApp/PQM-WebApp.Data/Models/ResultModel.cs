@@ -4,9 +4,19 @@ using System.Text;
 
 namespace PQM_WebApp.Data.Models
 {
+    public class ErrorModel
+    {
+        public string Code { get; set; }
+        public string ErrorMessage { get; set; }
+    }
+
     public class ResultModel
     {
-        public string ErrorMessage { get; set; }
+        public ResultModel()
+        {
+            Error = new ErrorModel();
+        }
+        public ErrorModel Error { get; set; }
         public object Data { get; set; }
         public bool Succeed { get; set; }
 

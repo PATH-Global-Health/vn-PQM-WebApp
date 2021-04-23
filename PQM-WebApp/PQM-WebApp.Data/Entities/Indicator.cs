@@ -1,6 +1,6 @@
-﻿using System;
+﻿using PQM_WebApp.Data.Enums;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -13,6 +13,8 @@ namespace PQM_WebApp.Data.Entities
         public string Description { get; set; }
         public int Order { get; set; }
         public bool? IsTotal { get; set; }
+        public Guid? DenominatorIndicatorId { get; set; }
+        public DataType DataType { get; set; }
 
         public Guid IndicatorGroupId { get; set; }
         [ForeignKey("IndicatorGroupId")]

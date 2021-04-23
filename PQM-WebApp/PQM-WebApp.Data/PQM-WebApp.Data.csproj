@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20210422040540_PQM_DB_v2.cs" />
+    <Compile Remove="Migrations\20210422040540_PQM_DB_v2.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ErrorMessages\" />
   </ItemGroup>
 

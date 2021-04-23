@@ -33,7 +33,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _aggregatedService.Get(pageIndex, pageSize);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPost("")]
@@ -41,7 +41,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _aggregatedService.Create(aggregatedValue);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPut("")]
@@ -49,7 +49,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _aggregatedService.Update(aggregatedValue);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpDelete("")]
@@ -57,7 +57,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _aggregatedService.Delete(id);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPost("ImportByExcel")]
@@ -76,7 +76,7 @@ namespace PQM_WebApp.Controllers
             {
                 return Ok(rs.Data);
             }
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPost("ImportV2")]
@@ -85,9 +85,9 @@ namespace PQM_WebApp.Controllers
             var rs = _aggregatedService.ImportIndicator(aggregateData);
             if (rs.Succeed)
             {
-                return Ok(rs.Data);
+                return Ok(rs);
             }
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs);
         }
 
         [HttpPost("PopulateData")]
@@ -104,7 +104,7 @@ namespace PQM_WebApp.Controllers
             {
                 return Ok(rs.Data);
             }
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
         [HttpGet("IndicatorValues")]
         public IActionResult GetIndicatorValues(string provinceCode, string districtCode, string indicatorGroup, string indicatorCode, int year, int? quarter = null, int? month = null)
@@ -114,7 +114,7 @@ namespace PQM_WebApp.Controllers
             {
                 return Ok(rs.Data);
             }
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

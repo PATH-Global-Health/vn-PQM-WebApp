@@ -17,7 +17,7 @@ namespace PQM_WebApp.Extensions
             #region Exception
             TypeAdapterConfig.GlobalSettings.ForType<Exception, ResultModel>()
                                                 .Map(dest => dest.Succeed, src => false)
-                                                .Map(dest => dest.ErrorMessage, 
+                                                .Map(dest => dest.Error.ErrorMessage, 
                                                         src => src.InnerException != null ? src.InnerException.Message : src.Message
                                                         + Environment.NewLine
                                                         + src.StackTrace);

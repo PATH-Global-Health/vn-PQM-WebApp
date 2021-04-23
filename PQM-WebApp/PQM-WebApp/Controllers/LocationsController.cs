@@ -33,7 +33,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.CreateProvince(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPut("Provinces")]
@@ -42,7 +42,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.UpdateProvince(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpDelete("Provinces")]
@@ -51,7 +51,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.DeleteProvince(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpGet("Districts")]
@@ -67,7 +67,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.CreateDistrict(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPut("Districts")]
@@ -76,7 +76,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.UpdateDistrict(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpDelete("Districts")]
@@ -85,7 +85,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.DeleteDistrict(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpGet("Sites")]
@@ -101,7 +101,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.CreateSite(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPut("Sites")]
@@ -110,7 +110,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.UpdateSite(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpDelete("Sites")]
@@ -119,7 +119,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.DeleteSite(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

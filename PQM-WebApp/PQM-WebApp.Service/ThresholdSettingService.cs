@@ -43,7 +43,7 @@ namespace PQM_WebApp.Service
             catch (Exception ex)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = ex.Message;
+                rs.Error.ErrorMessage = ex.Message;
                 return rs;
             }
         }
@@ -67,7 +67,7 @@ namespace PQM_WebApp.Service
             catch (Exception ex)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = ex.Message;
+                rs.Error.ErrorMessage = ex.Message;
                 return rs;
             }
         }

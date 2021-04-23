@@ -3,6 +3,7 @@ namespace PQM_WebApp.Data.ViewModels
 {
     public class IndicatorImportModel
     {
+        public int? RowIndex { get; set; }
         public string PeriodType { get; set; }
         public int Year { get; set; }
         public int? Quarter { get; set; }
@@ -15,6 +16,6 @@ namespace PQM_WebApp.Data.ViewModels
         public string Site { get; set; }
         public int ValueType { get; set; }
         public int Numerator { get; set; }
-        public int Denominator { get; set; }
+        public int? Denominator { get; set; }
     }
 }
