@@ -26,6 +26,15 @@ namespace PQM_WebApp.Controllers
             _treatmentService = treatmentService;
         }
 
+        /// <summary>
+        /// Get indicators
+        /// </summary>
+        /// <param name="pageIndex">Page Index</param>
+        /// <param name="pageSize">Page Size</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// In case pageIndex = 0 and pageSize = MaxValue, the system will return all items
+        /// </remarks>
         [HttpGet]
         public IActionResult Get(int pageIndex = 0, int pageSize = int.MaxValue)
         {
@@ -34,6 +43,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Create an indicator
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Create([FromBody] IndicatorCreateModel model)
         {
@@ -42,6 +56,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Update an indicator
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         public IActionResult Update(IndicatorViewModel model)
         {
@@ -51,6 +70,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Delete an indicator
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpDelete]
         public IActionResult Delete(IndicatorViewModel model)
         {

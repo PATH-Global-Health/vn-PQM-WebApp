@@ -9,17 +9,30 @@ using System.Threading.Tasks;
 
 namespace PQM_WebApp.Controllers
 {
+    /// <summary>
+    /// CRUD site type
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class SiteTypesController : ControllerBase
     {
         private readonly ISiteTypeService _siteTypeService;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="siteTypeService"></param>
         public SiteTypesController(ISiteTypeService siteTypeService)
         {
             _siteTypeService = siteTypeService;
         }
 
+        /// <summary>
+        /// Get site types
+        /// </summary>
+        /// <param name="pageIndex">Page Index</param>
+        /// <param name="pageSize">Page Size</param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Get(int pageIndex = 0, int pageSize = int.MaxValue)
         {
@@ -29,6 +42,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Create a site type
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Create(SiteTypeCreateModel model)
         {
@@ -38,6 +56,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Update a site type
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         public IActionResult Update(SiteTypeViewModel model)
         {
@@ -47,6 +70,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Delete a site type
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpDelete]
         public IActionResult Delete(SiteTypeViewModel model)
         {

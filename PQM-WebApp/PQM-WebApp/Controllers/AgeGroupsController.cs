@@ -19,15 +19,15 @@ namespace PQM_WebApp.Controllers
             _ageGroupService = ageGroupService;
         }
 
-        /*[HttpGet]
-        public IActionResult Get()
-        {
-            var rs = _ageGroupService.Get();
-            if (rs.Succeed)
-                return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
-        }*/
-
+        /// <summary>
+        /// Get list of age groups
+        /// </summary>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Number of items per page</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// In case pageIndex = 0 and pageSize = MaxValue, the system will return all items
+        /// </remarks>
         [HttpGet]
         public IActionResult Get(int pageIndex = 0, int pageSize = int.MaxValue)
         {
@@ -37,6 +37,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Create an AgeGroup
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Create(AgeGroupCreateModel model)
         {
@@ -46,6 +51,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Update an AgeGroup
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         public IActionResult Update(AgeGroupViewModel model)
         {
@@ -55,6 +65,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Delete an AgeGroup
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpDelete]
         public IActionResult Delete(AgeGroupViewModel model)
         {

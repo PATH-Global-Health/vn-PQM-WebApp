@@ -9,17 +9,30 @@ using System.Threading.Tasks;
 
 namespace PQM_WebApp.Controllers
 {
+    /// <summary>
+    /// CRUD province, district and site
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class LocationsController : ControllerBase
     {
         private readonly ILocationService _locationService;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="locationService"></param>
         public LocationsController(ILocationService locationService)
         {
             _locationService = locationService;
         }
 
+        /// <summary>
+        /// Get provinces
+        /// </summary>
+        /// <param name="pageIndex">Page Index</param>
+        /// <param name="pageSize">Page Size</param>
+        /// <returns></returns>
         [HttpGet("Provinces")]
         public IActionResult Provinces(int pageIndex = 0, int pageSize = int.MaxValue)
         {
@@ -27,6 +40,11 @@ namespace PQM_WebApp.Controllers
             return Ok(rs.Data);
         }
 
+        /// <summary>
+        /// Create a province
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("Provinces")]
         public IActionResult CreateProvince(ProvinceCreateModel model)
         {
@@ -36,6 +54,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Update a province
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut("Provinces")]
         public IActionResult UpdateProvince(ProvinceModel model)
         {
@@ -45,6 +68,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Delete a province
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpDelete("Provinces")]
         public IActionResult DeleteProvince(ProvinceModel model)
         {
@@ -54,6 +82,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Get districts of a province
+        /// </summary>
+        /// <param name="provinceCode">Province Code</param>
+        /// <returns></returns>
         [HttpGet("Districts")]
         public IActionResult Districts(string provinceCode)
         {
@@ -61,6 +94,11 @@ namespace PQM_WebApp.Controllers
             return Ok(rs.Data);
         }
 
+        /// <summary>
+        /// Create a district
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("Districts")]
         public IActionResult CreateDistrict(DistrictCreateModel model)
         {
@@ -70,6 +108,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Update a district
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut("Districts")]
         public IActionResult UpdateDistrict(DistrictModel model)
         {
@@ -79,6 +122,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Delete a district
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpDelete("Districts")]
         public IActionResult DeleteDistrict(DistrictModel model)
         {
@@ -88,6 +136,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Get sites
+        /// </summary>
+        /// <param name="districtId"></param>
+        /// <returns></returns>
         [HttpGet("Sites")]
         public IActionResult Sites(Guid districtId)
         {
@@ -95,6 +148,11 @@ namespace PQM_WebApp.Controllers
             return Ok(rs.Data);
         }
 
+        /// <summary>
+        /// Create a site
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("Sites")]
         public IActionResult CreateSite(SiteCreateModel model)
         {
@@ -104,6 +162,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Update a site
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut("Sites")]
         public IActionResult UpdateSite(SiteViewModel model)
         {
@@ -113,6 +176,11 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.ErrorMessage);
         }
 
+        /// <summary>
+        /// Delete a site
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpDelete("Sites")]
         public IActionResult DeleteSite(SiteViewModel model)
         {
