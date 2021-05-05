@@ -1,12 +1,11 @@
 ﻿let year = 2020;
-let month = '';
+let month = 1;
 let quarter = 1;
 let provinceCode = '79';
 let districtCode = '768';
 
-
 const createAgeGroupChart = () => {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=AgeGroup`,
+    $.get(`/api/AggregatedValues/Variables?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=AgeGroup`,
         function (response) {
             _initAgeGroupChart(response);
         }
@@ -14,7 +13,7 @@ const createAgeGroupChart = () => {
 }
 
 const createGenderChart = () => {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Gender`,
+    $.get(`/api/AggregatedValues/Variables?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Gender`,
         function (response) {
             _initGenderChart(response);
         }
@@ -22,7 +21,7 @@ const createGenderChart = () => {
 }
 
 const createKeyPopulationsChart = () => {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=KeyPopulation`,
+    $.get(`/api/AggregatedValues/Variables?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=KeyPopulation`,
         function (response) {
             _initKeyPopulationsChart(response);
         }
@@ -30,7 +29,7 @@ const createKeyPopulationsChart = () => {
 }
 
 const createClinicsChart = () => {
-    $.get(`/api/AggregatedValues?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Site`,
+    $.get(`/api/AggregatedValues/Variables?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&indicatorGroup=PrEP&groupBy=Site`,
         function (response) {
             _initClinicsChart(response);
         }

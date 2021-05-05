@@ -2,11 +2,24 @@
     ViewData["Title"] = "Aggregated Value Management";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<!-- Modal -->
+<div class="modal fade" id="importExcelModal">
+    
+</div>
 
 <div class="container-fluid">
     <div class="row" style="margin-top: 10px">
         <div id="grid"></div>
     </div>
+    <script id="template1" type="text/x-kendo-template">
+        <a class="k-button" href="\#" onclick="return importExcel()">Import Excel</a>
+    </script>
+    <script id="template2" type="text/x-kendo-template">
+        <a class="k-button" href="\#" onclick="return populateData()">Populate Data</a>
+    </script>
+    <script id="template3" type="text/x-kendo-template">
+        <a class="k-button" href="\#" onclick="return clearAll()">Clear All</a>
+    </script>
 </div>
 @section Scripts{
     <script src="~/js/aggregatedValue.js"></script>

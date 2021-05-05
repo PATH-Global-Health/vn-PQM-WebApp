@@ -16,6 +16,7 @@ namespace PQM_WebApp.Data.Models
         public string DistrictCode { get; set; } //district of site
         public string ProvinceCode { get; set; } //province of site
         //time dimensions
+        public string PeriodType { get; set; }
         public int Year { get; set; }
         public int? Quarter { get; set; }
         public int? Month { get; set; }

@@ -5,7 +5,7 @@ let month = '';
 let quarter = '1';
 let firstload = true;
 
-function drillDown(groupIndicator) {
+const drillDown = (groupIndicator) => {
     if (groupIndicator !== 'PrEP' && groupIndicator !== 'Testing' && groupIndicator !== 'Treatment') return;
     console.log(`${groupIndicator} is clicked`);
     var win = window.open(`${groupIndicator}?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`, '_blank');
@@ -142,12 +142,12 @@ function initIndicators() {
         treatment.forEach((indicator, idx, array) => {
             $("#treatment").append(createIndicator(indicator, idx !== array.length - 1));
         });
-        $("#treatment").append('<hr />');
-        $("#treatment").append(fakeIndicator('TB_PREW', 'N/A', 'black', null, null, false));
         initDrugsIndicators();
         initSHIIndicators();
         initServiceQualityIndicators();
-        fixContainerHeight();
+        if (data.length > 0) {
+            fixContainerHeight();
+        }
     });
 }
 
@@ -255,21 +255,22 @@ const fixContainerHeight = () => {
     let gap = containerHeight - testing.outerHeight(true) - prep.outerHeight(true) - treatment.outerHeight(true);
     let m = gap % 3;
     let g = (gap - m) / 3;
-    if (g < 0) {
-        return;
+    if (g > 0) {
+        testing.height(testing.height() + g);
+        prep.height(prep.height() + g);
+        treatment.height(treatment.height() + g + m);
     }
-    testing.height(testing.height() + g);
-    prep.height(prep.height() + g);
-    treatment.height(treatment.height() + g + m);
     let drug = $('#drug-container');
     let shi = $('#shi-container');
     let sq = $('#service-quality-container');
     gap = containerHeight - drug.outerHeight(true) - shi.outerHeight(true) - sq.outerHeight(true);
     m = gap % 3;
     g = (gap - m) / 3;
-    drug.height(drug.height() + g);
-    shi.height(shi.height() + g);
-    sq.height(sq.height() + g + m);
+    if (g > 0) {
+        drug.height(drug.height() + g);
+        shi.height(shi.height() + g);
+        sq.height(sq.height() + g + m);
+    }
 }
 
 $(window).resize(() => {

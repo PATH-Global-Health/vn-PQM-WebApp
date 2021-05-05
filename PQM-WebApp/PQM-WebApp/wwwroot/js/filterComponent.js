@@ -97,6 +97,7 @@ const initFilterPanel = () => {
     onQuarterChange();
     setTimeout(() => {
         window.scroll(0, findPos(document.getElementById("filterPanel")));
+        updateFilterDetail();
     }, 1000);
 }
 

@@ -16,6 +16,7 @@ using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 using PQM_WebApp.Data.Extensions;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace PQM_WebApp.Service
 {
@@ -36,7 +37,7 @@ namespace PQM_WebApp.Service
         /// <param name="groupBy">Loại</param>
         /// <returns>Loại và Tổng giá trị</returns>
         ResultModel GetAggregatedValues(int year, int? quarter, int? month, string indicatorGroup, string indicatorCode, string groupBy, string provinceCode, string districtCode);
-        ResultModel PopulateData(string indicator, int year, int month, int? day = null, bool all = false);
+        ResultModel PopulateData(string indicator, int year, int month, int? day = null, bool all = false, bool makeDeletion = false);
         ResultModel GetChartData(string indicator, int year, int quater, string provinceCode, string districtCode, int? month = null, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null);
         ResultModel GetIndicatorValues(string provinceCode, string districtCode, string indicatorGroup, string indicatorCode, int year
             , int? quarter = null, int? month = null, string ageGroups = "", string keyPopulations = "", string genders = "", string sites = "");
@@ -44,6 +45,7 @@ namespace PQM_WebApp.Service
         ResultModel ImportExcel(IFormFile file);
         ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRow = null);
         ResultModel ImportIndicator(AggregatedData aggregatedData);
+        ResultModel ClearAll();
     }
 
     public class AggregatedValueService : IAggregatedValueService
@@ -51,13 +53,19 @@ namespace PQM_WebApp.Service
         private const string INDICATOR_DENOMINATOR = nameof(IndicatorElasticModel.Denominator);
         private const string INDICATOR_NUMERATOR = nameof(IndicatorElasticModel.Numerator);
 
+
         private readonly AppDBContext _dBContext;
         private readonly ElasticClient _elasticClient;
 
-        public AggregatedValueService(AppDBContext dBContext, ElasticClient elasticClient)
+        private IConfiguration Configuration { get; }
+        private string _aggregatedValueIndex { get; set; }
+
+        public AggregatedValueService(AppDBContext dBContext, ElasticClient elasticClient, IConfiguration configuration)
         {
             _dBContext = dBContext;
             _elasticClient = elasticClient;
+            Configuration = configuration;
+            _aggregatedValueIndex = Configuration["elasticsearch:index"];
         }
 
         public ResultModel GetAggregatedValues(int year, int? quarter, int? month, string indicatorGroup, string indicatorCode, string groupBy, string provinceCode, string districtCode)
@@ -70,16 +78,17 @@ namespace PQM_WebApp.Service
                     : groupBy == "KeyPopulation" ? _dBContext.KeyPopulations.ToList().Select(s => s.Adapt<DimensionViewModel>())
                     : groupBy == "Gender" ? _dBContext.Gender.ToList().Select(s => s.Adapt<DimensionViewModel>())
                     : _dBContext.Sites.ToList().Select(s => s.Adapt<DimensionViewModel>());
-
+                var periodType = month == null ? "Quarter" : "Month";
                 var _districts = !string.IsNullOrEmpty(districtCode) ? districtCode.Split(',').ToList() : new List<string>();
                 var response = SearchOnElastic(provinceCode: provinceCode, districts: _districts
                     , indicatorGroup: indicatorGroup, indicatorCode: indicatorCode
-                    , year: year, quarter: quarter, month: month, groupBy: groupBy, onlyTotal: true);
+                    , year: year, quarter: quarter, month: month, groupBy: groupBy, onlyTotal: true, periodType: periodType);
                 var data = response.Aggregations.Terms(groupBy).Buckets.Select(s => new IndicatorModel
                 {
                     Name = s.Key,
                     Value = new IndicatorValue
                     {
+                        Value = (int)s.Sum(INDICATOR_NUMERATOR).Value,
                         Numerator = (int)s.Sum(INDICATOR_NUMERATOR).Value,
                         Denominator = (int)s.Sum(INDICATOR_DENOMINATOR).Value,
                     }
@@ -181,7 +190,7 @@ namespace PQM_WebApp.Service
             return null;
         }
 
-        private Dictionary<string, IAggregationContainer> BuildAggreagtionQuery(string groupBy)
+        private Dictionary<string, IAggregationContainer> BuildAggregationQuery(string groupBy)
         {
             var aggregations = new Dictionary<string, IAggregationContainer>();
             var sumAggregations = new Dictionary<string, IAggregationContainer>();
@@ -239,12 +248,13 @@ namespace PQM_WebApp.Service
             , string indicatorGroup, string indicatorCode
             , int year, int? quarter = null, int? month = null
             , List<string> ageGroups = null, List<string> keyPopulations = null, List<string> genders = null, List<string> sites = null
-            , string groupBy = "", bool onlyTotal = false)
+            , string groupBy = "", bool onlyTotal = false, string periodType = "Month")
         {
 
             var queryContainers = new List<QueryContainer>();
             var filterContainers = new List<QueryContainer>();
             var shouldContainers = new List<QueryContainer>();
+            queryContainers.Add((new QueryContainerDescriptor<IndicatorElasticModel>()).Match(m => m.Field(f => f.PeriodType).Query(periodType)));
             //year
             queryContainers.Add((new QueryContainerDescriptor<IndicatorElasticModel>()).Match(m => m.Field(f => f.Year).Query(year.ToString())));
             if (month != null)
@@ -284,12 +294,12 @@ namespace PQM_WebApp.Service
             {
                 queryContainers.Add((new QueryContainerDescriptor<IndicatorElasticModel>()).Match(m => m.Field(f => f.IsTotal).Query("true")));
             }
-            var searchRequest = new SearchRequest<IndicatorElasticModel>("indicatorvalue")
+            var searchRequest = new SearchRequest<IndicatorElasticModel>(_aggregatedValueIndex)
             {
                 From = 0,
                 Size = 1,
                 Query = new BoolQuery { Must = queryContainers, Filter = filterContainers, Should = shouldContainers },
-                Aggregations = BuildAggreagtionQuery(groupBy),
+                Aggregations = BuildAggregationQuery(groupBy),
             };
             return _elasticClient.Search<IndicatorElasticModel>(searchRequest);
         }
@@ -306,6 +316,7 @@ namespace PQM_WebApp.Service
 
             var indicators = _dBContext.Indicators.Include(i => i.IndicatorGroup).ToList();
             quarter = month == null ? quarter : null;
+            var periodType = month == null ? "Quarter" : "Month";
             //old data
             var preYear = quarter != null ? (quarter > 1 ? year : year - 1) : month != null ? (month > 1 ? year : year - 1) : year - 1;
             int? preMonth = month != null ? (month > 1 ? month - 1 : 12) : null;
@@ -313,12 +324,13 @@ namespace PQM_WebApp.Service
             var response2 = SearchOnElastic(provinceCode: provinceCode, districts: _districts, indicatorGroup: indicatorGroup, indicatorCode: indicatorCode
                 , year: preYear, quarter: preQuarter, month: preMonth
                 , ageGroups: _ageGroups, keyPopulations: _keyPopulations, genders: _genders, sites: _sites
-                , groupBy: "IndicatorCode");
+                , groupBy: "IndicatorCode", periodType: periodType);
             var predata = response2.Aggregations.Terms("IndicatorCode").Buckets.Select(s => new IndicatorModel
             {
                 Name = s.Key,
                 Value = new IndicatorValue
                 {
+                    Value = (int)s.Sum(INDICATOR_NUMERATOR).Value,
                     Numerator = (int)s.Sum(INDICATOR_NUMERATOR).Value,
                     Denominator = (int)s.Sum(INDICATOR_DENOMINATOR).Value,
                 }
@@ -326,46 +338,72 @@ namespace PQM_WebApp.Service
             predata.ForEach(s =>
             {
                 var indicator = indicators.FirstOrDefault(f => f.Code == s.Name);
-                s.Name = indicator.Name;
-                s.Group = indicator.IndicatorGroup.Name;
-                s.Order = indicator.Order;
-                s.Value.DataType = s.Value.Value > 0 ? DataType.Number : DataType.Percent;
+                if (indicator != null)
+                {
+                    s.Name = indicator.Name;
+                    s.Group = indicator.IndicatorGroup.Name;
+                    s.Order = indicator.Order;
+                    s.Value.DataType = indicator.DataType;
+                    if (indicator.DataType == DataType.Percent)
+                    {
+                        var deIndicator = indicators.FirstOrDefault(f => f.Id == indicator.DenominatorIndicatorId);
+                        var deData = predata.FirstOrDefault(f => f.Name == deIndicator.Name || f.Name == deIndicator.Code);
+                        if (deData != null)
+                        {
+                            s.Value.Denominator = deData.Value.Numerator;
+                        }
+                    }
+                }
             });
 
             //new data
             var response = SearchOnElastic(provinceCode: provinceCode, districts: _districts, indicatorGroup: indicatorGroup, indicatorCode: indicatorCode
                 , year: year, quarter: quarter, month: month
                 , ageGroups: _ageGroups, keyPopulations: _keyPopulations, genders: _genders, sites: _sites
-                , groupBy: "IndicatorCode");
+                , groupBy: "IndicatorCode", periodType: periodType);
             var data = response.Aggregations.Terms("IndicatorCode").Buckets.Select(s => new IndicatorModel
             {
                 Name = s.Key,
                 Value = new IndicatorValue
                 {
+                    Value = (int)s.Sum(INDICATOR_NUMERATOR).Value,
                     Numerator = (int)s.Sum(INDICATOR_NUMERATOR).Value,
                     Denominator = (int)s.Sum(INDICATOR_DENOMINATOR).Value,
                 }
             }).ToList();
             data.ForEach(s =>
             {
-                var indicator = indicators.FirstOrDefault(f => f.Code == s.Name);
-                s.Name = indicator.Name;
-                s.Group = indicator.IndicatorGroup.Name;
-                s.Order = indicator.Order;
-                s.Value.DataType = s.Value.Value > 0 ? DataType.Number : DataType.Percent;
-                var pre = predata.FirstOrDefault(f => f.Name == s.Name);
-                if (pre != null)
+                var indicator = indicators.FirstOrDefault(f => f.Code == s.Name || f.Name == s.Name);
+
+                if (indicator != null)
                 {
-                    var p = s.Value.DataType == DataType.Number
-                                                        ? (double)(s.Value.Value - pre.Value.Value) / pre.Value.Value
-                                                        : (double)(s.Value.Numerator * pre.Value.Denominator
-                                                                    - pre.Value.Numerator * s.Value.Denominator)
-                                                                    / (double)(s.Value.Denominator * pre.Value.Denominator);
-                    s.Trend = new IndicatorTrend
+                    s.Name = indicator.Name;
+                    s.Group = indicator.IndicatorGroup.Name;
+                    s.Order = indicator.Order;
+                    s.Value.DataType = indicator.DataType;
+                    if (indicator.DataType == DataType.Percent)
                     {
-                        ComparePercent = p >= 0 ? p : -p,
-                        Direction = p >= 0 ? 1 : -1,
-                    };
+                        var deIndicator = indicators.FirstOrDefault(f => f.Id == indicator.DenominatorIndicatorId);
+                        var deData = data.FirstOrDefault(f => f.Name == deIndicator.Name || f.Name == deIndicator.Code);
+                        if (deData != null)
+                        {
+                            s.Value.Denominator = deData.Value.Numerator;
+                        }
+                    }
+                    var pre = predata.FirstOrDefault(f => f.Name == s.Name);
+                    if (pre != null)
+                    {
+                        var p = s.Value.DataType == DataType.Number
+                                                            ? (double)(s.Value.Numerator - pre.Value.Numerator) / pre.Value.Numerator
+                                                            : (double)(s.Value.Numerator * pre.Value.Denominator
+                                                                        - pre.Value.Numerator * s.Value.Denominator)
+                                                                        / (double)(s.Value.Denominator * pre.Value.Denominator);
+                        s.Trend = new IndicatorTrend
+                        {
+                            ComparePercent = p.Value >= 0 ? p.Value : -p.Value,
+                            Direction = p >= 0 ? 1 : -1,
+                        };
+                    }
                 }
             });
             return new ResultModel()
@@ -375,8 +413,13 @@ namespace PQM_WebApp.Service
             };
         }
 
-        public ResultModel PopulateData(string indicator, int year, int month, int? day = null, bool all = false)
+        public ResultModel PopulateData(string indicator, int year, int month, int? day = null, bool all = false, bool makeDeletion = false)
         {
+            if (makeDeletion)
+            {
+                _elasticClient.DeleteByQuery<IndicatorElasticModel>(del => del.Index(_aggregatedValueIndex).Query(q => q.QueryString(qs => qs.Query("*"))));
+            }
+
             var data = _dBContext.AggregatedValues
                                  .Where(w => all || (w.Month == month && w.Year == year && w.Indicator.Name == indicator))
                                  .Select(s => new IndicatorElasticModel
@@ -395,11 +438,12 @@ namespace PQM_WebApp.Service
                                      KeyPopulation = s.KeyPopulation.Name,
                                      Site = s.Site.Name,
                                      Gender = s.Gender.Name,
+                                     PeriodType = s.PeriodType,
                                      Month = !all ? month : s.Month,
                                      Year = !all ? year : s.Year,
                                      Day = !all ? day : s.Day,
                                  }).ToList();
-            var response = _elasticClient.IndexMany(data, "indicatorvalue");
+            var response = _elasticClient.IndexMany(data, _aggregatedValueIndex);
 
             return new ResultModel()
             {
@@ -611,7 +655,7 @@ namespace PQM_WebApp.Service
                     #region check denominator
                     if (data.ValueType == 2)
                     {
-                        data.Denominator = data.Denominator != null ? data.Denominator : FindDenominator(importValues, data, definedDimValue);
+                        data.Denominator = FindDenominator(importValues, data, definedDimValue);
                         if (data.Denominator == null)
                         {
                             errorRows.Add(new
@@ -630,7 +674,8 @@ namespace PQM_WebApp.Service
                             });
                             continue;
                         }
-                    } else
+                    }
+                    else
                     {
                         data.Denominator = 1;
                     }
@@ -752,14 +797,14 @@ namespace PQM_WebApp.Service
                 XSSFWorkbook xssWorkbook = new XSSFWorkbook(stream);
                 ISheet sheet;
                 sheet = xssWorkbook.GetSheetAt(0);
-                for (var i = 0; i <= sheet.LastRowNum; i++)
+                for (var i = 1; i <= sheet.LastRowNum; i++)
                 {
                     var row = sheet.GetRow(i);
                     var period = row.GetCell(0).ToString();
                     var year = int.Parse(row.GetCell(1).ToString());
                     var quarter = TryParse(row.GetCell(2).ToString());
-                    var month = TryParse(row.GetCell(3).ToString());
-                    var day = TryParse(row.GetCell(4).ToString());
+                    var month = TryParse(row.GetCell(3) != null ? row.GetCell(3).ToString() : null);
+                    var day = TryParse(row.GetCell(4) != null ? row.GetCell(4).ToString() : null);
                     var indicator = row.GetCell(5).ToString();
                     var gender = row.GetCell(6).ToString();
                     var ageGroup = row.GetCell(7).ToString();
@@ -803,11 +848,16 @@ namespace PQM_WebApp.Service
 
         public ResultModel Get(int? pageIndex = 0, int? pageSize = int.MaxValue)
         {
-            var list = _dBContext.AggregatedValues.Skip((int)(pageIndex * pageSize)).Take((int)pageSize).Adapt<List<AggregatedValueViewModel>>();
+            var total = _dBContext.AggregatedValues.Count();
+            var data = _dBContext.AggregatedValues.Skip((int)(pageIndex * pageSize)).Take((int)pageSize).Adapt<List<AggregatedValueViewModel>>();
             return new ResultModel
             {
                 Succeed = true,
-                Data = list,
+                Data = new
+                {
+                    data,
+                    total,
+                }
             };
         }
 
@@ -1101,6 +1151,31 @@ namespace PQM_WebApp.Service
                 importData.Add(data);
             };
             return ImportIndicator(importData, _errorRows);
+        }
+
+        public ResultModel ClearAll()
+        {
+            using var transaction = _dBContext.Database.BeginTransaction();
+            try
+            {
+                _elasticClient.DeleteByQuery<IndicatorElasticModel>(del => del.Index(_aggregatedValueIndex).Query(q => q.QueryString(qs => qs.Query("*"))));
+                _dBContext.UnsolvedDimValues.RemoveRange(_dBContext.UnsolvedDimValues);
+                _dBContext.UndefinedDimValues.RemoveRange(_dBContext.UndefinedDimValues);
+                _dBContext.AggregatedValues.RemoveRange(_dBContext.AggregatedValues);
+                _dBContext.SaveChanges();
+                transaction.Commit();
+            }
+            catch (Exception)
+            {
+                return new ResultModel()
+                {
+                    Succeed = false,
+                };
+            }
+            return new ResultModel()
+            {
+                Succeed = true,
+            };
         }
     }
 }

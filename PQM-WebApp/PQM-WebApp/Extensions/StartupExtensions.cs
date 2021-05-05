@@ -88,22 +88,22 @@ namespace PQM_WebApp.Extensions
             });
         }
 
-        private static void CreateIndex(IElasticClient client)
+        private static void CreateIndex(IElasticClient client, string index)
         {
-            var getResponse = client.Indices.Get("indicatorvalue");
+            var getResponse = client.Indices.Get(index);
             if (!getResponse.IsValid)
             {
-                var createIndexResponse = client.Indices.Create("indicatorvalue",
+                var createIndexResponse = client.Indices.Create(index,
                                                                     index => index.Settings(s => s.Analysis(a => a.Analyzers(aa => aa.Standard("default", sa => sa.StopWords("_none_")))))
                                                                                   .Map<IndicatorElasticModel>(x => x.AutoMap())
                                                             );
             }
         }
 
-        public static void AddElasticsearch(this IServiceCollection services, string url, string username, string password)
+        public static void AddElasticsearch(this IServiceCollection services, string url, string username, string password, string index)
         {
             var settings = new ConnectionSettings(new Uri(url))
-                .DefaultIndex("indicatorvalue")
+                .DefaultIndex(index)
                 .BasicAuthentication(username, password)
                 .PrettyJson()
                 .EnableDebugMode()
@@ -115,7 +115,7 @@ namespace PQM_WebApp.Extensions
 
             services.AddSingleton(client);
 
-            CreateIndex(client);
+            CreateIndex(client, index);
         }
 
         public static void ConfigCors(this IServiceCollection services)

@@ -46,7 +46,7 @@ const setToken = (token, remember) => {
 const httpClient = {
     callApi: async ({
         method = 'GET',
-        contentType = 'application/json',
+        contentType = '',
         url,
         data,
         params,

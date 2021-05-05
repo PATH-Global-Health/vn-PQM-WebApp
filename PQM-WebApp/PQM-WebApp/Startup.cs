@@ -28,7 +28,7 @@ namespace PQM_WebApp
             services.ConfigDbContext(Configuration["ConnectionStrings:DbConnection"]);
             services.ConfigJwt(Configuration["Jwt:Key"], Configuration["Jwt:Issuer"], Configuration["Jwt:Issuer"]);
             services.ConfigSwagger();
-            services.AddElasticsearch(Configuration["elasticsearch:url"], Configuration["elasticsearch:username"], Configuration["elasticsearch:password"]);
+            services.AddElasticsearch(Configuration["elasticsearch:url"], Configuration["elasticsearch:username"], Configuration["elasticsearch:password"], Configuration["elasticsearch:index"]);
             services.ConfigCors();
         }
 

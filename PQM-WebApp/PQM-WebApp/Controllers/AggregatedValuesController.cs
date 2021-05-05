@@ -20,13 +20,13 @@ namespace PQM_WebApp.Controllers
             _aggregatedService = aggregatedService;
         }
 
-        //[HttpGet("")]
-        //public IActionResult Provinces(int year, int quarter, int? month, string indicatorGroup, string indicator, string groupBy, string provinceCode, string districtCode)
-        //{
-        //    var rs = _aggregatedService.GetAggregatedValues(year, quarter, month, indicatorGroup, indicator, groupBy, provinceCode, districtCode);
-        //    if (rs.Succeed) return Ok(rs.Data);
-        //    return BadRequest(rs.ErrorMessage);
-        //}
+        [HttpGet("Variables")]
+        public IActionResult Variables(int year, int quarter, int? month, string indicatorGroup, string indicator, string groupBy, string provinceCode, string districtCode)
+        {
+            var rs = _aggregatedService.GetAggregatedValues(year, quarter, month, indicatorGroup, indicator, groupBy, provinceCode, districtCode);
+            if (rs.Succeed) return Ok(rs.Data);
+            return BadRequest(rs.Error);
+        }
 
         [HttpGet("")]
         public IActionResult Get(int? pageIndex = 0, int? pageSize = int.MaxValue)
@@ -91,9 +91,9 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpPost("PopulateData")]
-        public IActionResult PopulateData(string indicator, int year, int month, int? day = null, bool all = false)
+        public IActionResult PopulateData(string indicator, int year, int month, int? day = null, bool all = false, bool makeDeletion = false)
         {
-            return Ok(_aggregatedService.PopulateData(indicator, year, month, day, all));
+            return Ok(_aggregatedService.PopulateData(indicator, year, month, day, all, makeDeletion));
         }
 
         [HttpGet("ChartData")]
@@ -106,6 +106,7 @@ namespace PQM_WebApp.Controllers
             }
             return BadRequest(rs.Error.ErrorMessage);
         }
+
         [HttpGet("IndicatorValues")]
         public IActionResult GetIndicatorValues(string provinceCode, string districtCode, string indicatorGroup, string indicatorCode, int year, int? quarter = null, int? month = null)
         {
@@ -115,6 +116,13 @@ namespace PQM_WebApp.Controllers
                 return Ok(rs.Data);
             }
             return BadRequest(rs.Error.ErrorMessage);
+        }
+
+        [HttpGet("ClearAll")]
+        public IActionResult ClearAll()
+        {
+            _aggregatedService.ClearAll();
+            return Ok();
         }
     }
 }

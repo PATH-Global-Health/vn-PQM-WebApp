@@ -226,3 +226,7 @@ hr {
         border: 1px black solid;
         border-radius: 5px;
     }
+
+.k-file-name-size-wrapper {
+    margin-left: 35px!important;
+}
