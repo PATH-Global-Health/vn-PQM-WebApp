@@ -27,6 +27,8 @@ namespace PQM_WebApp.Data
         public DbSet<Site> Sites { get; set; }
         public DbSet<SiteType> SiteTypes { get; set; }
         public DbSet<CategoryAlias> CategoryAliases { get; set; }
+        public DbSet<Language> Languages { get; set; }
+        public DbSet<LanguageDictionary> LanguageDictionaries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
