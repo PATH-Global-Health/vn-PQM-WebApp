@@ -71,17 +71,6 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.Error.ErrorMessage);
         }
 
-        [HttpGet("/api/Testing/indicators")]
-        public IActionResult TestingIndicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
-        {
-            var rs = _testingService.GetIndicators(year, quater, month, provinceCode, districtCode, ageGroups, keyPopulations, genders, clinnics);
-            if (rs.Succeed)
-            {
-                return Ok(rs.Data);
-            }
-            return BadRequest(rs.Error.ErrorMessage);
-        }
-
         [HttpGet("/api/Treatment/indicators")]
         public IActionResult TreatmentIndicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
         {

@@ -25,5 +25,6 @@ namespace PQM_WebApp.Data.Models
     public class PagingModel : ResultModel
     {
         public int PageCount { get; set; }
+        public int Total { get; set; }
     }
 }

@@ -64,14 +64,16 @@ namespace PQM_WebApp.Controllers
         [Consumes("multipart/form-data")]
         public IActionResult ImportByExcel([FromForm] IFormFile file)
         {
-            _aggregatedService.ImportExcel(file);
-            return Ok();
+            var username = User.Claims.FirstOrDefault(s => s.Type == "Username").Value;
+            var rs = _aggregatedService.ImportExcel(file, username);
+            return Ok(rs);
         }
 
         [HttpPost("Import")]
         public IActionResult ImportAggregateData([FromBody] List<IndicatorImportModel> aggregateData)
         {
-            var rs = _aggregatedService.ImportIndicator(aggregateData);
+            var username = User.Claims.FirstOrDefault(s => s.Type == "Username").Value;
+            var rs = _aggregatedService.ImportIndicator(aggregateData, username: username);
             if (rs.Succeed)
             {
                 return Ok(rs.Data);
@@ -82,7 +84,7 @@ namespace PQM_WebApp.Controllers
         [HttpPost("ImportV2")]
         public IActionResult ImportAggregateDataV2([FromBody] AggregatedData aggregateData)
         {
-            var rs = _aggregatedService.ImportIndicator(aggregateData);
+            var rs = _aggregatedService.ImportIndicator(aggregateData, "admin");
             if (rs.Succeed)
             {
                 return Ok(rs);
@@ -108,9 +110,12 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet("IndicatorValues")]
-        public IActionResult GetIndicatorValues(string provinceCode, string districtCode, string indicatorGroup, string indicatorCode, int year, int? quarter = null, int? month = null)
+        public IActionResult GetIndicatorValues(string provinceCode, string districtCode
+                                              , string indicatorGroup, string indicatorCode
+                                              , int year, int? quarter = null, int? month = null
+                                              , string ageGroups = "", string genders = "", string keyPopulations = "", string sites = "")
         {
-            var rs = _aggregatedService.GetIndicatorValues(provinceCode, districtCode, indicatorGroup, indicatorCode, year, quarter, month);
+            var rs = _aggregatedService.GetIndicatorValues(provinceCode, districtCode, indicatorGroup, indicatorCode, year, quarter, month, ageGroups, keyPopulations, genders, sites);
             if (rs.Succeed)
             {
                 return Ok(rs.Data);

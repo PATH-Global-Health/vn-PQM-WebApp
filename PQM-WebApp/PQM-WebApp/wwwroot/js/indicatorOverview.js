@@ -13,7 +13,7 @@ const loadThresholdList = () => {
 }
 
 const shortLabels = (number) => {
-    return kendo.toString((number / 1000), "\\ #") + "k";
+    return number > 1000 ? kendo.toString((number / 1000), "\\ #") + "k" : number;
 }
 
 const initDataChart = (indicator, elementId, queries) => {
@@ -108,7 +108,7 @@ const indicatorOverview = (indicator, parent) => {
             <div class="row d-flex justify-content-center">
                 <div id="${elementId}" class="col-xl-10 col-md-12 px-1 indicator-container" onclick="onClickIndicator(this.id)">
                     <div class="d-flex flex-column justify-content-around indicator-infor">
-                        <div class="row d-flex justify-content-center indicator-title">${indicator.name}</div>
+                        <div class="row d-flex justify-content-center indicator-title">${languages.translate('', indicator.name)}</div>
                         <div class="row d-flex justify-content-center indicator-value">
                             <span style="color: ${color}">${calValue(indicator.value)}</span>
                         </div>

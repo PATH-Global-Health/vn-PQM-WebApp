@@ -1,0 +1,378 @@
+﻿[
+  {
+    "code": "vn",
+    "name": "Tiếng Việt",
+    "dictionary": [
+      {
+        "key": "Sign in",
+        "value": "Đăng nhập"
+      },
+      {
+        "key": "Please sign in",
+        "value": "Đăng nhập để tiếp tục"
+      },
+      {
+        "key": "Username",
+        "value": "Tên đăng nhập"
+      },
+      {
+        "key": "Password",
+        "value": "Mật khẩu"
+      },
+      {
+        "key": "Remember me",
+        "value": "Ghi nhớ"
+      },
+      {
+        "key": "Please check username or password!!",
+        "value": "Vui lòng kiểm tra tên đăng nhập và mật khẩu!"
+      },
+      {
+        "key": "Profile",
+        "value": "Tài khoản"
+      },
+      {
+        "key": "Setting",
+        "value": "Cài đặt"
+      },
+      {
+        "key": "Log out",
+        "value": "Đăng xuất"
+      },
+      {
+        "key": "Filter by",
+        "value": "Lọc dữ liệu theo"
+      },
+      {
+        "key": "Province/City",
+        "value": "Tỉnh thành"
+      },
+      {
+        "key": "District",
+        "value": "Quận huyện"
+      },
+      {
+        "key": "Year",
+        "value": "Năm"
+      },
+      {
+        "key": "Quarter",
+        "value": "Quý"
+      },
+      {
+        "key": "Month",
+        "value": "Tháng"
+      },
+      {
+        "key": "Process",
+        "value": "Xử lý"
+      },
+      {
+        "key": "January",
+        "value": "Tháng 1"
+      },
+      {
+        "key": "February",
+        "value": "Tháng 2"
+      },
+      {
+        "key": "March",
+        "value": "Tháng 3"
+      },
+      {
+        "key": "April",
+        "value": "Tháng 4"
+      },
+      {
+        "key": "May",
+        "value": "Tháng 5"
+      },
+      {
+        "key": "June",
+        "value": "Tháng 6"
+      },
+      {
+        "key": "July",
+        "value": "Tháng 7"
+      },
+      {
+        "key": "August",
+        "value": "Tháng 8"
+      },
+      {
+        "key": "September",
+        "value": "Tháng 9"
+      },
+      {
+        "key": "October",
+        "value": "Tháng 10"
+      },
+      {
+        "key": "November",
+        "value": "Tháng 11"
+      },
+      {
+        "key": "December",
+        "value": "Tháng 12"
+      },
+      {
+        "key": "Testing",
+        "value": "Xét nghiệm"
+      },
+      {
+        "key": "PrEP",
+        "value": "Điều trị PrEP"
+      },
+      {
+        "key": "Treatment",
+        "value": "Điều trị ARV"
+      },
+      {
+        "key": "Drug",
+        "value": "Thuốc"
+      },
+      {
+        "key": "SHI",
+        "value": "Bảo hiểm y tế"
+      },
+      {
+        "key": "Service Quality",
+        "value": "Chất lượng dịch vụ"
+      },
+      {
+        "key": "HTS_TST_POS",
+        "value": "Dương tính"
+      },
+      {
+        "key": "HTS_TST_Recency",
+        "value": "Dương tính mới"
+      },
+      {
+        "key": "POS_TO_ART",
+        "value": "Kết nối điều trị"
+      },
+      {
+        "key": "PrEP NEW",
+        "value": "Mới điều PrEP"
+      },
+      {
+        "key": "PrEP CURR",
+        "value": "Đang điều trị PrEP"
+      },
+      {
+        "key": "%PrEP 3M",
+        "value": "Điều trị được 3 tháng"
+      },
+      {
+        "key": "TX_Curr",
+        "value": "Đang điều trị ARV"
+      },
+      {
+        "key": "TX_New",
+        "value": "Mới điều trị ARV"
+      },
+      {
+        "key": "MMD",
+        "value": "Bệnh nhân được cấp thuốc nhiều tháng"
+      },
+      {
+        "key": "TX_ML",
+        "value": "Gián đoạn điều trị"
+      },
+      {
+        "key": "% VL unsupressed",
+        "value": "% VL"
+      },
+      {
+        "key": "Age Group",
+        "value": "Nhóm tuổi"
+      },
+      {
+        "key": "Gender",
+        "value": "Giới tính"
+      },
+      {
+        "key": "Key Population",
+        "value": "Nhóm nguy cơ"
+      },
+      {
+        "key": "Site",
+        "value": "Cơ sở"
+      },
+      {
+        "key": "Add filter",
+        "value": "Thêm bộ lọc"
+      },
+      {
+        "key": "Variable",
+        "value": "Lọc dữ liệu theo"
+      },
+      {
+        "key": "Value",
+        "value": "Giá trị"
+      }
+    ]
+  },
+  {
+    "code": "en",
+    "name": "English",
+    "dictionary": [
+      {
+        "key": "Sign in",
+        "value": "Sign in"
+      },
+      {
+        "key": "Please sign in",
+        "value": "Please sign in"
+      },
+      {
+        "key": "Username",
+        "value": "Username"
+      },
+      {
+        "key": "Password",
+        "value": "Password"
+      },
+      {
+        "key": "Remember me",
+        "value": "Remember me"
+      },
+      {
+        "key": "Please check username or password!!",
+        "value": "Please check username or password!!"
+      },
+      {
+        "key": "Profile",
+        "value": "Profile"
+      },
+      {
+        "key": "Setting",
+        "value": "Setting"
+      },
+      {
+        "key": "Log out",
+        "value": "Log out"
+      },
+      {
+        "key": "Filter by",
+        "value": "Filter by"
+      },
+      {
+        "key": "Province/City",
+        "value": "Province/City"
+      },
+      {
+        "key": "District",
+        "value": "District"
+      },
+      {
+        "key": "Year",
+        "value": "Year"
+      },
+      {
+        "key": "Quarter",
+        "value": "Quarter"
+      },
+      {
+        "key": "Month",
+        "value": "Month"
+      },
+      {
+        "key": "Process",
+        "value": "Process"
+      },
+      {
+        "key": "January",
+        "value": "January"
+      },
+      {
+        "key": "February",
+        "value": "February"
+      },
+      {
+        "key": "March",
+        "value": "March"
+      },
+      {
+        "key": "April",
+        "value": "April"
+      },
+      {
+        "key": "May",
+        "value": "May"
+      },
+      {
+        "key": "June",
+        "value": "June"
+      },
+      {
+        "key": "July",
+        "value": "July"
+      },
+      {
+        "key": "August",
+        "value": "August"
+      },
+      {
+        "key": "September",
+        "value": "September"
+      },
+      {
+        "key": "October",
+        "value": "October"
+      },
+      {
+        "key": "November",
+        "value": "November"
+      },
+      {
+        "key": "December",
+        "value": "December"
+      },
+      {
+        "key": "Testing",
+        "value": "Testing"
+      },
+      {
+        "key": "PrEP",
+        "value": "PrEP"
+      },
+      {
+        "key": "Treatment",
+        "value": "Treatment"
+      },
+      {
+        "key": "Drug",
+        "value": "Drug"
+      },
+      {
+        "key": "SHI",
+        "value": "SHI"
+      },
+      {
+        "key": "Service Quality",
+        "value": "Service Quality"
+      },
+      {
+        "key": "Age Group",
+        "value": "Age Group"
+      },
+      {
+        "key": "Gender",
+        "value": "Gender"
+      },
+      {
+        "key": "Key Population",
+        "value": "Key Population"
+      },
+      {
+        "key": "Site",
+        "value": "Site"
+      },
+      {
+        "key": "Add filter",
+        "value": "Add filter"
+      }
+    ]
+  }
+]

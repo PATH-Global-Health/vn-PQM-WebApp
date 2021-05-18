@@ -1,6 +1,14 @@
 ﻿using System;
+using Nest;
+
 namespace PQM_WebApp.Data.Models
 {
+    public class IndicatorElasticLocationModel
+    {
+        public double Lat { get; set; }
+        public double Lng { get; set; }
+    }
+
     public class IndicatorElasticModel
     {
         //indicator information
@@ -12,6 +20,8 @@ namespace PQM_WebApp.Data.Models
         public string AgeGroup { get; set; }
         public string KeyPopulation { get; set; }
         public string Gender { get; set; }
+        //location dimensions
+        public GeoCoordinate Location { get; set; }
         public string Site { get; set; }
         public string DistrictCode { get; set; } //district of site
         public string ProvinceCode { get; set; } //province of site

@@ -27,6 +27,7 @@ namespace PQM_WebApp.Data
         public DbSet<CategoryAlias> CategoryAliases { get; set; }
         public DbSet<UndefinedDimValue> UndefinedDimValues { get; set; }
         public DbSet<UnsolvedDimValue> UnsolvedDimValues { get; set; }
+        public DbSet<DataPermission> DataPermissions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,6 +39,11 @@ namespace PQM_WebApp.Data
         }
     }
 
+    // For Package Console
     // Add-Migration PQM_DB_v1
     // Update-Database
+    //
+    // For Terminal
+    // dotnet ef migrations add PQM_DB_v3_3 -s PQM-WebApp -p PQM-WebApp.Data
+    // dotnet ef database update -s PQM-WebApp -p PQM-WebApp.Data
 }

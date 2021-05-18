@@ -60,6 +60,7 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<IIndicatorGroupService, IndicatorGroupService>();
             services.AddTransient<ISiteTypeService, SiteTypeService>();
             services.AddTransient<ICategoryAliasService, CategoryAliasService>();
+            services.AddTransient<IDataPermissionService, DataPermissionService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)
@@ -93,10 +94,11 @@ namespace PQM_WebApp.Extensions
             var getResponse = client.Indices.Get(index);
             if (!getResponse.IsValid)
             {
-                var createIndexResponse = client.Indices.Create(index,
-                                                                    index => index.Settings(s => s.Analysis(a => a.Analyzers(aa => aa.Standard("default", sa => sa.StopWords("_none_")))))
-                                                                                  .Map<IndicatorElasticModel>(x => x.AutoMap())
-                                                            );
+                var createIndexResponse = client.Indices
+                    .Create(index,
+                            index => index.Settings(s => s.Analysis(a => a.Analyzers(aa => aa.Standard("default", sa => sa.StopWords("_none_")))))
+                                            .Map<IndicatorElasticModel>(_ => _.AutoMap().Properties(ps => ps.GeoPoint(s => s.Name(n => n.Location))))
+                    );
             }
         }
 

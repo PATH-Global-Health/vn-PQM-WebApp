@@ -27,5 +27,6 @@
 
   <ItemGroup>
     <Folder Include="Views\Setting\" />
+    <Folder Include="wwwroot\language\" />
   </ItemGroup>
 </Project>

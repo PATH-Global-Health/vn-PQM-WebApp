@@ -1,13 +1,20 @@
-﻿
+﻿let _districts;
+
 const filterDetail = (label, value, tooltip) => {
     return `<div class="card" data-toggle="tooltip" data-placement="top" title="${tooltip}" style="padding: 8px;display: inline;font-size: 17px;background-color: whitesmoke; margin-right: 5px; min-width: max-content">
-                <span>${label}</span>
+                <span>${label}:</span>
                 <spanl style="font-weight: bold">${value}</span>
             </div>`
 }
 
-const initFilterPanel = () => {
-    let _html =
+const filter = {
+    onLanguageChange: (language) => {
+        filter.buildForm();
+        updateFilterDetail();
+    },
+    buildForm: () => {
+        let lang = languages._language;
+        $("#filterPanel").html(
         `<div class="col-12" style="padding: 0px !important">
             <div class="card px-2" style="background-color: white">
                 <div class="container-fluid"> 
@@ -36,7 +43,9 @@ const initFilterPanel = () => {
           <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Filter by</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">
+                    ${languages.translate(lang, 'Filter by')}
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -44,7 +53,9 @@ const initFilterPanel = () => {
               <div class="modal-body">
                 <form>
                   <div class="form-group">
-                    <label for="inputProvince">Province/City</label>
+                    <label for="inputProvince">
+                        ${languages.translate(lang, 'Province/City')}
+                    </label>
                     <select id="inputProvince" class="form-control" onchange="onProvinceChange()" required>
                         <option value="79" selected>Ho Chi Minh City</option>
                         <option value="82">Tien Giang</option>
@@ -53,52 +64,70 @@ const initFilterPanel = () => {
                     </select>
                   </div>
                   <div class="form-group" id="inputDistrictContainer">
-                    <label for="inputDistrict">District</label>
+                    <label for="inputDistrict">
+                        ${languages.translate(lang, 'District')}
+                    </label>
                     <select id="inputDistrict" class="form-control">
                     </select>
                   </div>
                   <hr/>
                   <div class="form-group">
                     <div class="k-content">
-                        <label for="year-picker">Year</label>
+                        <label for="year-picker">
+                            ${languages.translate(lang, 'Year')}
+                        </label>
                         <input class="form-control" id="year-picker" required />
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="inputQuarter">Quarter</label>
+                    <label for="inputQuarter">
+                        ${languages.translate(lang, 'Quarter')}
+                    </label>
                     <select id="inputQuarter" class="form-control" onchange="onQuarterChange()" required>
-                        <option value="1">Quarter 1</option>
-                        <option value="2">Quarter 2</option>
-                        <option value="3">Quarter 3</option>
-                        <option value="4">Quarter 4</option>
+                        <option value="1">${languages.translate(lang, 'Quarter')} 1</option>
+                        <option value="2">${languages.translate(lang, 'Quarter')} 2</option>
+                        <option value="3">${languages.translate(lang, 'Quarter')} 3</option>
+                        <option value="4">${languages.translate(lang, 'Quarter')} 4</option>
                     </select>
                   </div>
                   <div class="form-group">
-                    <label for="inputMonth">Month</label>
+                    <label for="inputMonth">
+                        ${languages.translate(lang, 'Month')}
+                    </label>
                     <select id="inputMonth" class="form-control">
                     </select>
                   </div>
                 </form>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="onApplyFilter()">Process</button>
+                <button type="button" class="btn btn-primary" onclick="onApplyFilter()">
+                    ${languages.translate(lang, 'Process')}
+                </button>
               </div>
             </div>
           </div>
         </div>`
-    $("#filterPanel").html(_html);
-    $("#year-picker").kendoDatePicker({
-        value: year,
-        format: "yyyy",
-        depth: "decade",
-        start: "decade"
-    });
-    onProvinceChange();
-    onQuarterChange();
-    setTimeout(() => {
-        window.scroll(0, findPos(document.getElementById("filterPanel")));
-        updateFilterDetail();
-    }, 1000);
+        );
+        $("#year-picker").kendoDatePicker({
+            value: year,
+            format: "yyyy",
+            depth: "decade",
+            start: "decade"
+        });
+        onQuarterChange();
+        updateDistrictSelect(_districts);
+    }
+}
+
+const initFilterPanel = () => {
+    Promise.all([loadDistricts('79')])
+        .then((res) => {
+            _districts = res[0].data;
+            filter.buildForm();
+            updateFilterDetail();
+            window.scroll(0, findPos(document.getElementById("filterPanel")));
+        })
+    languages.addCallback(filter.onLanguageChange);
 }
 
 const onApplyFilter = () => {
@@ -110,23 +139,34 @@ const openFilterPanel = () => {
     $('#filterModal').modal('show')
 }
 
-const onProvinceChange = () => {
-    provinceCode = $('#inputProvince').val();
-    $.get(`/api/Locations/Districts?provinceCode=${provinceCode}`,
-        function (districts) {
-            let data = districts.map(u => { text = u.nameWithType, value = u.code });
-            $('#inputDistrictContainer')
-                .html(`<label for="inputDistrict">Quận huyện</label>
+const loadDistricts = (provinceCode) => {
+    return httpClient.callApi({
+        method: 'GET',
+        url: `/api/Locations/Districts?provinceCode=${provinceCode}`,
+    })
+}
+
+const updateDistrictSelect = (districts) => {
+    if (!districts) return;
+    let data = districts.map(u => { text = u.nameWithType, value = u.code });
+    $('#inputDistrictContainer')
+        .html(`<label for="inputDistrict">${languages.translate('', 'District')}</label>
                         <select id="inputDistrict" class="form-control">
                         </select>`);
-            $('#inputDistrict').kendoMultiSelect({
-                dataTextField: "nameWithType",
-                dataValueField: "code",
-                dataSource: districts,
-                filter: "contains",
-            });
-        }
-    );
+    $('#inputDistrict').kendoMultiSelect({
+        dataTextField: "nameWithType",
+        dataValueField: "code",
+        dataSource: districts,
+        filter: "contains",
+    });
+}
+
+const onProvinceChange = () => {
+    provinceCode = $('#inputProvince').val();
+    loadDistricts(provinceCode).then((response) => {
+        _districts = response.data;
+        updateDistrictSelect(_districts);
+    })
 }
 
 const onQuarterChange = () => {
@@ -183,7 +223,8 @@ const onQuarterChange = () => {
             value: 12
         }
     ];
-    let monthOptions = `<option value=""></option>${months.filter(m => from <= m.value && m.value <= to).map(m => `<option value='${m.value}'>${m.name}</option>`).join()}`;
+    let monthOptions = `<option value=""></option>${months.filter(m => from <= m.value && m.value <= to)
+                                                          .map(m => `<option value='${m.value}'>${languages.translate('', m.name)}</option>`).join()}`;
     $('#inputMonth').html(monthOptions);
     $('#inputMonth').val(month);
 }
@@ -192,7 +233,7 @@ const updateFilterDetail = () => {
     var htmlElement = ``;
     var province = $("#inputProvince option:selected").text()
     if (province && province.length > 0) {
-        htmlElement += filterDetail("Provice/City", province, province);
+        htmlElement += filterDetail(languages.translate('', 'Province/City'), province, province);
     }
     let districts = $("#inputDistrict").data("kendoMultiSelect").dataItems().map(m => m.nameWithType);
     let districtValue = '';
@@ -205,14 +246,14 @@ const updateFilterDetail = () => {
         districtValue = `${districtValue},...`;
     }
     if (districtValue.length > 0) {
-        htmlElement += filterDetail("District", districtValue, districts.join(', '));
+        htmlElement += filterDetail(languages.translate('', 'District'), districtValue, districts.join(', '));
     }
-    htmlElement += filterDetail("Year", $('#year-picker').val(), $('#year-picker').val());
+    htmlElement += filterDetail(languages.translate('', 'Year'), $('#year-picker').val(), $('#year-picker').val());
     let quarter = $("#inputQuarter option:selected").text();
-    htmlElement += filterDetail("Quarter", quarter, quarter);
+    htmlElement += filterDetail(languages.translate('', 'Quarter'), quarter, quarter);
     let month = $("#inputMonth option:selected").text();
     if (month.length > 0) {
-        htmlElement += filterDetail("Month", month, month);
+        htmlElement += filterDetail(languages.translate('', 'Month'), month, month);
     }
     $("#filterDisplay").html(htmlElement);
 }

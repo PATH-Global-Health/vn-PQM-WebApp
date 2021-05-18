@@ -42,9 +42,9 @@ namespace PQM_WebApp.Service
         ResultModel GetIndicatorValues(string provinceCode, string districtCode, string indicatorGroup, string indicatorCode, int year
             , int? quarter = null, int? month = null, string ageGroups = "", string keyPopulations = "", string genders = "", string sites = "");
 
-        ResultModel ImportExcel(IFormFile file);
-        ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRow = null);
-        ResultModel ImportIndicator(AggregatedData aggregatedData);
+        ResultModel ImportExcel(IFormFile file, string username = null);
+        ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRow = null, string username = null);
+        ResultModel ImportIndicator(AggregatedData aggregatedData, string username = null);
         ResultModel ClearAll();
     }
 
@@ -120,56 +120,55 @@ namespace PQM_WebApp.Service
 
         public ResultModel GetChartData(string indicator, int year, int quater, string provinceCode, string districtCode, int? month = null, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
         {
-            //var toMonth = quater == 1 ? 3 : quater == 2 ? 6 : quater == 3 ? 9 : 12;
-            //var _districts = !string.IsNullOrEmpty(districtCode) ? districtCode.Split(',') : null;
-            //var districts = _dBContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || _districts.Contains(d.Code))).Select(s => s.Id);
-            //var sites = _dBContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
-            //var limit = month == null ? year * 100 + toMonth : year * 100 + month;
-            //var aggregatedValues = _dBContext.AggregatedValues.Where(w => months.Contains(w.MonthId) && sites.Contains(w.SiteId) && w.Indicator.Name == indicator);
-            //if (!string.IsNullOrEmpty(ageGroups))
-            //{
-            //    var _ageGroups = ageGroups.Split(',').Select(s => Guid.Parse(s));
-            //    aggregatedValues = aggregatedValues.Where(s => _ageGroups.Contains(s.AgeGroupId));
-            //}
-            //if (!string.IsNullOrEmpty(keyPopulations))
-            //{
-            //    var _keyPopulations = keyPopulations.Split(',').Select(s => Guid.Parse(s));
-            //    aggregatedValues = aggregatedValues.Where(s => _keyPopulations.Contains(s.KeyPopulationId));
-            //}
-            //if (!string.IsNullOrEmpty(genders))
-            //{
-            //    var _genders = genders.Split(',').Select(s => Guid.Parse(s));
-            //    aggregatedValues = aggregatedValues.Where(s => _genders.Contains(s.SexId));
-            //}
-            //if (!string.IsNullOrEmpty(clinnics))
-            //{
-            //    var _clinnics = clinnics.Split(',').Select(s => Guid.Parse(s));
-            //    aggregatedValues = aggregatedValues.Where(s => _clinnics.Contains(s.SiteId));
-            //}
-            //var groupIndicator = aggregatedValues.ToList().GroupBy(g => g.Month);
-            //var data = groupIndicator.Select(s => new IndicatorModel
-            //{
-            //    Order = s.Key.MonthNumOfYear + s.Key.Year.Year * 100,
-            //    Group = s.Key.MonthNumOfYear + "-" + s.Key.Year.Year,
-            //    Name = s.Key.MonthNumOfYear + "-" + s.Key.Year.Year,
-            //    Value = new IndicatorValue
-            //    {
-            //        Value = s.Sum(_ => _.Value).Value,
-            //        Numerator = s.Sum(_ => _.Numerator),
-            //        Denominator = s.Sum(_ => _.Denominator),
-            //        DataType = s.FirstOrDefault().DataType,
-            //    },
-            //}).OrderBy(o => o.Order).Select(s => new
-            //{
-            //    s.Name,
-            //    Value = s.Value.DataType == DataType.Number ? s.Value.Value : (double)s.Value.Numerator / s.Value.Denominator,
-            //    s.Value.DataType,
-            //}).ToList();
-            //var skip = data.Count > 6 ? data.Count - 6 : 0;
+            var toMonth = quater == 1 ? 3 : quater == 2 ? 6 : quater == 3 ? 9 : 12;
+            var _districts = !string.IsNullOrEmpty(districtCode) ? districtCode.Split(',') : null;
+            var districts = _dBContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || _districts.Contains(d.Code))).Select(s => s.Id);
+            var sites = _dBContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
+            var limit = month == null ? year * 100 + toMonth : year * 100 + month;
+            var aggregatedValues = _dBContext.AggregatedValues.Where(w => (w.Month + w.Year * 100 <= limit) && sites.Contains(w.SiteId) && w.Indicator.Name == indicator);
+            if (!string.IsNullOrEmpty(ageGroups))
+            {
+                var _ageGroups = ageGroups.Split(',').Select(s => Guid.Parse(s));
+                aggregatedValues = aggregatedValues.Where(s => _ageGroups.Contains(s.AgeGroupId));
+            }
+            if (!string.IsNullOrEmpty(keyPopulations))
+            {
+                var _keyPopulations = keyPopulations.Split(',').Select(s => Guid.Parse(s));
+                aggregatedValues = aggregatedValues.Where(s => _keyPopulations.Contains(s.KeyPopulationId));
+            }
+            if (!string.IsNullOrEmpty(genders))
+            {
+                var _genders = genders.Split(',').Select(s => Guid.Parse(s));
+                aggregatedValues = aggregatedValues.Where(s => _genders.Contains(s.GenderId));
+            }
+            if (!string.IsNullOrEmpty(clinnics))
+            {
+                var _clinnics = clinnics.Split(',').Select(s => Guid.Parse(s));
+                aggregatedValues = aggregatedValues.Where(s => _clinnics.Contains(s.SiteId));
+            }
+            var groupIndicator = aggregatedValues.ToList().GroupBy(g => g.Month);
+            var data = groupIndicator.Select(s => new IndicatorModel
+            {
+                Order = s.FirstOrDefault().Month.Value + s.FirstOrDefault().Year * 100,
+                Name = string.Format("{0}-{1}", s.FirstOrDefault().Month, s.FirstOrDefault().Year),
+                Value = new IndicatorValue
+                {
+                    Value = s.Sum(_ => _.Numerator),
+                    Numerator = s.Sum(_ => _.Numerator),
+                    Denominator = s.Sum(_ => _.Denominator),
+                    DataType = s.FirstOrDefault().DataType,
+                },
+            }).OrderBy(o => o.Order).Select(s => new
+            {
+                s.Name,
+                Value = s.Value.DataType == DataType.Number ? s.Value.Value : (double)s.Value.Numerator / s.Value.Denominator,
+                s.Value.DataType,
+            }).ToList();
+            var skip = data.Count > 6 ? data.Count - 6 : 0;
             return new ResultModel()
             {
                 Succeed = true,
-                //Data = data.Skip(skip),
+                Data = data.Skip(skip),
             };
         }
 
@@ -177,7 +176,7 @@ namespace PQM_WebApp.Service
         {
             if (sites != null && sites.Count > 0)
             {
-                return (new QueryContainerDescriptor<IndicatorElasticModel>()).Terms(t => t.Field(f => f.Site).Terms(sites));
+                return (new QueryContainerDescriptor<IndicatorElasticModel>()).Terms(t => t.Field(f => f.Site.Suffix("keyword")).Terms(sites));
             }
             if (districts.Count > 0)
             {
@@ -280,15 +279,15 @@ namespace PQM_WebApp.Service
             }
             if (ageGroups != null && ageGroups.Count > 0)
             {
-                queryContainers.Add((new QueryContainerDescriptor<IndicatorElasticModel>()).Terms(t => t.Field(f => f.AgeGroup).Terms(ageGroups)));
+                queryContainers.Add((new QueryContainerDescriptor<IndicatorElasticModel>()).Terms(t => t.Field(f => f.AgeGroup.Suffix("keyword")).Terms(ageGroups)));
             }
             if (keyPopulations != null && keyPopulations.Count > 0)
             {
-                queryContainers.Add((new QueryContainerDescriptor<IndicatorElasticModel>()).Terms(t => t.Field(f => f.KeyPopulation).Terms(keyPopulations)));
+                queryContainers.Add((new QueryContainerDescriptor<IndicatorElasticModel>()).Terms(t => t.Field(f => f.KeyPopulation.Suffix("keyword")).Terms(keyPopulations)));
             }
             if (genders != null && genders.Count > 0)
             {
-                queryContainers.Add((new QueryContainerDescriptor<IndicatorElasticModel>()).Terms(t => t.Field(f => f.KeyPopulation).Terms(genders)));
+                queryContainers.Add((new QueryContainerDescriptor<IndicatorElasticModel>()).Terms(t => t.Field(f => f.KeyPopulation.Suffix("keyword")).Terms(genders)));
             }
             if (onlyTotal)
             {
@@ -431,6 +430,7 @@ namespace PQM_WebApp.Service
                                      Quarter = s.Quarter,
                                      DistrictCode = s.Site.District.Code,
                                      ProvinceCode = s.Site.District.Province.Code,
+                                     Location = (s.Site.Lat != null && s.Site.Lng != null) ? new GeoCoordinate(s.Site.Lat.Value, s.Site.Lng.Value) : null,
                                      ValueType = s.DataType == DataType.Number ? 1 : 2,
                                      Denominator = s.Denominator,
                                      Numerator = s.Numerator,
@@ -615,8 +615,20 @@ namespace PQM_WebApp.Service
             return _denominator.Numerator;
         }
 
-        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRows = null)
+        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRows = null, string username = null)
         {
+            if (string.IsNullOrEmpty(username))
+            {
+                return new ResultModel
+                {
+                    Succeed = false,
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = "Not found user"
+                    }
+                };
+            }
+
             try
             {
                 errorRows = errorRows != null ? errorRows : new List<object>();
@@ -624,6 +636,10 @@ namespace PQM_WebApp.Service
                 int succeedWithUndefinedDimValue = 0;
                 int updated = 0;
                 var undefinedDimValues = new List<UndefinedDimValue>();
+                var permissions = _dBContext.DataPermissions
+                    .Where(s => s.Type == DataPermissionType.Write && s.Username == username)
+                    .ToList();
+
                 for (int i = 0; i < importValues.Count; i++)
                 {
                     var data = importValues[i];
@@ -680,11 +696,36 @@ namespace PQM_WebApp.Service
                         data.Denominator = 1;
                     }
                     #endregion
-                    #region add aggregated value to database
                     Guid ageGroupId; definedDimValue.TryGetValue("AgeGroup", out ageGroupId);
                     Guid siteId; definedDimValue.TryGetValue("Site", out siteId);
                     Guid keyPopulationId; definedDimValue.TryGetValue("KeyPopulation", out keyPopulationId);
                     Guid genderId; definedDimValue.TryGetValue("Gender", out genderId);
+                    #region check permission
+                    if(username != "admin")
+                    {
+                        var site = _dBContext.Sites.Include(s => s.District).FirstOrDefault(s => s.Id == siteId);
+                        if (site == null || site.Name == "N/A")
+                        {
+                            errorRows.Add(new
+                            {
+                                Row = _index,
+                                Error = "Undefined Site",
+                            });
+                            continue;
+                        }
+                        var p = permissions.FirstOrDefault(s => s.IndicatorId == indicator.Id && s.ProvinceId == site.District.ProvinceId);
+                        if (p == null)
+                        {
+                            errorRows.Add(new
+                            {
+                                Row = _index,
+                                Error = "User doesn't have permission to insert or update",
+                            });
+                            continue;
+                        }
+                    }
+                    #endregion
+                    #region add aggregated value to database
                     var current = _dBContext.AggregatedValues.FirstOrDefault(f => f.SiteId == siteId
                                                                                && f.KeyPopulationId == keyPopulationId
                                                                                && f.AgeGroupId == ageGroupId
@@ -787,7 +828,7 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public ResultModel ImportExcel(IFormFile file)
+        public ResultModel ImportExcel(IFormFile file, string username = null)
         {
             var importedValues = new List<IndicatorImportModel>();
             using (var stream = new MemoryStream())
@@ -832,7 +873,7 @@ namespace PQM_WebApp.Service
                 }
             }
 
-            return ImportIndicator(importedValues);
+            return ImportIndicator(importedValues, username: username);
         }
 
         private int? TryParse(string value)
@@ -1076,7 +1117,7 @@ namespace PQM_WebApp.Service
             return month < 4 ? 1 : month < 7 ? 2 : month < 10 ? 3 : 4;
         }
 
-        public ResultModel ImportIndicator(AggregatedData aggregatedData)
+        public ResultModel ImportIndicator(AggregatedData aggregatedData, string username)
         {
             var rs = new ResultModel();
             var importData = new List<IndicatorImportModel>();
@@ -1150,7 +1191,7 @@ namespace PQM_WebApp.Service
                 }
                 importData.Add(data);
             };
-            return ImportIndicator(importData, _errorRows);
+            return ImportIndicator(importData, _errorRows, username);
         }
 
         public ResultModel ClearAll()

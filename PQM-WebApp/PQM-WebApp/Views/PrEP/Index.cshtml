@@ -4,10 +4,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="container-fluid">
-    <div class="row" style="background-color: whitesmoke;" id="filterPanel">
+    <div class="row" style="background-color: #fafbfd;" id="filterPanel">
     </div>
-    <div class="row">
-        <div class="col-12" id="variables" style="padding-left: 30px">
+    <div class="row" style="background-color: #fafbfd">
+        <div class="col-12" id="variables" style="padding-left: 30px; margin-top: 3px; display:inherit">
 
         </div>
     </div>
@@ -16,9 +16,9 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <div class="row">
-                <div class="col-12" style="margin:15px">
-                    <h3>PrEP Variables</h3>
+            <div class="row" style="background-color: #fafbfd">
+                <div class="col-12" style="margin: 5px;">
+                    <h4 id="variableLabel">PrEP Variables</h4>
                 </div>
             </div>
             <div class="row">
@@ -27,7 +27,7 @@
                         <div class="col-lg-3 col-12" style="padding: 0px">
                             <div class="col-12 variable-containter">
                                 <div class="row" style="padding-left: 15px">
-                                    <h4>Age Group</h4>
+                                    <h4 id="ageGroupLabel">Age Group</h4>
                                 </div>
                                 <div id="age-group-chart"></div>
                             </div>
@@ -35,7 +35,7 @@
                         <div class="col-lg-3 col-12" style="padding: 0px">
                             <div class="col-12 variable-containter">
                                 <div class="row" style="padding-left: 15px">
-                                    <h4>Gender</h4>
+                                    <h4 id="genderLabel">Gender</h4>
                                 </div>
                                 <div id="gender-chart"></div>
                             </div>
@@ -43,7 +43,7 @@
                         <div class="col-lg-3 col-12" style="padding: 0px">
                             <div class="col-12 variable-containter">
                                 <div class="row" style="padding-left: 15px">
-                                    <h4>Key Populations</h4>
+                                    <h4 id="keyPopulationLabel">Key Populations</h4>
                                 </div>
                                 <div id="key-populations-chart"></div>
                             </div>
@@ -51,7 +51,7 @@
                         <div class="col-lg-3 col-12" style="padding: 0px">
                             <div class="col-12 variable-containter">
                                 <div class="row" style="padding-left: 15px">
-                                    <h4>Clinics</h4>
+                                    <h4 id="siteLabel">Site</h4>
                                 </div>
                                 <div id="clinics-chart"></div>
                             </div>
@@ -67,5 +67,6 @@
     <script src="~/js/variableChart.js"></script>
     <script src="~/js/indicatorOverview.js"></script>
     <script src="~/js/filterComponent.js"></script>
+    <script src="~/js/subFilterComponent.js"></script>
     <script src="~/js/PrEP.js"></script>
 }

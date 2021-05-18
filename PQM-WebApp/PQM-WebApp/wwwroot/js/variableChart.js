@@ -2,36 +2,6 @@
 let keyPopulations = [];
 let genders = [];
 let clinnics = [];
-let variables = [];
-
-const createChip = (name) => {
-    return `<div class="chip">
-                <span style="font-weight: bold">${name.split(':')[0]}</span>: ${name.split(':')[1]}
-                <span class="closebtn" onclick="removeVar('${name}')">×</span>
-            </div>`;
-}
-
-const updateVariablesComp = () => {
-    let elements = '';
-    variables.forEach(v => elements += createChip(v.name));
-    $("#variables").html(elements);
-}
-
-const addVar = (variable) => {
-    let v = variables.find(s => s.name === variable.name);
-    if (!v) {
-        variables.push(variable);
-        updateVariablesComp();
-        applyFilter();
-    }
-}
-
-const removeVar = (name) => {
-    variables = variables.filter(s => s.name !== name);
-    updateVariablesComp();
-    applyFilter();
-}
-
 
 const _initAgeGroupChart = (response, htmlElement) => {
     console.log('here');
@@ -68,10 +38,6 @@ const _initAgeGroupChart = (response, htmlElement) => {
             majorGridLines: {
                 visible: false
             }
-        },
-        seriesClick: function (e) {
-            let a = ageGroups.find(ag => ag.name === e.category);
-            addVar({ name: `Age group: ${e.category}`, id: a.id, type: 'AgeGroup' });
         }
     });
 }
@@ -110,10 +76,6 @@ const _initGenderChart = (response, htmlElement) => {
             majorGridLines: {
                 visible: false
             }
-        },
-        seriesClick: function (e) {
-            let a = genders.find(g => g.name === e.category);
-            addVar({ name: `Gender: ${e.category}`, id: a.id, type: 'Gender' });
         }
     });
 }
@@ -152,10 +114,6 @@ const _initKeyPopulationsChart = (response, htmlElement) => {
             majorGridLines: {
                 visible: false
             }
-        },
-        seriesClick: function (e) {
-            let a = keyPopulations.find(g => g.name === e.category);
-            addVar({ name: `Key population: ${e.category}`, id: a.id, type: 'KeyPopulation' });
         }
     });
 }
@@ -209,10 +167,6 @@ const _initClinicsChart = (response, htmlElement) => {
             majorGridLines: {
                 visible: false
             }
-        },
-        seriesClick: function (e) {
-            let a = clinnics.find(g => g.name === e.category);
-            addVar({ name: `Clinnic: ${e.category}`, id: a.id, type: 'Clinnic' });
         }
     });
 }

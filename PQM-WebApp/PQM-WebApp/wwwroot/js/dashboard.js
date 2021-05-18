@@ -8,7 +8,7 @@ let firstload = true;
 const drillDown = (groupIndicator) => {
     if (groupIndicator !== 'PrEP' && groupIndicator !== 'Testing' && groupIndicator !== 'Treatment') return;
     console.log(`${groupIndicator} is clicked`);
-    var win = window.open(`${groupIndicator}?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`, '_blank');
+    var win = window.open(`${groupIndicator}?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&lang=${languages._language}`, '_blank');
     win.focus();
 }
 
@@ -53,7 +53,7 @@ function createIndicator(indicator, hrTag) {
     let _hrElement = hrTag ? '<hr />' : '';
     let value = indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%');
     return `<div class="d-flex justify-content-between dashboard-indicator">
-                        <span class="align-middle">${indicator.name}</span>
+                        <span class="align-middle">${languages.translate('', indicator.name)}</span >
                         <span class="align-middle" style="color: ${indicator.value.criticalInfo}; font-size: 23px; font-weight: bold">
                             ${numberWithCommas(value)}
                             ${_infoElement}
@@ -233,6 +233,18 @@ function checkURLParams() {
     console.log(`${year} - ${quarter} - ${month} - ${provinceCode} - ${districtCode}`);
 }
 
+const updateDashboardUI = () => {
+    let labels = [
+        { elementId: 'testingLabel', name: 'Testing' },
+        { elementId: 'prepLabel', name: 'PrEP' },
+        { elementId: 'treatmentLabel', name: 'Treatment' },
+        { elementId: 'drugLabel', name: 'Drug' },
+        { elementId: 'shiLabel', name: 'SHI' },
+        { elementId: 'sqLabel', name: 'Service Quality' },
+    ]
+    labels.forEach(label => $(`#${label.elementId}`).html(languages.translate('', label.name)));
+}
+
 const loadThresholdList = () => {
     let token = `Bearer ${getToken()}`;
     $.ajax({
@@ -242,6 +254,7 @@ const loadThresholdList = () => {
         success: function (data) {
             thresholdSettings = data;
             initIndicators();
+            updateDashboardUI();
         }
     });
 }
@@ -280,7 +293,7 @@ $(window).resize(() => {
 $(document).ready(() => {
     checkURLParams();
     initFilterPanel();
-    loadThresholdList();
+    languages.addCallback(loadThresholdList);
 }); 
 
 const applyFilter = () => {
