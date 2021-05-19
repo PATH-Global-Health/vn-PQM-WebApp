@@ -439,10 +439,23 @@ namespace PQM_WebApp.Service
                                      Site = s.Site.Name,
                                      Gender = s.Gender.Name,
                                      PeriodType = s.PeriodType,
+                                     
                                      Month = !all ? month : s.Month,
                                      Year = !all ? year : s.Year,
                                      Day = !all ? day : s.Day,
                                  }).ToList();
+            foreach (var s in data)
+            {
+                if (s.PeriodType.ToLower() == "month")
+                {
+                    s.Date = new DateTime(s.Year, s.Month.Value + 1, 1).AddDays(-1);
+                } else if(s.PeriodType.ToLower() == "quarter")
+                {
+                    var _day = s.Quarter.Value == 1 ? 31 : s.Quarter.Value == 2 ? 30 : s.Quarter.Value == 3 ? 30 : 31;
+                    var _month = s.Quarter.Value == 1 ? 3 : s.Quarter.Value == 2 ? 6 : s.Quarter.Value == 3 ? 9 : 12;
+                    s.Date = new DateTime(s.Year, _month, _day);
+                }
+            }
             var response = _elasticClient.IndexMany(data, _aggregatedValueIndex);
 
             return new ResultModel()

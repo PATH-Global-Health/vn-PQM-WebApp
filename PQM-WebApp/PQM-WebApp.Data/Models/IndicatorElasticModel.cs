@@ -31,6 +31,7 @@ namespace PQM_WebApp.Data.Models
         public int? Quarter { get; set; }
         public int? Month { get; set; }
         public int? Day { get; set; }
+        public DateTime? Date { get; set; }
         //value
         public int ValueType { get; set; } //1: number; 2: percent
         public int Denominator { get; set; }

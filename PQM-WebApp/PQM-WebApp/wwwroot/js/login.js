@@ -6,7 +6,7 @@
 const buildForm = () => {
     let lang = languages._language;
     let _html =
-        `<img src="/images/usaid-logo.PNG" alt="" width="250" height="auto">
+        `<img src="/images/usaid-logo.png" alt="" width="250" height="auto">
         <h1 class="h3 mb-3 font-weight-normal">${languages.translate(lang, 'Please sign in')}</h1>
         <label for="inputUsername" class="sr-only">${languages.translate(lang, 'Username')}</label>
         <input type="text" id="inputUsername" class="form-control" placeholder="${languages.translate(lang, 'Username')}" required autofocus>

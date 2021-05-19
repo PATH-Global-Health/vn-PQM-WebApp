@@ -97,7 +97,11 @@ namespace PQM_WebApp.Extensions
                 var createIndexResponse = client.Indices
                     .Create(index,
                             index => index.Settings(s => s.Analysis(a => a.Analyzers(aa => aa.Standard("default", sa => sa.StopWords("_none_")))))
-                                            .Map<IndicatorElasticModel>(_ => _.AutoMap().Properties(ps => ps.GeoPoint(s => s.Name(n => n.Location))))
+                                            .Map<IndicatorElasticModel>(_ => _.AutoMap()
+                                                                              .Properties(ps => ps.GeoPoint(s => s.Name(n => n.Location))
+                                                                                                  .Date(s => s.Name(n => n.Date))
+                                                                              )
+                                                                       )
                     );
             }
         }

@@ -25,6 +25,7 @@ namespace PQM_WebApp.Service
         ResultModel DeleteDistrict(DistrictModel model);
 
         ResultModel GetSites(Guid districtId);
+        ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null);
         ResultModel CreateSite(SiteCreateModel model);
         ResultModel UpdateSite(SiteViewModel model);
         ResultModel DeleteSite(SiteViewModel model);
@@ -307,6 +308,26 @@ namespace PQM_WebApp.Service
             return result;
         }
 
+        public ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var filter = _dbContext.Sites.Include(s => s.District).ThenInclude(s => s.Province).AsSoftDelete(false)
+                                            .Where(w => (proviceCode == null || w.District.Province.Code == proviceCode)
+                                                     && (districtCode == null || w.District.Code == districtCode))
+                                            .Skip(pageIndex * pageSize)
+                                            .Take(pageSize);
+                result.Data = filter.AsEnumerable().Adapt<IEnumerable<SiteViewModel>>();
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                ex.Adapt(result);
+            }
+            return result;
+        }
+
         public ResultModel CreateSite(SiteCreateModel model)
         {
             var rs = new ResultModel();
@@ -452,6 +473,10 @@ namespace PQM_WebApp.Service
             site.Order = source.Order;
             site.DistrictId = source.DistrictId;
             site.SiteTypeId = source.SiteTypeId;
+            site.Lat = source.Lat;
+            site.Lng = source.Lng;
         }
+
+        
     }
 }

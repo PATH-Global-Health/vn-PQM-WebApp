@@ -121,5 +121,14 @@ namespace PQM_WebApp.Controllers
                 return Ok(rs.Data);
             return BadRequest(rs.Error.ErrorMessage);
         }
+
+        [HttpGet("Sites/ByCode")]
+        public IActionResult GetSitesByCode(int pageIndex, int pageSize, string provinceCode = null, string districtCode = null)
+        {
+            var rs = _locationService.GetSites(pageIndex, pageSize, provinceCode, districtCode);
+            if (rs.Succeed)
+                return Ok(rs.Data);
+            return BadRequest(rs.Error.ErrorMessage);
+        }
     }
 }
