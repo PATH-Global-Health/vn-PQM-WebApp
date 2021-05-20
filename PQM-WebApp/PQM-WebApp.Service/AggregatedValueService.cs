@@ -476,14 +476,14 @@ namespace PQM_WebApp.Service
             {
                 return null;
             }
-            var dim = _dBContext.Set(typeOfCategory).Adapt<List<DimensionGroup>>().FirstOrDefault(s => s.Name == name);
+            var dim = _dBContext.Set(typeOfCategory).Adapt<List<Dimension>>().FirstOrDefault(s => s.Name == name || (typeOfCategory == typeof(Site) && s.Code == name));
             if (dim != null)
             {
                 return dim.Id;
             }
             else
             {
-                var na = _dBContext.Set(typeOfCategory).Adapt<List<DimensionGroup>>().FirstOrDefault(s => s.Name == "N/A");
+                var na = _dBContext.Set(typeOfCategory).Adapt<List<Dimension>>().FirstOrDefault(s => s.Name == "N/A");
                 undefinedDimValue = new UndefinedDimValue
                 {
                     Dimension = category,
