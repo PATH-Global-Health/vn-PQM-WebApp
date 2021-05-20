@@ -76,8 +76,7 @@ const buildGrid = (aggregatedValues, total) => {
                         unsolvedDimValue: { type: "number" },
                     }
                 },
-            },
-            pageSize: 20,
+            }
         },
         sortable: true,
         scrollable: {
@@ -88,9 +87,6 @@ const buildGrid = (aggregatedValues, total) => {
         aggregate: [
             { field: "value", aggregate: "sum" },
         ],
-        pageable: {
-            pageSizes: [20, 50, 100, 200]
-        },
         columns: [
             { field: "period", width: "100px" },
             { field: "year", width: "100px" },
@@ -106,16 +102,6 @@ const buildGrid = (aggregatedValues, total) => {
                 field: "value", width: "150px"
             },
         ]
-    });
-    const grid = $('#grid').data('kendoGrid');
-    const pager = grid.pager;
-    pager.totalPage = totalPage;
-    pager.bind('change', (e) => {
-        loadAggregatedValue(pager.page(), pager.pageSize());
-    });
-    const pageSizesDdl = $(pager.element).find("[data-role='dropdownlist']").data("kendoDropDownList");
-    pageSizesDdl.bind("change", function (ev) {
-        console.log(pager.pageSize());
     });
 }
 
@@ -219,11 +205,11 @@ const clearAll = () => {
         url: "/api/AggregatedValues/ClearAll",
     }).then((res) => {
         alert('Clear all is done');
-        loadAggregatedValue(0, 200);
+        loadAggregatedValue(0, 2000000000);
     })
 }
 
 $(document).ready(() => {
     loadData();
-    loadAggregatedValue(0, 200);
+    loadAggregatedValue(0, 2000000000);
 })
