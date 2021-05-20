@@ -44,7 +44,6 @@ namespace PQM_WebApp
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseCors("AllowAll");
-
             app.UseStaticFiles();
 
             app.UseRouting();

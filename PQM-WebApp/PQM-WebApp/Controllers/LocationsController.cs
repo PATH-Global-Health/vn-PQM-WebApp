@@ -123,9 +123,18 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet("Sites/ByCode")]
-        public IActionResult GetSitesByCode(int pageIndex, int pageSize, string provinceCode = null, string districtCode = null)
+        public IActionResult GetSitesByCode(int pageIndex = 0, int pageSize = 10, string provinceCode = null, string districtCode = null, Guid? siteTypeId = null)
         {
-            var rs = _locationService.GetSites(pageIndex, pageSize, provinceCode, districtCode);
+            var rs = _locationService.GetSites(pageIndex, pageSize, provinceCode, districtCode, siteTypeId);
+            if (rs.Succeed)
+                return Ok(rs);
+            return BadRequest(rs.Error.ErrorMessage);
+        }
+
+        [HttpPost("Sites/Import")]
+        public IActionResult ImportSites([FromBody]List<SiteCreateModel> sites)
+        {
+            var rs = _locationService.ImportSites(sites);
             if (rs.Succeed)
                 return Ok(rs.Data);
             return BadRequest(rs.Error.ErrorMessage);
