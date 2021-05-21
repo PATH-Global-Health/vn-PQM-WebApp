@@ -17,6 +17,7 @@ using NPOI.SS.UserModel;
 using PQM_WebApp.Data.Extensions;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
+using PQM_WebApp.Service.Utils;
 
 namespace PQM_WebApp.Service
 {
@@ -902,16 +903,13 @@ namespace PQM_WebApp.Service
 
         public ResultModel Get(int? pageIndex = 0, int? pageSize = int.MaxValue)
         {
-            var total = _dBContext.AggregatedValues.Count();
-            var data = _dBContext.AggregatedValues.Skip((int)(pageIndex * pageSize)).Take((int)pageSize).Adapt<List<AggregatedValueViewModel>>();
-            return new ResultModel
+            var filter = _dBContext.AggregatedValues;
+            return new PagingModel
             {
                 Succeed = true,
-                Data = new
-                {
-                    data,
-                    total,
-                }
+                Total = filter.Count(),
+                PageCount = filter.PageCount(pageSize.Value),
+                Data = filter.Skip((int)(pageIndex * pageSize)).Take((int)pageSize).Adapt<IEnumerable<AggregatedValueViewModel>>(),
             };
         }
 

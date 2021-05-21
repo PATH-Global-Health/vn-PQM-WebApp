@@ -32,7 +32,7 @@ namespace PQM_WebApp.Controllers
         public IActionResult Get(int? pageIndex = 0, int? pageSize = int.MaxValue)
         {
             var rs = _aggregatedService.Get(pageIndex, pageSize);
-            if (rs.Succeed) return Ok(rs.Data);
+            if (rs.Succeed) return Ok(rs);
             return BadRequest(rs.Error.ErrorMessage);
         }
 
