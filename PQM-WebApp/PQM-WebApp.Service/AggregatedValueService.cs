@@ -449,7 +449,7 @@ namespace PQM_WebApp.Service
             {
                 if (s.PeriodType.ToLower() == "month")
                 {
-                    s.Date = new DateTime(s.Year, s.Month.Value + 1, 1).AddDays(-1);
+                    s.Date = new DateTime(s.Year, s.Month.Value, DateTime.DaysInMonth(s.Year, s.Month.Value));
                 } else if(s.PeriodType.ToLower() == "quarter")
                 {
                     var _day = s.Quarter.Value == 1 ? 31 : s.Quarter.Value == 2 ? 30 : s.Quarter.Value == 3 ? 30 : 31;
