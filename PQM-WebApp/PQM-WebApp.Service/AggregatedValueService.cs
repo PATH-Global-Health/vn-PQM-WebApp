@@ -23,7 +23,10 @@ namespace PQM_WebApp.Service
 {
     public interface IAggregatedValueService
     {
-        ResultModel Get(int? pageIndex = 0, int? pageSize = int.MaxValue);
+        ResultModel Get(int? pageIndex = 0, int? pageSize = int.MaxValue
+                      , string period = null, int? year = null, int? quarter = null, int? month = null
+                      , Guid? indicatorId = null, Guid? ageGroupId = null, Guid? genderId = null, Guid? keyPopulationId = null
+                      , Guid? provinceId = null, Guid? districId = null, Guid? siteId = null);
         ResultModel Create(IndicatorImportModel aggregatedValue);
         ResultModel Update(IndicatorImportModel aggregatedValue);
         ResultModel Delete(Guid id);
@@ -440,7 +443,7 @@ namespace PQM_WebApp.Service
                                      Site = s.Site.Name,
                                      Gender = s.Gender.Name,
                                      PeriodType = s.PeriodType,
-                                     
+
                                      Month = !all ? month : s.Month,
                                      Year = !all ? year : s.Year,
                                      Day = !all ? day : s.Day,
@@ -450,14 +453,20 @@ namespace PQM_WebApp.Service
                 if (s.PeriodType.ToLower() == "month")
                 {
                     s.Date = new DateTime(s.Year, s.Month.Value, DateTime.DaysInMonth(s.Year, s.Month.Value));
-                } else if(s.PeriodType.ToLower() == "quarter")
+                }
+                else if (s.PeriodType.ToLower() == "quarter")
                 {
                     var _day = s.Quarter.Value == 1 ? 31 : s.Quarter.Value == 2 ? 30 : s.Quarter.Value == 3 ? 30 : 31;
                     var _month = s.Quarter.Value == 1 ? 3 : s.Quarter.Value == 2 ? 6 : s.Quarter.Value == 3 ? 9 : 12;
                     s.Date = new DateTime(s.Year, _month, _day);
                 }
             }
-            var response = _elasticClient.IndexMany(data, _aggregatedValueIndex);
+            var pageSize = 100;
+            var pageCount = data.Count / pageSize + (data.Count % pageSize != 0 ? 1 : 0);
+            for (var index = 0; index < pageCount; index++)
+            {
+                var response = _elasticClient.IndexMany(data.Skip(pageSize * index).Take(pageSize), _aggregatedValueIndex);
+            }
 
             return new ResultModel()
             {
@@ -715,7 +724,7 @@ namespace PQM_WebApp.Service
                     Guid keyPopulationId; definedDimValue.TryGetValue("KeyPopulation", out keyPopulationId);
                     Guid genderId; definedDimValue.TryGetValue("Gender", out genderId);
                     #region check permission
-                    if(username != "admin")
+                    if (username != "admin")
                     {
                         var site = _dBContext.Sites.Include(s => s.District).FirstOrDefault(s => s.Id == siteId);
                         if (site == null || site.Name == "N/A")
@@ -901,9 +910,59 @@ namespace PQM_WebApp.Service
             return result;
         }
 
-        public ResultModel Get(int? pageIndex = 0, int? pageSize = int.MaxValue)
+        public ResultModel Get(int? pageIndex = 0, int? pageSize = int.MaxValue
+            , string period = null, int? year = null, int? quarter = null, int? month = null
+            , Guid? indicatorId = null, Guid? ageGroupId = null, Guid? genderId = null, Guid? keyPopulationId = null
+            , Guid? provinceId = null, Guid? districId = null, Guid? siteId = null)
         {
-            var filter = _dBContext.AggregatedValues;
+            var filter = _dBContext.AggregatedValues.Where(w => true);
+            if (!string.IsNullOrEmpty(period))
+            {
+                filter = filter.Where(w => w.PeriodType == period);
+            }
+            if (year != null)
+            {
+                filter = filter.Where(w => w.Year == year);
+            }
+            if (quarter != null)
+            {
+                filter = filter.Where(w => w.Quarter == quarter);
+            }
+            if (month != null)
+            {
+                filter = filter.Where(w => w.Month == month);
+            }
+            if (indicatorId != null)
+            {
+                filter = filter.Where(w => w.IndicatorId == indicatorId);
+            }
+            if (ageGroupId != null)
+            {
+                filter = filter.Where(w => w.AgeGroupId == ageGroupId);
+            }
+            if (genderId != null)
+            {
+                filter = filter.Where(w => w.GenderId == genderId);
+            }
+            if (keyPopulationId != null)
+            {
+                filter = filter.Where(w => w.KeyPopulationId == keyPopulationId);
+            }
+            if (siteId != null)
+            {
+                filter = filter.Where(w => w.SiteId == siteId);
+            }
+            else if (districId != null)
+            {
+                var sites = _dBContext.Sites.Where(s => s.DistrictId == districId).Select(s => s.Id);
+                filter = filter.Where(w => sites.Contains(w.SiteId));
+            }
+            else if (provinceId != null)
+            {
+                var districs = _dBContext.Districts.Where(s => s.ProvinceId == provinceId).Select(s => s.Id);
+                var sites = _dBContext.Sites.Where(s => districs.Contains(s.DistrictId)).Select(s => s.Id);
+                filter = filter.Where(w => sites.Contains(w.SiteId));
+            }
             return new PagingModel
             {
                 Succeed = true,

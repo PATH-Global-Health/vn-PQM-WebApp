@@ -21,7 +21,9 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet("Variables")]
-        public IActionResult Variables(int year, int quarter, int? month, string indicatorGroup, string indicator, string groupBy, string provinceCode, string districtCode)
+        public IActionResult Variables(int year, int quarter, int? month
+            , string indicatorGroup, string indicator, string groupBy
+            , string provinceCode, string districtCode)
         {
             var rs = _aggregatedService.GetAggregatedValues(year, quarter, month, indicatorGroup, indicator, groupBy, provinceCode, districtCode);
             if (rs.Succeed) return Ok(rs.Data);
@@ -29,9 +31,15 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet("")]
-        public IActionResult Get(int? pageIndex = 0, int? pageSize = int.MaxValue)
+        public IActionResult Get(int? pageIndex = 0, int? pageSize = int.MaxValue
+            , string period = null, int? year = null, int? quarter = null, int? month = null
+            , Guid? indicatorId = null, Guid? ageGroupId = null, Guid? genderId = null, Guid? keyPopulationId = null
+            , Guid? provinceId = null, Guid? districId = null, Guid? siteId = null)
         {
-            var rs = _aggregatedService.Get(pageIndex, pageSize);
+            var rs = _aggregatedService.Get(pageIndex, pageSize
+                , period, year, quarter, month
+                , indicatorId, ageGroupId, genderId, keyPopulationId
+                , provinceId, districId, siteId);
             if (rs.Succeed) return Ok(rs);
             return BadRequest(rs.Error.ErrorMessage);
         }

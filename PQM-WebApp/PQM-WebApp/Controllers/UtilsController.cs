@@ -37,5 +37,11 @@ namespace PQM_WebApp.Controllers
             if (rs.Succeed) return Ok(rs.Data);
             return BadRequest(rs.Error.ErrorMessage);
         }
+
+        [HttpPut]
+        public IActionResult FixVLUnsupressed()
+        {
+            return Ok(_utilsService.FixVLUnsupressed());
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace PQM_WebApp.Service
     {
         ResultModel ImportProvince(IEnumerable<ProvinceModel> models);
         ResultModel ImportDistrict(IEnumerable<DistrictModel> models);
+        bool FixVLUnsupressed();
     }
 
     public class UtilsService : IUtilsService
@@ -85,6 +86,39 @@ namespace PQM_WebApp.Service
                 rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
+        }
+
+        public bool FixVLUnsupressed()
+        {
+            var id = Guid.Parse("3dcb48cd-666a-4e04-8900-07f90289b320");
+            var txcurr = Guid.Parse("3dcb48cd-666a-4e04-8900-07f90289b380");
+            var vls = _dbContext.AggregatedValues.Where(s => s.IndicatorId == id);
+            var s = 0;
+            var f = 0;
+            foreach (var vl in vls)
+            {
+                var curr = _dbContext.AggregatedValues.FirstOrDefault(w =>
+                       w.IndicatorId == txcurr
+                    && w.SiteId == vl.SiteId
+                    && w.GenderId == vl.GenderId
+                    && w.KeyPopulation == vl.KeyPopulation
+                    && w.AgeGroupId == vl.AgeGroupId
+                    && w.Year == vl.Year
+                    && w.Month == vl.Month
+                );
+                if (curr != null && curr.Numerator >= vl.Numerator)
+                {
+                    vl.Denominator = curr.Numerator;
+                    _dbContext.AggregatedValues.Update(vl);
+                    s++;
+                }
+                else
+                {
+                    f++;
+                }
+            }
+            _dbContext.SaveChanges();
+            return true;
         }
     }
 }
