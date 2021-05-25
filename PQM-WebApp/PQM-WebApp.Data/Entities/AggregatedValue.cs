@@ -36,6 +36,10 @@ namespace PQM_WebApp.Data.Entities
         public Guid KeyPopulationId { get; set; }
         [ForeignKey("KeyPopulationId")]
         public virtual KeyPopulation KeyPopulation { get; set; }
+        //validation
+        public bool IsValid { get; set; }
+        public string InvalidMessage { get; set; }
+        //unsolved dimension value
         public virtual ICollection<UnsolvedDimValue> UnsolvedDimValues { get; set; }
     }
 }

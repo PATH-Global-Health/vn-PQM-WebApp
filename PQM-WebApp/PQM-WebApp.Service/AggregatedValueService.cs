@@ -665,6 +665,8 @@ namespace PQM_WebApp.Service
 
                 for (int i = 0; i < importValues.Count; i++)
                 {
+                    var isValid = true;
+                    var invalidMessage = "";
                     var data = importValues[i];
                     var _index = data.RowIndex != null ? data.RowIndex.Value + 1 : i + 1;
                     #region check time
@@ -697,21 +699,14 @@ namespace PQM_WebApp.Service
                         data.Denominator = FindDenominator(importValues, data, definedDimValue);
                         if (data.Denominator == null)
                         {
-                            errorRows.Add(new
-                            {
-                                Row = _index,
-                                Error = "Can not calculate the denominator of indicator",
-                            });
-                            continue;
+                            isValid = false;
+                            invalidMessage = "Can not find the denominator of indicator";
+                            data.Denominator = 0;
                         }
                         if (data.Denominator < data.Numerator)
                         {
-                            errorRows.Add(new
-                            {
-                                Row = _index,
-                                Error = "Invalid denominator data (numerator > denominator)",
-                            });
-                            continue;
+                            isValid = false;
+                            invalidMessage = "Invalid denominator data (numerator > denominator)";
                         }
                     }
                     else
@@ -790,6 +785,8 @@ namespace PQM_WebApp.Service
                             Quarter = data.Quarter,
                             Year = data.Year,
                             PeriodType = data.PeriodType,
+                            IsValid = isValid,
+                            InvalidMessage = invalidMessage,
                         };
                         _dBContext.AggregatedValues.Add(aggregatedValue);
                         if (localUndefinedDimValues.Count > 0)
