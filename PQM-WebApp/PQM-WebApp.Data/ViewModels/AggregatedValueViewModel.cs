@@ -18,13 +18,15 @@ namespace PQM_WebApp.Data.ViewModels
         public int? Month { get; set; }
         public int? Day { get; set; }
         //Location Dimension
-        public Guid SiteId { get; set; }
         public SiteViewModel Site { get; set; }
         public IndicatorViewModel Indicator { get; set; }
         //Gender Dimension
         public GenderViewModel Gender { get; set; }
         //Age Group Dimension
         public AgeGroupViewModel AgeGroup { get; set; }
+        //validation
+        public bool IsValid { get; set; }
+        public string InvalidMessage { get; set; }
         //Key population Dimension
         public KeyPopulationViewModel KeyPopulation { get; set; }
         public virtual ICollection<UnsolvedDimValueViewModel> UnsolvedDimValues { get; set; }
