@@ -654,8 +654,8 @@ namespace PQM_WebApp.Service
                 };
             }
 
-            try
-            {
+            //try
+            //{
                 errorRows = errorRows != null ? errorRows : new List<object>();
                 int succeed = 0;
                 int succeedWithUndefinedDimValue = 0;
@@ -768,7 +768,7 @@ namespace PQM_WebApp.Service
                             KeyPopulationId = keyPopulationId,
                             SiteId = siteId,
                             Numerator = data.Numerator,
-                            Denominator = data.Denominator.Value,
+                            Denominator = data.Denominator != null ? data.Denominator.Value : 0,
                             DataType = data.ValueType == 1 ? Data.Enums.DataType.Number : Data.Enums.DataType.Percent,
                             CreatedBy = "",
                             IsDeleted = false,
@@ -870,18 +870,18 @@ namespace PQM_WebApp.Service
                         })
                     }
                 };
-            }
-            catch (Exception ex)
-            {
-                return new ResultModel()
-                {
-                    Succeed = false,
-                    Error = new ErrorModel
-                    {
-                        ErrorMessage = ex.Message
-                    },
-                };
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return new ResultModel()
+            //    {
+            //        Succeed = false,
+            //        Error = new ErrorModel
+            //        {
+            //            ErrorMessage = ex.Message
+            //        },
+            //    };
+            //}
         }
 
         public ResultModel ImportExcel(IFormFile file, string username = null)
