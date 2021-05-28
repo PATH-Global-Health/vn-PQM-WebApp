@@ -749,7 +749,7 @@ namespace PQM_WebApp.Service
                         if (current.UnsolvedDimValues != null && current.UnsolvedDimValues.Count == 0 && localUndefinedDimValues.Count == 0)
                         {
                             current.Numerator = data.Numerator;
-                            current.Denominator = data.Denominator.Value;
+                            current.Denominator = data.Denominator != null ? data.Denominator.Value : 0;
                             _dBContext.AggregatedValues.Update(current);
                             updated++;
                             if (current.DataType == DataType.Percent)
