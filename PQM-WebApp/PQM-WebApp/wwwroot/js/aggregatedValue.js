@@ -205,11 +205,11 @@ const clearAll = () => {
         url: "/api/AggregatedValues/ClearAll",
     }).then((res) => {
         alert('Clear all is done');
-        loadAggregatedValue(0, 2000000000);
+        loadAggregatedValue(0, 200);
     })
 }
 
 $(document).ready(() => {
     loadData();
-    loadAggregatedValue(0, 2000000000);
+    loadAggregatedValue(0, 200);
 })

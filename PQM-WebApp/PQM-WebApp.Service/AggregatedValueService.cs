@@ -424,30 +424,30 @@ namespace PQM_WebApp.Service
             }
 
             var data = _dBContext.AggregatedValues
-                                 .Where(w => all || (w.Month == month && w.Year == year && w.Indicator.Name == indicator))
-                                 .Select(s => new IndicatorElasticModel
-                                 {
-                                     IndicatorName = s.Indicator.Name,
-                                     IndicatorCode = s.Indicator.Code,
-                                     IndicatorGroup = s.Indicator.IndicatorGroup.Name,
-                                     IsTotal = s.Indicator.IsTotal.Value,
-                                     Quarter = s.Quarter,
-                                     DistrictCode = s.Site.District.Code,
-                                     ProvinceCode = s.Site.District.Province.Code,
-                                     Location = (s.Site.Lat != null && s.Site.Lng != null) ? new GeoCoordinate(s.Site.Lat.Value, s.Site.Lng.Value) : null,
-                                     ValueType = s.DataType == DataType.Number ? 1 : 2,
-                                     Denominator = s.Denominator,
-                                     Numerator = s.Numerator,
-                                     AgeGroup = s.AgeGroup.Name,
-                                     KeyPopulation = s.KeyPopulation.Name,
-                                     Site = s.Site.Name,
-                                     Gender = s.Gender.Name,
-                                     PeriodType = s.PeriodType,
+                                .Where(w => all || (w.Month == month && w.Year == year && w.Indicator.Name == indicator))
+                                .Select(s => new IndicatorElasticModel
+                                {
+                                    IndicatorName = s.Indicator.Name,
+                                    IndicatorCode = s.Indicator.Code,
+                                    IndicatorGroup = s.Indicator.IndicatorGroup.Name,
+                                    IsTotal = s.Indicator.IsTotal.Value,
+                                    Quarter = s.Quarter,
+                                    DistrictCode = s.Site.District.Code,
+                                    ProvinceCode = s.Site.District.Province.Code,
+                                    Location = (s.Site.Lat != null && s.Site.Lng != null) ? new GeoCoordinate(s.Site.Lat.Value, s.Site.Lng.Value) : null,
+                                    ValueType = s.DataType == DataType.Number ? 1 : 2,
+                                    Denominator = s.Denominator,
+                                    Numerator = s.Numerator,
+                                    AgeGroup = s.AgeGroup.Name,
+                                    KeyPopulation = s.KeyPopulation.Name,
+                                    Site = s.Site.Name,
+                                    Gender = s.Gender.Name,
+                                    PeriodType = s.PeriodType,
 
-                                     Month = !all ? month : s.Month,
-                                     Year = !all ? year : s.Year,
-                                     Day = !all ? day : s.Day,
-                                 }).ToList();
+                                    Month = !all ? month : s.Month,
+                                    Year = !all ? year : s.Year,
+                                    Day = !all ? day : s.Day,
+                                }).ToList();
             foreach (var s in data)
             {
                 if (s.PeriodType.ToLower() == "month")
@@ -474,41 +474,6 @@ namespace PQM_WebApp.Service
             };
         }
 
-        private Guid? FindCategoryId(string category, string name, out UndefinedDimValue undefinedDimValue)
-        {
-            undefinedDimValue = null;
-            var typeOfCategory = category == "AgeGroup" ? typeof(AgeGroup)
-                               : category == "KeyPopulation" ? typeof(KeyPopulation)
-                               : category == "Gender" ? typeof(Gender)
-                               : category == "Site" ? typeof(Site)
-                               : null;
-            if (typeOfCategory == null)
-            {
-                return null;
-            }
-            var dim = _dBContext.Set(typeOfCategory).Adapt<List<Dimension>>().FirstOrDefault(s => s.Name == name || (typeOfCategory == typeof(Site) && s.Code == name));
-            if (dim != null)
-            {
-                return dim.Id;
-            }
-            else
-            {
-                var na = _dBContext.Set(typeOfCategory).Adapt<List<Dimension>>().FirstOrDefault(s => s.Name == "N/A");
-                undefinedDimValue = new UndefinedDimValue
-                {
-                    Dimension = category,
-                    UndefinedValue = name,
-                };
-                if (na != null)
-                {
-                    return na.Id;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
         private IndicatorImportModel VerifyTime(IndicatorImportModel data, out string error)
         {
             error = "";
@@ -546,6 +511,43 @@ namespace PQM_WebApp.Service
                 error = "No day";
             } //check day is not null
             return data;
+        }
+
+        private Guid? FindCategoryId(string category, string name, out UndefinedDimValue undefinedDimValue)
+        {
+            undefinedDimValue = null;
+            var typeOfCategory = category == "AgeGroup" ? typeof(AgeGroup)
+                               : category == "KeyPopulation" ? typeof(KeyPopulation)
+                               : category == "Gender" ? typeof(Gender)
+                               : category == "Site" ? typeof(Site)
+                               : null;
+            if (typeOfCategory == null)
+            {
+                return null;
+            }
+            var dim = _dBContext.Set(typeOfCategory).Adapt<List<Dimension>>()
+                .FirstOrDefault(s => !s.IsDeleted && (s.Name == name || s.Code == name));
+            if (dim != null)
+            {
+                return dim.Id;
+            }
+            else
+            {
+                var na = _dBContext.Set(typeOfCategory).Adapt<List<Dimension>>().FirstOrDefault(s => s.Name == "N/A");
+                undefinedDimValue = new UndefinedDimValue
+                {
+                    Dimension = category,
+                    UndefinedValue = name,
+                };
+                if (na != null)
+                {
+                    return na.Id;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         private Dictionary<string, Guid> GetDimensionValues(IndicatorImportModel data
@@ -662,7 +664,7 @@ namespace PQM_WebApp.Service
                 var permissions = _dBContext.DataPermissions
                     .Where(s => s.Type == DataPermissionType.Write && s.Username == username)
                     .ToList();
-
+                var percentValues = new List<AggregatedValue>();
                 for (int i = 0; i < importValues.Count; i++)
                 {
                     var isValid = true;
@@ -691,27 +693,15 @@ namespace PQM_WebApp.Service
                     {
                         continue;
                     }
-                    var indicator = _dBContext.Indicators.FirstOrDefault(f => f.Name.Equals(data.Indicator));
-                    #endregion
-                    #region check denominator
-                    if (data.ValueType == 2)
+                    var indicator = _dBContext.Indicators.FirstOrDefault(f => f.Name.Equals(data.Indicator) || f.Code.Equals(data.Indicator));
+                    if (indicator == null)
                     {
-                        data.Denominator = FindDenominator(importValues, data, definedDimValue);
-                        if (data.Denominator == null)
+                        errorRows.Add(new
                         {
-                            isValid = false;
-                            invalidMessage = "Can not find the denominator of indicator";
-                            data.Denominator = 0;
-                        }
-                        if (data.Denominator < data.Numerator)
-                        {
-                            isValid = false;
-                            invalidMessage = "Invalid denominator data (numerator > denominator)";
-                        }
-                    }
-                    else
-                    {
-                        data.Denominator = 1;
+                            Row = _index,
+                            Error = "Can not find indicator",
+                        });
+                        continue;
                     }
                     #endregion
                     Guid ageGroupId; definedDimValue.TryGetValue("AgeGroup", out ageGroupId);
@@ -762,6 +752,10 @@ namespace PQM_WebApp.Service
                             current.Denominator = data.Denominator.Value;
                             _dBContext.AggregatedValues.Update(current);
                             updated++;
+                            if (current.DataType == DataType.Percent)
+                            {
+                                percentValues.Add(current);
+                            }
                         }
                     }
                     else
@@ -811,11 +805,53 @@ namespace PQM_WebApp.Service
                         }
                         else
                         {
+                            if (aggregatedValue.DataType == DataType.Percent)
+                            {
+                                percentValues.Add(aggregatedValue);
+                            }
                             succeed++;
                         }
                     }
                     #endregion
                 }
+                _dBContext.SaveChanges();
+                percentValues.ForEach(value =>
+                {
+                    var deIndicator = _dBContext.Indicators.FirstOrDefault(s => s.Id == value.Indicator.DenominatorIndicatorId);
+                    if (deIndicator != null)
+                    {
+                        var denominator = _dBContext.AggregatedValues.FirstOrDefault(f => f.SiteId == value.SiteId
+                                                                               && f.KeyPopulationId == value.KeyPopulationId
+                                                                               && f.AgeGroupId == value.AgeGroupId
+                                                                               && f.GenderId == value.GenderId
+                                                                               && f.IndicatorId == deIndicator.Id
+                                                                               && f.Day == value.Day
+                                                                               && f.Month == value.Month
+                                                                               && f.Quarter == value.Quarter
+                                                                               && f.Year == value.Year
+                                                                               && f.PeriodType == value.PeriodType);
+                        if (denominator != null)
+                        {
+                            value.Denominator = denominator.Numerator;
+                            if (value.Numerator > value.Denominator)
+                            {
+                                value.IsValid = false;
+                                value.InvalidMessage = "Numerator > Denominator";
+                            }
+                        }
+                        else
+                        {
+                            value.IsValid = false;
+                            value.InvalidMessage = "Can not find the denominator data";
+                        }
+                    }
+                    else
+                    {
+                        value.IsValid = false;
+                        value.InvalidMessage = "Can not find the denominator data";
+                    }
+                    _dBContext.AggregatedValues.Update(value);
+                });
                 _dBContext.SaveChanges();
                 return new ResultModel()
                 {
