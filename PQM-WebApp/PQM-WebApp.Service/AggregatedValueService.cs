@@ -825,9 +825,9 @@ namespace PQM_WebApp.Service
                                                                                && f.AgeGroupId == value.AgeGroupId
                                                                                && f.GenderId == value.GenderId
                                                                                && f.IndicatorId == deIndicator.Id
-                                                                               && f.Day == value.Day
-                                                                               && f.Month == value.Month
-                                                                               && f.Quarter == value.Quarter
+                                                                               && (value.PeriodType.ToLower() != "day" || f.Day == value.Day)
+                                                                               && ((value.PeriodType.ToLower() != "day" && (value.PeriodType.ToLower() != "month")) || f.Month == value.Month)
+                                                                               && ((value.PeriodType.ToLower() != "day" && (value.PeriodType.ToLower() != "month") && (value.PeriodType.ToLower() != "quarter")) || f.Quarter == value.Quarter)
                                                                                && f.Year == value.Year
                                                                                && f.PeriodType == value.PeriodType);
                         if (denominator != null)
