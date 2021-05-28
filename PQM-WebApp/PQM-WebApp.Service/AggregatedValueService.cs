@@ -592,54 +592,6 @@ namespace PQM_WebApp.Service
             return definedDimValue;
         }
 
-        private int? FindDenominator(List<IndicatorImportModel> importValues, IndicatorImportModel value, Dictionary<string, Guid> definedDimValue)
-        {
-            var indicator = _dBContext.Indicators.FirstOrDefault(s => s.Name == value.Indicator || s.Code == value.Indicator);
-            if (indicator == null)
-            {
-                return null;
-            }
-            var deIndicator = _dBContext.Indicators.FirstOrDefault(s => s.Id == indicator.DenominatorIndicatorId);
-            if (deIndicator == null)
-            {
-                return null;
-            }
-
-            var denominator = importValues.FirstOrDefault(f => f.Site == value.Site
-                                                            && f.KeyPopulation == value.KeyPopulation
-                                                            && f.AgeGroup == value.AgeGroup
-                                                            && f.Gender == value.Gender
-                                                            && (f.Indicator == deIndicator.Name || f.Indicator == deIndicator.Code)
-                                                            && f.Day == value.Day
-                                                            && f.Month == value.Month
-                                                            && f.Quarter == value.Quarter
-                                                            && f.Year == value.Year
-                                                            && f.PeriodType == value.PeriodType);
-            if (denominator != null)
-            {
-                return denominator.Numerator;
-            }
-            Guid ageGroupId; definedDimValue.TryGetValue("AgeGroup", out ageGroupId);
-            Guid siteId; definedDimValue.TryGetValue("Site", out siteId);
-            Guid keyPopulationId; definedDimValue.TryGetValue("KeyPopulation", out keyPopulationId);
-            Guid genderId; definedDimValue.TryGetValue("Gender", out genderId);
-            var _denominator = _dBContext.AggregatedValues.FirstOrDefault(f => f.SiteId == siteId
-                                                                               && f.KeyPopulationId == keyPopulationId
-                                                                               && f.AgeGroupId == ageGroupId
-                                                                               && f.GenderId == genderId
-                                                                               && f.IndicatorId == deIndicator.Id
-                                                                               && f.Day == value.Day
-                                                                               && f.Month == value.Month
-                                                                               && f.Quarter == value.Quarter
-                                                                               && f.Year == value.Year
-                                                                               && f.PeriodType == value.PeriodType);
-            if (_denominator == null)
-            {
-                return null;
-            }
-            return _denominator.Numerator;
-        }
-
         public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRows = null, string username = null)
         {
             if (string.IsNullOrEmpty(username))
@@ -654,8 +606,8 @@ namespace PQM_WebApp.Service
                 };
             }
 
-            //try
-            //{
+            try
+            {
                 errorRows = errorRows != null ? errorRows : new List<object>();
                 int succeed = 0;
                 int succeedWithUndefinedDimValue = 0;
@@ -693,7 +645,7 @@ namespace PQM_WebApp.Service
                     {
                         continue;
                     }
-                    var indicator = _dBContext.Indicators.FirstOrDefault(f => f.Name.Equals(data.Indicator) || f.Code.Equals(data.Indicator));
+                    var indicator = _dBContext.Indicators.FirstOrDefault(f => !f.IsDeleted && (f.Name.Equals(data.Indicator) || f.Code.Equals(data.Indicator)));
                     if (indicator == null)
                     {
                         errorRows.Add(new
@@ -817,7 +769,7 @@ namespace PQM_WebApp.Service
                 _dBContext.SaveChanges();
                 percentValues.ForEach(value =>
                 {
-                    var deIndicator = _dBContext.Indicators.FirstOrDefault(s => s.Id == value.Indicator.DenominatorIndicatorId);
+                    var deIndicator = _dBContext.Indicators.FirstOrDefault(s => !s.IsDeleted && s.Id == value.Indicator.DenominatorIndicatorId);
                     if (deIndicator != null)
                     {
                         var denominator = _dBContext.AggregatedValues.FirstOrDefault(f => f.SiteId == value.SiteId
@@ -870,18 +822,18 @@ namespace PQM_WebApp.Service
                         })
                     }
                 };
-            //}
-            //catch (Exception ex)
-            //{
-            //    return new ResultModel()
-            //    {
-            //        Succeed = false,
-            //        Error = new ErrorModel
-            //        {
-            //            ErrorMessage = ex.Message
-            //        },
-            //    };
-            //}
+            }
+            catch (Exception ex)
+            {
+                return new ResultModel()
+                {
+                    Succeed = false,
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = ex.Message
+                    },
+                };
+            }
         }
 
         public ResultModel ImportExcel(IFormFile file, string username = null)
