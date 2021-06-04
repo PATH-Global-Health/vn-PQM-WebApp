@@ -2,6 +2,13 @@
     $('#create-setting-modal-body').html(
         `<form>
             <div class="form-group">
+                <label for="type">Loại ngưỡng:</label>
+                <select id="type" class="form-control" required>
+                    <option value="1" selected>Giá trị</option>
+                    <option value="2">Mũi tên</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label>Tỉnh thành</label>
                 <select id="inputProvince" class="form-control" onchange="onProvinceChange()" required>
                     <option value="79" selected>Thành phố Hồ Chí Minh</option>
@@ -48,11 +55,11 @@ const onProvinceChange = () => {
                 .html(`<label for="inputDistrict">Quận huyện</label>
                         <select id="inputDistrict" class="form-control">
                         </select>`);
-            $('#inputDistrict').kendoDropDownList({
-                optionLabel: "-- Chọn quận/huyện --",
+            $('#inputDistrict').kendoMultiSelect({
                 dataTextField: "nameWithType",
                 dataValueField: "code",
                 dataSource: districts,
+                filter: "contains",
             });
         }
     );
@@ -102,8 +109,8 @@ const initIndicatorSelect = () => {
             value: "MMD",
         },
         {
-            text: "Interruption in Treatment",
-            value: "Interruption in Treatment",
+            text: "TX_ML",
+            value: "TX_ML",
         },
         {
             text: "% VL unsupressed",
@@ -122,16 +129,16 @@ const initIndicatorSelect = () => {
             value: "%PrEP 3M",
         },
         {
-            text: "HTS Positive",
-            value: "HTS Positive",
+            text: "HTS_TST_Positive",
+            value: "HTS_TST_Positive",
         },
         {
-            text: "%HIV+ referred",
-            value: "%HIV+ referred",
+            text: "HTS_TST_Recency",
+            value: "HTS_TST_Recency",
         },
         {
-            text: "%HTS recent",
-            value: "%HTS recent",
+            text: "POS_TO_ART",
+            value: "POS_TO_ART",
         },
     ];
     $('#inputIndicator').kendoDropDownList({
@@ -152,12 +159,26 @@ const loadThresholdList = () => {
                 .map(m =>
                         `<tr>
                             <td>${m.username}</td>
+                            <td>${m.type === 1 ? "Giá trị" : "Mũi tên"}</td>
                             <td>${m.provinceCode}</td>
                             <td>${m.districtCode}</td>
                             <td>${m.indicatorName}</td>
                             <td>${m.from}</td>
                             <td>${m.to}</td>
                             <td style="color: ${m.colorCode}">${m.colorCode}</td>
+                            <td>
+                                <button class="btn btn-outline-warning" style="margin-right: 5px">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                                      <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
+                                    </svg>
+                                </button>
+                                <button class="btn btn-outline-danger">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                    </svg>
+                                </button>
+                            </td>
                         </tr>`);
             $('#threshold-setting-list').html(rows);
         }
@@ -173,12 +194,13 @@ const createThreshold = () => {
         contentType: 'application/json',
         data: JSON.stringify(
             {
-                districtCode: $('#inputDistrict').val(),
+                districtCode: $('#inputDistrict').val().join(','),
                 provinceCode: $('#inputProvince').val(),
                 indicatorName: $('#inputIndicator').val(),
                 colorCode: $('#inputColor').val(),
                 from: Number.parseInt($('#inputFrom').val()),
-                to: Number.parseInt($('#inputTo').val())
+                to: Number.parseInt($('#inputTo').val()),
+                type: Number.parseInt($('#type').val())
             }),
         beforeSend: function (xhr) { xhr.setRequestHeader('Authorization', token); },
         success: function (data) {

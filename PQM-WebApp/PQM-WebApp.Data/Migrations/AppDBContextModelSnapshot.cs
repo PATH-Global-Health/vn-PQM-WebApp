@@ -72,147 +72,131 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<DateTime?>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("DateId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("DateUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Denominator")
+                    b.Property<int?>("Day")
                         .HasColumnType("int");
+
+                    b.Property<int>("Denominator")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("GenderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IndicatorId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("InvalidMessage")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsValid")
                         .HasColumnType("bit");
 
                     b.Property<Guid>("KeyPopulationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("MonthId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("Numerator")
+                    b.Property<int?>("Month")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("SexId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Numerator")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PeriodType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Quarter")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("SiteId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("Value")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AgeGroupId");
-
-                    b.HasIndex("DateId");
-
-                    b.HasIndex("IndicatorId");
-
-                    b.HasIndex("KeyPopulationId");
-
-                    b.HasIndex("MonthId");
-
-                    b.HasIndex("SexId");
-
-                    b.HasIndex("SiteId");
-
-                    b.ToTable("AggregatedValues");
-                });
-
-            modelBuilder.Entity("PQM_WebApp.Data.Entities.DimDate", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("MonthId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MonthId");
-
-                    b.ToTable("DimDates");
-                });
-
-            modelBuilder.Entity("PQM_WebApp.Data.Entities.DimMonth", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<byte>("MonthNumOfYear")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("YearId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("YearId");
-
-                    b.ToTable("DimMonths");
-                });
-
-            modelBuilder.Entity("PQM_WebApp.Data.Entities.DimYear", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("DimYears");
+                    b.HasIndex("AgeGroupId");
+
+                    b.HasIndex("GenderId");
+
+                    b.HasIndex("IndicatorId");
+
+                    b.HasIndex("KeyPopulationId");
+
+                    b.HasIndex("SiteId");
+
+                    b.ToTable("AggregatedValues");
+                });
+
+            modelBuilder.Entity("PQM_WebApp.Data.Entities.CategoryAlias", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Alias")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CategoryAliases");
+                });
+
+            modelBuilder.Entity("PQM_WebApp.Data.Entities.DataPermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("IndicatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ProvinceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataPermissions");
                 });
 
             modelBuilder.Entity("PQM_WebApp.Data.Entities.District", b =>
@@ -239,7 +223,7 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<double?>("Lat")
                         .HasColumnType("float");
 
-                    b.Property<double?>("Lon")
+                    b.Property<double?>("Lng")
                         .HasColumnType("float");
 
                     b.Property<string>("Name")
@@ -273,6 +257,35 @@ namespace PQM_WebApp.Data.Migrations
                     b.ToTable("Districts");
                 });
 
+            modelBuilder.Entity("PQM_WebApp.Data.Entities.Gender", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Gender");
+                });
+
             modelBuilder.Entity("PQM_WebApp.Data.Entities.Indicator", b =>
                 {
                     b.Property<Guid>("Id")
@@ -285,16 +298,28 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("DataType")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("DateCreated")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateUpdated")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("DenominatorIndicatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("IndicatorGroupId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsTotal")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -403,35 +428,6 @@ namespace PQM_WebApp.Data.Migrations
                     b.ToTable("Provinces");
                 });
 
-            modelBuilder.Entity("PQM_WebApp.Data.Entities.Sex", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Sex");
-                });
-
             modelBuilder.Entity("PQM_WebApp.Data.Entities.Site", b =>
                 {
                     b.Property<Guid>("Id")
@@ -456,17 +452,54 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<double?>("Lat")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Lng")
+                        .HasColumnType("float");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("SiteTypeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DistrictId");
 
+                    b.HasIndex("SiteTypeId");
+
                     b.ToTable("Sites");
+                });
+
+            modelBuilder.Entity("PQM_WebApp.Data.Entities.SiteType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SiteTypes");
                 });
 
             modelBuilder.Entity("PQM_WebApp.Data.Entities.ThresholdSetting", b =>
@@ -493,7 +526,7 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<double>("From")
                         .HasColumnType("float");
 
-                    b.Property<string>("IndicatorNamge")
+                    b.Property<string>("IndicatorName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
@@ -505,12 +538,62 @@ namespace PQM_WebApp.Data.Migrations
                     b.Property<double>("To")
                         .HasColumnType("float");
 
+                    b.Property<int?>("Type")
+                        .HasColumnType("int");
+
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("ThresholdSettings");
+                });
+
+            modelBuilder.Entity("PQM_WebApp.Data.Entities.UndefinedDimValue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Dimension")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("SourceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UndefinedValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UndefinedDimValues");
+                });
+
+            modelBuilder.Entity("PQM_WebApp.Data.Entities.UnsolvedDimValue", b =>
+                {
+                    b.Property<Guid>("AggregatedValueId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UndefinedDimValueId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AggregatedValueId", "UndefinedDimValueId");
+
+                    b.HasIndex("UndefinedDimValueId");
+
+                    b.ToTable("UnsolvedDimValues");
                 });
 
             modelBuilder.Entity("PQM_WebApp.Data.Entities.AggregatedValue", b =>
@@ -521,10 +604,11 @@ namespace PQM_WebApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PQM_WebApp.Data.Entities.DimDate", "Date")
+                    b.HasOne("PQM_WebApp.Data.Entities.Gender", "Gender")
                         .WithMany("AggregatedValues")
-                        .HasForeignKey("DateId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("GenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("PQM_WebApp.Data.Entities.Indicator", "Indicator")
                         .WithMany("AggregatedValues")
@@ -538,40 +622,11 @@ namespace PQM_WebApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PQM_WebApp.Data.Entities.DimMonth", "Month")
-                        .WithMany("AggregatedValues")
-                        .HasForeignKey("MonthId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PQM_WebApp.Data.Entities.Sex", "Sex")
-                        .WithMany("AggregatedValues")
-                        .HasForeignKey("SexId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("PQM_WebApp.Data.Entities.Site", "Site")
                         .WithMany()
                         .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("PQM_WebApp.Data.Entities.DimDate", b =>
-                {
-                    b.HasOne("PQM_WebApp.Data.Entities.DimMonth", "Month")
-                        .WithMany("Dates")
-                        .HasForeignKey("MonthId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PQM_WebApp.Data.Entities.DimMonth", b =>
-                {
-                    b.HasOne("PQM_WebApp.Data.Entities.DimYear", "Year")
-                        .WithMany("Months")
-                        .HasForeignKey("YearId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("PQM_WebApp.Data.Entities.District", b =>
@@ -597,6 +652,26 @@ namespace PQM_WebApp.Data.Migrations
                     b.HasOne("PQM_WebApp.Data.Entities.District", "District")
                         .WithMany("Sites")
                         .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PQM_WebApp.Data.Entities.SiteType", "SiteType")
+                        .WithMany()
+                        .HasForeignKey("SiteTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("PQM_WebApp.Data.Entities.UnsolvedDimValue", b =>
+                {
+                    b.HasOne("PQM_WebApp.Data.Entities.AggregatedValue", "AggregatedValue")
+                        .WithMany("UnsolvedDimValues")
+                        .HasForeignKey("AggregatedValueId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PQM_WebApp.Data.Entities.UndefinedDimValue", "UndefinedDimValue")
+                        .WithMany("UnsolvedDimValues")
+                        .HasForeignKey("UndefinedDimValueId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

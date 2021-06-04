@@ -4,13 +4,11 @@ let year = '2020';
 let month = '';
 let quarter = '1';
 let firstload = true;
-let thresholdSettings = [];
 
-
-function drillDown(groupIndicator) {
+const drillDown = (groupIndicator) => {
     if (groupIndicator !== 'PrEP' && groupIndicator !== 'Testing' && groupIndicator !== 'Treatment') return;
     console.log(`${groupIndicator} is clicked`);
-    var win = window.open(`${groupIndicator}?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`, '_blank');
+    var win = window.open(`${groupIndicator}?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}&lang=${languages._language}`, '_blank');
     win.focus();
 }
 
@@ -55,7 +53,7 @@ function createIndicator(indicator, hrTag) {
     let _hrElement = hrTag ? '<hr />' : '';
     let value = indicator.value.dataType === 1 ? indicator.value.value : (Math.round(((indicator.value.numerator / indicator.value.denominator) + Number.EPSILON) * 100) + '%');
     return `<div class="d-flex justify-content-between dashboard-indicator">
-                        <span class="align-middle">${indicator.name}</span>
+                        <span class="align-middle">${languages.translate('', indicator.name)}</span >
                         <span class="align-middle" style="color: ${indicator.value.criticalInfo}; font-size: 23px; font-weight: bold">
                             ${numberWithCommas(value)}
                             ${_infoElement}
@@ -144,12 +142,12 @@ function initIndicators() {
         treatment.forEach((indicator, idx, array) => {
             $("#treatment").append(createIndicator(indicator, idx !== array.length - 1));
         });
-        $("#treatment").append('<hr />');
-        $("#treatment").append(fakeIndicator('TB_PREW', 'N/A', 'black', null, null, false));
         initDrugsIndicators();
         initSHIIndicators();
         initServiceQualityIndicators();
-        fixContainerHeight();
+        if (data.length > 0) {
+            fixContainerHeight();
+        }
     });
 }
 
@@ -235,6 +233,18 @@ function checkURLParams() {
     console.log(`${year} - ${quarter} - ${month} - ${provinceCode} - ${districtCode}`);
 }
 
+const updateDashboardUI = () => {
+    let labels = [
+        { elementId: 'testingLabel', name: 'Testing' },
+        { elementId: 'prepLabel', name: 'PrEP' },
+        { elementId: 'treatmentLabel', name: 'Treatment' },
+        { elementId: 'drugLabel', name: 'Drug' },
+        { elementId: 'shiLabel', name: 'SHI' },
+        { elementId: 'sqLabel', name: 'Service Quality' },
+    ]
+    labels.forEach(label => $(`#${label.elementId}`).html(languages.translate('', label.name)));
+}
+
 const loadThresholdList = () => {
     let token = `Bearer ${getToken()}`;
     $.ajax({
@@ -244,19 +254,11 @@ const loadThresholdList = () => {
         success: function (data) {
             thresholdSettings = data;
             initIndicators();
+            updateDashboardUI();
         }
     });
 }
 
-const findPos = (obj) => {
-    var curtop = 0;
-    if (obj.offsetParent) {
-        do {
-            curtop += obj.offsetTop;
-        } while (obj = obj.offsetParent);
-        return [curtop];
-    }
-}
 
 const fixContainerHeight = () => {
     let containerHeight = $('.dashboard-container').height();
@@ -266,29 +268,33 @@ const fixContainerHeight = () => {
     let gap = containerHeight - testing.outerHeight(true) - prep.outerHeight(true) - treatment.outerHeight(true);
     let m = gap % 3;
     let g = (gap - m) / 3;
-    testing.height(testing.height() + g);
-    prep.height(prep.height() + g);
-    treatment.height(treatment.height() + g + m);
+    if (g > 0) {
+        testing.height(testing.height() + g);
+        prep.height(prep.height() + g);
+        treatment.height(treatment.height() + g + m);
+    }
     let drug = $('#drug-container');
     let shi = $('#shi-container');
     let sq = $('#service-quality-container');
     gap = containerHeight - drug.outerHeight(true) - shi.outerHeight(true) - sq.outerHeight(true);
     m = gap % 3;
     g = (gap - m) / 3;
-    drug.height(drug.height() + g);
-    shi.height(shi.height() + g);
-    sq.height(sq.height() + g + m);
+    if (g > 0) {
+        drug.height(drug.height() + g);
+        shi.height(shi.height() + g);
+        sq.height(sq.height() + g + m);
+    }
 }
+
+$(window).resize(() => {
+    fixContainerHeight();
+});
 
 $(document).ready(() => {
     checkURLParams();
     initFilterPanel();
-    loadThresholdList();
-
-    setTimeout(() => {
-        window.scroll(0, findPos(document.getElementById("filterPanel")));
-    }, 1000);
-});
+    languages.addCallback(loadThresholdList);
+}); 
 
 const applyFilter = () => {
     provinceCode = $('#inputProvince').val();

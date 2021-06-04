@@ -9,4 +9,12 @@ namespace PQM_WebApp.Data.Entities
         public string Name { get; set; }
         public int Order { get; set; }
     }
+
+    public class Dimension
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Code { get; set; }
+        public bool IsDeleted { get; set; }
+    }
 }

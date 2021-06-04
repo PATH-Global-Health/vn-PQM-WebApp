@@ -12,5 +12,6 @@
   <ItemGroup>
     <PackageReference Include="NPOI" Version="2.5.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="NEST" Version="7.12.0" />
   </ItemGroup>
 </Project>

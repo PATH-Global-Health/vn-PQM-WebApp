@@ -6,109 +6,8 @@
 <div class="container-fluid">
     <div class="row" style="background-color: whitesmoke;" id="filterPanel">
     </div>
-    <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around">
-        <div class="col-3 indicator-container">
-            <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">
-                    TX_Curr
-                </div>
-                <div class="row d-flex justify-content-center indicator-value">
-                    <span id="TX_Curr-value"></span>
-                </div>
-                <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="TX_Curr-percent">
+    <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around" id="indicatorPanel">
 
-                    </span>
-                </div>
-            </div>
-            <div id="TX_Curr_chart" class="indicator-infor-chart">
-
-            </div>
-        </div>
-        <div class="col-3 indicator-container">
-            <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">
-                    TX_New
-                </div>
-                <div class="row d-flex justify-content-center indicator-value" id="TX_New-value"></div>
-                <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="TX_New-percent">
-
-                    </span>
-                </div>
-            </div>
-            <div id="TX_New_chart" class="indicator-infor-chart">
-
-            </div>
-        </div>
-        <div class="col-3 indicator-container">
-            <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">
-                    MMD
-                </div>
-                <div class="row d-flex justify-content-center indicator-value" id="MMD-value"></div>
-                <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="MMD-percent">
-
-                    </span>
-                </div>
-            </div>
-            <div id="MMD_chart" class="indicator-infor-chart">
-
-            </div>
-        </div>
-    </div>
-    <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around">
-        <div class="col-3 indicator-container">
-            <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">
-                    Interruption in Treatment
-                </div>
-                <div class="row d-flex justify-content-center indicator-value">
-                    <span id="IT-value"></span>
-                </div>
-                <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="IT-percent">
-
-                    </span>
-                </div>
-            </div>
-            <div id="IT_chart" class="indicator-infor-chart">
-
-            </div>
-        </div>
-        <div class="col-3 indicator-container">
-            <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">
-                    % VL unsupressed
-                </div>
-                <div class="row d-flex justify-content-center indicator-value" id="pVL-value"></div>
-                <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="pVL-percent">
-
-                    </span>
-                </div>
-            </div>
-            <div id="pVL_chart" class="indicator-infor-chart">
-
-            </div>
-        </div>
-        <div class="col-3 indicator-container">
-            <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">
-                    TB_PREW
-                </div>
-                <div class="row d-flex justify-content-center indicator-value" id="TB_PREW-value"></div>
-                <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="TB_PREW-percent">
-
-                    </span>
-                </div>
-            </div>
-            <div id="TB_PREW_chart" class="indicator-infor-chart">
-
-            </div>
-        </div>
     </div>
     <div class="row dashboard-row">
         <div class="col-12" style="margin:15px">
@@ -156,6 +55,7 @@
 
 @section Scripts{
     <script src="~/js/variableChart.js"></script>
+    <script src="~/js/indicatorOverview.js"></script>
     <script src="~/js/filterComponent.js"></script>
     <script src="~/js/treatment.js"></script>
 }

@@ -31,7 +31,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _indicatorService.Get(pageIndex, pageSize);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPost]
@@ -39,7 +39,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _indicatorService.Create(model);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPut]
@@ -48,7 +48,7 @@ namespace PQM_WebApp.Controllers
             var rs = _indicatorService.Update(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpDelete]
@@ -57,7 +57,7 @@ namespace PQM_WebApp.Controllers
             var rs = _indicatorService.Delete(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpGet("/api/PrEP/indicators")]
@@ -68,18 +68,7 @@ namespace PQM_WebApp.Controllers
             {
                 return Ok(rs.Data);
             }
-            return BadRequest(rs.ErrorMessage);
-        }
-
-        [HttpGet("/api/Testing/indicators")]
-        public IActionResult TestingIndicators(int year, int quater, int? month, string provinceCode, string districtCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
-        {
-            var rs = _testingService.GetIndicators(year, quater, month, provinceCode, districtCode, ageGroups, keyPopulations, genders, clinnics);
-            if (rs.Succeed)
-            {
-                return Ok(rs.Data);
-            }
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpGet("/api/Treatment/indicators")]
@@ -90,26 +79,7 @@ namespace PQM_WebApp.Controllers
             {
                 return Ok(rs.Data);
             }
-            return BadRequest(rs.ErrorMessage);
-        }
-
-        [HttpPut("ImportByExcel")]
-        [Consumes("multipart/form-data")]
-        public IActionResult ImportByExcel([FromForm] IFormFile file, [FromQuery] string type)
-        {
-            _indicatorService.ImportExcel(file, type);
-            return Ok();
-        }
-
-        [HttpPost("/api/AggregateData")]
-        public IActionResult ImportAggregateData([FromBody] List<IndicatorImportModel> aggregateData)
-        {
-            var rs = _indicatorService.ImportIndicator(aggregateData);
-            if (rs.Succeed)
-            {
-                return Ok(rs.Data);
-            }
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

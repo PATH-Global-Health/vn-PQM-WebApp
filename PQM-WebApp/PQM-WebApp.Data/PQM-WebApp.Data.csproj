@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20210422040540_PQM_DB_v2.cs" />
+    <Compile Remove="Migrations\20210422040540_PQM_DB_v2.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ErrorMessages\" />
   </ItemGroup>
 
@@ -13,7 +18,7 @@
     <PackageReference Include="Mapster" Version="7.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.10">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

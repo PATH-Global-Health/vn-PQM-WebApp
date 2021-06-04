@@ -56,8 +56,11 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<IThresholdSettingService, ThresholdSettingService>();
             services.AddTransient<IAgeGroupService, AgeGroupService>();
             services.AddTransient<IKeyPopulationService, KeyPopulationService>();
-            services.AddTransient<ISexService, SexService>();
+            services.AddTransient<IGenderService, GenderService>();
             services.AddTransient<IIndicatorGroupService, IndicatorGroupService>();
+            services.AddTransient<ISiteTypeService, SiteTypeService>();
+            services.AddTransient<ICategoryAliasService, CategoryAliasService>();
+            services.AddTransient<IDataPermissionService, DataPermissionService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)
@@ -86,22 +89,27 @@ namespace PQM_WebApp.Extensions
             });
         }
 
-        private static void CreateIndex(IElasticClient client)
+        private static void CreateIndex(IElasticClient client, string index)
         {
-            var getResponse = client.Indices.Get("indicatorvalue");
+            var getResponse = client.Indices.Get(index);
             if (!getResponse.IsValid)
             {
-                var createIndexResponse = client.Indices.Create("indicatorvalue",
-                                                                    index => index.Settings(s => s.Analysis(a => a.Analyzers(aa => aa.Standard("default", sa => sa.StopWords("_none_")))))
-                                                                                  .Map<IndicatorElasticModel>(x => x.AutoMap())
-                                                            );
+                var createIndexResponse = client.Indices
+                    .Create(index,
+                            index => index.Settings(s => s.Analysis(a => a.Analyzers(aa => aa.Standard("default", sa => sa.StopWords("_none_")))))
+                                            .Map<IndicatorElasticModel>(_ => _.AutoMap()
+                                                                              .Properties(ps => ps.GeoPoint(s => s.Name(n => n.Location))
+                                                                                                  .Date(s => s.Name(n => n.Date))
+                                                                              )
+                                                                       )
+                    );
             }
         }
 
-        public static void AddElasticsearch(this IServiceCollection services, string url, string username, string password)
+        public static void AddElasticsearch(this IServiceCollection services, string url, string username, string password, string index)
         {
             var settings = new ConnectionSettings(new Uri(url))
-                .DefaultIndex("indicatorvalue")
+                .DefaultIndex(index)
                 .BasicAuthentication(username, password)
                 .PrettyJson()
                 .EnableDebugMode()
@@ -113,7 +121,12 @@ namespace PQM_WebApp.Extensions
 
             services.AddSingleton(client);
 
-            CreateIndex(client);
+            CreateIndex(client, index);
+        }
+
+        public static void ConfigCors(this IServiceCollection services)
+        {
+            services.AddCors(options => options.AddPolicy("AllowAll", builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
         }
     }
 }

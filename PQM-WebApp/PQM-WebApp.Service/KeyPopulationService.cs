@@ -47,7 +47,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -57,7 +57,7 @@ namespace PQM_WebApp.Service
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.KeyPopulations.Where(_ => _.IsDeleted == false);
+                var filter = _dbContext.KeyPopulations.AsSoftDelete(false);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<KeyPopulationViewModel>>();
                 result.Succeed = true;
@@ -74,11 +74,11 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var keyPopulation = _dbContext.KeyPopulations.Find(model.Id);
+                var keyPopulation = _dbContext.KeyPopulations.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (keyPopulation == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found key population: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found key population: {0}", model.Name);
                 }
                 else
                 {
@@ -96,7 +96,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -106,11 +106,11 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var keyPopulation = _dbContext.KeyPopulations.Find(model.Id);
+                var keyPopulation = _dbContext.KeyPopulations.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (keyPopulation == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found key population: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found key population: {0}", model.Name);
                 }
                 else
                 {
@@ -128,7 +128,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }

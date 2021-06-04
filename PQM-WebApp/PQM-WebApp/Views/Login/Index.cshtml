@@ -18,23 +18,22 @@
     <link rel="stylesheet" href="~/css/auth.css" />
 </head>
 <body class="text-center">
-    <form class="form-signin" onsubmit="return onLogin()">
-        <img src="/images/usaid-logo.PNG" alt="" width="250" height="auto">
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        <label for="inputUsername" class="sr-only">Email address</label>
-        <input type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-        <span id="loginError" style="display: none; color: red">Please check username or password!!</span>
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" value="remember-me" id="inputRememberMe"> Remember me
-            </label>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    <div style="position: absolute; top: 5px; right: 15px" id="selectLanguage">
+
+    </div>
+    <form class="form-signin" onsubmit="return onLogin()" id="loginForm">
+
         @*<p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>*@
     </form>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/axios/axios.min.js"></script>
+    <script src="~/js/utility.js"></script>
+    <script src="~/js/multipleLanguage.js"></script>
+    <script src="~/js/login.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
     <script src="~/js/auth.js"></script>
 </body>
 </html>
+
+

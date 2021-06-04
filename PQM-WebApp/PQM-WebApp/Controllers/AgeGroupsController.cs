@@ -34,7 +34,7 @@ namespace PQM_WebApp.Controllers
             var rs = _ageGroupService.Get(pageIndex, pageSize);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPost]
@@ -43,7 +43,7 @@ namespace PQM_WebApp.Controllers
             var rs = _ageGroupService.Create(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPut]
@@ -52,7 +52,7 @@ namespace PQM_WebApp.Controllers
             var rs = _ageGroupService.Update(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpDelete]
@@ -61,7 +61,7 @@ namespace PQM_WebApp.Controllers
             var rs = _ageGroupService.Delete(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

@@ -2,36 +2,6 @@
 let keyPopulations = [];
 let genders = [];
 let clinnics = [];
-let variables = [];
-
-const createChip = (name) => {
-    return `<div class="chip">
-                <span style="font-weight: bold">${name.split(':')[0]}</span>: ${name.split(':')[1]}
-                <span class="closebtn" onclick="removeVar('${name}')">×</span>
-            </div>`;
-}
-
-const updateVariablesComp = () => {
-    let elements = '';
-    variables.forEach(v => elements += createChip(v.name));
-    $("#variables").html(elements);
-}
-
-const addVar = (variable) => {
-    let v = variables.find(s => s.name === variable.name);
-    if (!v) {
-        variables.push(variable);
-        updateVariablesComp();
-        applyFilter();
-    }
-}
-
-const removeVar = (name) => {
-    variables = variables.filter(s => s.name !== name);
-    updateVariablesComp();
-    applyFilter();
-}
-
 
 const _initAgeGroupChart = (response, htmlElement) => {
     console.log('here');
@@ -68,10 +38,6 @@ const _initAgeGroupChart = (response, htmlElement) => {
             majorGridLines: {
                 visible: false
             }
-        },
-        seriesClick: function (e) {
-            let a = ageGroups.find(ag => ag.name === e.category);
-            addVar({ name: `Age group: ${e.category}`, id: a.id, type: 'AgeGroup' });
         }
     });
 }
@@ -110,10 +76,6 @@ const _initGenderChart = (response, htmlElement) => {
             majorGridLines: {
                 visible: false
             }
-        },
-        seriesClick: function (e) {
-            let a = genders.find(g => g.name === e.category);
-            addVar({ name: `Gender: ${e.category}`, id: a.id, type: 'Gender' });
         }
     });
 }
@@ -152,10 +114,6 @@ const _initKeyPopulationsChart = (response, htmlElement) => {
             majorGridLines: {
                 visible: false
             }
-        },
-        seriesClick: function (e) {
-            let a = keyPopulations.find(g => g.name === e.category);
-            addVar({ name: `Key population: ${e.category}`, id: a.id, type: 'KeyPopulation' });
         }
     });
 }
@@ -209,58 +167,7 @@ const _initClinicsChart = (response, htmlElement) => {
             majorGridLines: {
                 visible: false
             }
-        },
-        seriesClick: function (e) {
-            let a = clinnics.find(g => g.name === e.category);
-            addVar({ name: `Clinnic: ${e.category}`, id: a.id, type: 'Clinnic' });
         }
     });
 }
 
-const initDataChart = (indicator, elementId, queries) => {
-    let ageGroupQuery = queries ? queries.filter(v => v.type === 'AgeGroup').map(s => s.id).join(',') : '';
-    let keyPopulationQuery = queries ? queries.filter(v => v.type === 'KeyPopulation').map(s => s.id).join(',') : '';
-    let genderQuery = queries ? queries.filter(v => v.type === 'Gender').map(s => s.id).join(',') : '';
-    let clinnicQuery = queries ? queries.filter(v => v.type === 'Clinnic').map(s => s.id).join(',') : '';
-    $(`#${elementId}`).html('');
-    $.get(`/api/AggregatedValues/ChartData?year=${year}&quarter=${quarter}&month=${month}&provinceCode=${provinceCode}&districtCode=${districtCode}`
-        + `&ageGroups=${ageGroupQuery}&genders=${genderQuery}&keyPopulations=${keyPopulationQuery}&clinnics=${clinnicQuery}&indicator=${indicator}`,
-        function (response) {
-            $(`#${elementId}`).kendoChart({
-                seriesDefaults: {
-                    type: "line",
-                    style: "smooth"
-                },
-                series: [{
-                    data: response.map(s => s.value),
-                    color: "#62666e",
-                    tooltip: {
-                        visible: true
-                    }
-                }],
-                categoryAxis: {
-                    categories: response.map(s => s.name),
-                    majorGridLines: {
-                        visible: false
-                    },
-                    majorTicks: {
-                        visible: false
-                    }
-                },
-                valueAxis: {
-                    title: {
-                    },
-                    majorGridLines: {
-                        visible: false
-                    },
-                    visible: true
-                },
-                tooltip: {
-                    visible: true,
-                    format: "{0}%",
-                    template: "#= category #: #= value #"
-                }
-            });
-        }
-    );
-}

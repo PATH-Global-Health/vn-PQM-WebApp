@@ -1,4 +1,41 @@
-﻿const numberWithCommas = (x) => {
+﻿const insertParam = (key, value) => {
+    key = encodeURIComponent(key);
+    value = encodeURIComponent(value);
+
+    // kvp looks like ['key1=value1', 'key2=value2', ...]
+    var kvp = document.location.search.substr(1).split('&');
+    let i = 0;
+
+    for (; i < kvp.length; i++) {
+        if (kvp[i].startsWith(key + '=')) {
+            let pair = kvp[i].split('=');
+            pair[1] = value;
+            kvp[i] = pair.join('=');
+            break;
+        }
+    }
+
+    if (i >= kvp.length) {
+        kvp[kvp.length] = [key, value].join('=');
+    }
+
+    // can return this or...
+    let params = kvp.join('&');
+
+    // reload page with new params
+    document.location.search = params;
+}
+
+const getUrlParam = (name, url) => {
+    if (!url) url = location.href;
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    var regexS = "[\\?&]" + name + "=([^&#]*)";
+    var regex = new RegExp(regexS);
+    var results = regex.exec(url);
+    return results == null ? null : results[1];
+}
+
+const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
@@ -14,3 +51,63 @@ const getBoundary = (key) => {
     }
     return [];
 }
+
+const customRound = (numerator, denominator) => {
+    let d = numerator / denominator;
+    let r = Math.round(d * 10000) / 10000;
+    return r;
+}
+
+const findPos = (obj) => {
+    var curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+        return [curtop];
+    }
+}
+
+const getToken = () => {
+    return sessionStorage.getItem('token') !== null ? sessionStorage.getItem('token') : localStorage.getItem('token');
+}
+
+const setToken = (token, remember) => {
+    if (remember) {
+        localStorage.setItem('token', token);
+    } else {
+        sessionStorage.setItem('token', token);
+    }
+}
+
+const httpClient = {
+    callApi: async ({
+        method = 'GET',
+        contentType = '',
+        url,
+        data,
+        params,
+        onUploadProgress,
+        responseType,
+        cancelToken: isCancel,
+    }) => {
+        const token = getToken(); // token
+        const headerToken = token ? { Authorization: `bearer ${token}` } : null;
+        if (typeof cancelToken !== typeof undefined) {
+            cancelToken.cancel('Operation canceled due to new request.');
+        }
+        cancelToken = axios.CancelToken.source();
+
+        return axios({
+            method,
+            contentType,
+            url,
+            headers: { ...headerToken },
+            data,
+            params,
+            onUploadProgress,
+            responseType,
+            cancelToken: isCancel && cancelToken.token,
+        });
+    },
+};

@@ -10,5 +10,6 @@ namespace PQM_WebApp.Data.Entities
         public double From { get; set; }
         public double To { get; set; }
         public string ColorCode { get; set; } //hexa
+        public int? Type { get; set; }
     }
 }

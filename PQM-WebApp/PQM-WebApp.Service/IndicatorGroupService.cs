@@ -48,7 +48,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -58,7 +58,7 @@ namespace PQM_WebApp.Service
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.IndicatorGroups.Where(_ => _.IsDeleted == false);
+                var filter = _dbContext.IndicatorGroups.AsSoftDelete(false);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<IndicatorGroupViewModel>>();
                 result.Succeed = true;
@@ -75,11 +75,11 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var indicatorGroup = _dbContext.IndicatorGroups.Find(model.Id);
+                var indicatorGroup = _dbContext.IndicatorGroups.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (indicatorGroup == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
                 }
                 else
                 {
@@ -97,7 +97,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -107,16 +107,23 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
-                var indicatorGroup = _dbContext.IndicatorGroups.Find(model.Id);
+                var indicatorGroup = _dbContext.IndicatorGroups.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (indicatorGroup == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
                 }
                 else
                 {
                     indicatorGroup.IsDeleted = true;
                     indicatorGroup.DateUpdated = DateTime.Now;
+                    if (indicatorGroup.Indicators != null)
+                    {
+                        foreach (var indicator in indicatorGroup.Indicators)
+                        {
+                            indicator.IsDeleted = true;
+                        }
+                    }
                     _dbContext.IndicatorGroups.Update(indicatorGroup);
                     rs.Succeed = _dbContext.SaveChanges() > 0;
                     if (rs.Succeed)
@@ -129,7 +136,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
