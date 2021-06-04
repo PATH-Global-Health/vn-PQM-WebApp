@@ -24,7 +24,9 @@ namespace PQM_WebApp.Data.Models
         public GeoCoordinate Location { get; set; }
         public string Site { get; set; }
         public string DistrictCode { get; set; } //district of site
+        public string DistrictName { get; set; }
         public string ProvinceCode { get; set; } //province of site
+        public string ProvinceName { get; set; }
         //time dimensions
         public string PeriodType { get; set; }
         public int Year { get; set; }
@@ -36,5 +38,8 @@ namespace PQM_WebApp.Data.Models
         public int ValueType { get; set; } //1: number; 2: percent
         public int Denominator { get; set; }
         public int Numerator { get; set; }
+        //last data for data trend
+        public int LastDenominator { get; set; }
+        public int LastNumerator { get; set; }
     }
 }

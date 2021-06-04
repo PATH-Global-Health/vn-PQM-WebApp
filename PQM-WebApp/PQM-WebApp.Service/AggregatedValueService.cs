@@ -58,7 +58,7 @@ namespace PQM_WebApp.Service
         private const string INDICATOR_NUMERATOR = nameof(IndicatorElasticModel.Numerator);
 
 
-        private readonly AppDBContext _dBContext;
+        private readonly AppDBContext _dbContext;
         private readonly ElasticClient _elasticClient;
 
         private IConfiguration Configuration { get; }
@@ -66,7 +66,7 @@ namespace PQM_WebApp.Service
 
         public AggregatedValueService(AppDBContext dBContext, ElasticClient elasticClient, IConfiguration configuration)
         {
-            _dBContext = dBContext;
+            _dbContext = dBContext;
             _elasticClient = elasticClient;
             Configuration = configuration;
             _aggregatedValueIndex = Configuration["elasticsearch:index"];
@@ -78,10 +78,10 @@ namespace PQM_WebApp.Service
             result.Succeed = true;
             try
             {
-                var dims = groupBy == "AgeGroup" ? _dBContext.AgeGroups.ToList().Select(s => s.Adapt<DimensionViewModel>())
-                    : groupBy == "KeyPopulation" ? _dBContext.KeyPopulations.ToList().Select(s => s.Adapt<DimensionViewModel>())
-                    : groupBy == "Gender" ? _dBContext.Gender.ToList().Select(s => s.Adapt<DimensionViewModel>())
-                    : _dBContext.Sites.ToList().Select(s => s.Adapt<DimensionViewModel>());
+                var dims = groupBy == "AgeGroup" ? _dbContext.AgeGroups.ToList().Select(s => s.Adapt<DimensionViewModel>())
+                    : groupBy == "KeyPopulation" ? _dbContext.KeyPopulations.ToList().Select(s => s.Adapt<DimensionViewModel>())
+                    : groupBy == "Gender" ? _dbContext.Gender.ToList().Select(s => s.Adapt<DimensionViewModel>())
+                    : _dbContext.Sites.ToList().Select(s => s.Adapt<DimensionViewModel>());
                 var periodType = month == null ? "Quarter" : "Month";
                 var _districts = !string.IsNullOrEmpty(districtCode) ? districtCode.Split(',').ToList() : new List<string>();
                 var response = SearchOnElastic(provinceCode: provinceCode, districts: _districts
@@ -126,10 +126,10 @@ namespace PQM_WebApp.Service
         {
             var toMonth = quater == 1 ? 3 : quater == 2 ? 6 : quater == 3 ? 9 : 12;
             var _districts = !string.IsNullOrEmpty(districtCode) ? districtCode.Split(',') : null;
-            var districts = _dBContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || _districts.Contains(d.Code))).Select(s => s.Id);
-            var sites = _dBContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
+            var districts = _dbContext.Districts.Where(d => d.Province.Code == provinceCode && (string.IsNullOrEmpty(districtCode) || _districts.Contains(d.Code))).Select(s => s.Id);
+            var sites = _dbContext.Sites.Where(s => districts.Contains(s.DistrictId)).Select(s => s.Id);
             var limit = month == null ? year * 100 + toMonth : year * 100 + month;
-            var aggregatedValues = _dBContext.AggregatedValues.Where(w => (w.Month + w.Year * 100 <= limit) && sites.Contains(w.SiteId) && w.Indicator.Name == indicator);
+            var aggregatedValues = _dbContext.AggregatedValues.Where(w => (w.Month + w.Year * 100 <= limit) && sites.Contains(w.SiteId) && w.Indicator.Name == indicator);
             if (!string.IsNullOrEmpty(ageGroups))
             {
                 var _ageGroups = ageGroups.Split(',').Select(s => Guid.Parse(s));
@@ -317,7 +317,7 @@ namespace PQM_WebApp.Service
             var _genders = !string.IsNullOrEmpty(genders) ? genders.Split(',').ToList() : new List<string>();
             var _sites = !string.IsNullOrEmpty(sites) ? sites.Split(',').ToList() : new List<string>();
 
-            var indicators = _dBContext.Indicators.Include(i => i.IndicatorGroup).ToList();
+            var indicators = _dbContext.Indicators.Include(i => i.IndicatorGroup).ToList();
             quarter = month == null ? quarter : null;
             var periodType = month == null ? "Quarter" : "Month";
             //old data
@@ -416,56 +416,130 @@ namespace PQM_WebApp.Service
             };
         }
 
+
+
         public ResultModel PopulateData(string indicator, int year, int month, int? day = null, bool all = false, bool makeDeletion = false)
         {
             if (makeDeletion)
             {
                 _elasticClient.DeleteByQuery<IndicatorElasticModel>(del => del.Index(_aggregatedValueIndex).Query(q => q.QueryString(qs => qs.Query("*"))));
             }
+            var periods = new List<string>
+            {
+                "day",
+                "month",
+                "quarter",
+                "year"
+            };
+            var data = _dbContext.AggregatedValues
+                                .Where(w => all || (w.Month == month && w.Year == year && w.Indicator.Name == indicator));
 
-            var data = _dBContext.AggregatedValues
-                                .Where(w => all || (w.Month == month && w.Year == year && w.Indicator.Name == indicator))
-                                .Select(s => new IndicatorElasticModel
-                                {
-                                    IndicatorName = s.Indicator.Name,
-                                    IndicatorCode = s.Indicator.Code,
-                                    IndicatorGroup = s.Indicator.IndicatorGroup.Name,
-                                    IsTotal = s.Indicator.IsTotal.Value,
-                                    Quarter = s.Quarter,
-                                    DistrictCode = s.Site.District.Code,
-                                    ProvinceCode = s.Site.District.Province.Code,
-                                    Location = (s.Site.Lat != null && s.Site.Lng != null) ? new GeoCoordinate(s.Site.Lat.Value, s.Site.Lng.Value) : null,
-                                    ValueType = s.DataType == DataType.Number ? 1 : 2,
-                                    Denominator = s.Denominator,
-                                    Numerator = s.Numerator,
-                                    AgeGroup = s.AgeGroup.Name,
-                                    KeyPopulation = s.KeyPopulation.Name,
-                                    Site = s.Site.Name,
-                                    Gender = s.Gender.Name,
-                                    PeriodType = s.PeriodType,
-
-                                    Month = !all ? month : s.Month,
-                                    Year = !all ? year : s.Year,
-                                    Day = !all ? day : s.Day,
-                                }).ToList();
+            var populateData = new List<IndicatorElasticModel>();
             foreach (var s in data)
             {
+                DateTime date = new DateTime();
                 if (s.PeriodType.ToLower() == "month")
                 {
-                    s.Date = new DateTime(s.Year, s.Month.Value, DateTime.DaysInMonth(s.Year, s.Month.Value));
+                    date = new DateTime(s.Year, s.Month.Value, DateTime.DaysInMonth(s.Year, s.Month.Value));
                 }
                 else if (s.PeriodType.ToLower() == "quarter")
                 {
                     var _day = s.Quarter.Value == 1 ? 31 : s.Quarter.Value == 2 ? 30 : s.Quarter.Value == 3 ? 30 : 31;
                     var _month = s.Quarter.Value == 1 ? 3 : s.Quarter.Value == 2 ? 6 : s.Quarter.Value == 3 ? 9 : 12;
-                    s.Date = new DateTime(s.Year, _month, _day);
+                    date = new DateTime(s.Year, _month, _day);
                 }
+                else if (s.PeriodType.ToLower() == "day")
+                {
+                    date = new DateTime(s.Year, s.Month.Value, s.Day.Value);
+                }
+                var periodType = s.PeriodType.ToLower();
+                var periodIndex = periods.IndexOf(periodType);
+                DateTime lastDate = new DateTime();
+
+                if (periodType == "day")
+                {
+                    lastDate = date.AddDays(-1);
+                }
+                else if (periodType == "month")
+                {
+                    lastDate = date.AddMonths(-1);
+                }
+                else if (periodType == "quarter")
+                {
+                    lastDate = date.AddMonths(-3);
+                }
+                else if (periodType == "year")
+                {
+                    lastDate = date.AddYears(-1);
+                };
+                int lastYear = lastDate.Year, lastQuarter = lastDate.Quarter(), lastMonth = lastDate.Month, lastDay = lastDate.Day;
+                var lastData = _dbContext.AggregatedValues
+                                         .FirstOrDefault(f => f.SiteId == s.SiteId
+                                                        && f.KeyPopulationId == s.KeyPopulationId
+                                                        && f.AgeGroupId == s.AgeGroupId
+                                                        && f.GenderId == s.GenderId
+                                                        && f.IndicatorId == s.IndicatorId
+                                                        && (periodIndex > 0 || f.Day == lastDay)
+                                                        && (periodIndex > 1 || f.Month == lastMonth)
+                                                        && (periodIndex > 2 || f.Quarter == lastQuarter)
+                                                        && f.Year == lastYear
+                                                        && f.PeriodType == s.PeriodType);
+                if (lastData == null)
+                {
+                    var n = 1;
+                }
+                var lastN = lastData != null ? lastData.Numerator : 0;
+                var lastD = lastData != null ? lastData.Denominator : 0;
+                populateData.Add(new IndicatorElasticModel
+                {
+                    IndicatorName = s.Indicator.Name,
+                    IndicatorCode = s.Indicator.Code,
+                    IndicatorGroup = s.Indicator.IndicatorGroup.Name,
+                    IsTotal = s.Indicator.IsTotal.Value,
+                    Quarter = s.Quarter,
+                    DistrictCode = s.Site.District.Code,
+                    DistrictName = s.Site.District.NameWithType,
+                    ProvinceCode = s.Site.District.Province.Code,
+                    ProvinceName = s.Site.District.Province.NameWithType,
+                    Location = (s.Site.Lat != null && s.Site.Lng != null) ? new GeoCoordinate(s.Site.Lat.Value, s.Site.Lng.Value) : null,
+                    ValueType = s.DataType == DataType.Number ? 1 : 2,
+                    Denominator = s.Denominator,
+                    Numerator = s.Numerator,
+                    LastDenominator = lastD,
+                    LastNumerator = lastN,
+                    AgeGroup = s.AgeGroup.Name,
+                    KeyPopulation = s.KeyPopulation.Name,
+                    Site = s.Site.Name,
+                    Gender = s.Gender.Name,
+                    PeriodType = s.PeriodType,
+
+                    Month = !all ? month : s.Month,
+                    Year = !all ? year : s.Year,
+                    Day = !all ? day : s.Day,
+                }) ;
+                populateData.ForEach(s =>
+                {
+                    if (s.PeriodType.ToLower() == "month")
+                    {
+                        s.Date = new DateTime(s.Year, s.Month.Value, DateTime.DaysInMonth(s.Year, s.Month.Value));
+                    }
+                    else if (s.PeriodType.ToLower() == "quarter")
+                    {
+                        var _day = s.Quarter.Value == 1 ? 31 : s.Quarter.Value == 2 ? 30 : s.Quarter.Value == 3 ? 30 : 31;
+                        var _month = s.Quarter.Value == 1 ? 3 : s.Quarter.Value == 2 ? 6 : s.Quarter.Value == 3 ? 9 : 12;
+                        s.Date = new DateTime(s.Year, _month, _day);
+                    }
+                    else if (s.PeriodType.ToLower() == "day")
+                    {
+                        s.Date = new DateTime(s.Year, s.Month.Value, s.Day.Value);
+                    }
+                });
             }
             var pageSize = 100;
-            var pageCount = data.Count / pageSize + (data.Count % pageSize != 0 ? 1 : 0);
+            var pageCount = populateData.Count / pageSize + (populateData.Count % pageSize != 0 ? 1 : 0);
             for (var index = 0; index < pageCount; index++)
             {
-                var response = _elasticClient.IndexMany(data.Skip(pageSize * index).Take(pageSize), _aggregatedValueIndex);
+                var response = _elasticClient.IndexMany(populateData.Skip(pageSize * index).Take(pageSize), _aggregatedValueIndex);
             }
 
             return new ResultModel()
@@ -490,6 +564,7 @@ namespace PQM_WebApp.Service
             } //no need month and day when period is quarter
             else if (data.PeriodType.Equals("Month", StringComparison.OrdinalIgnoreCase))
             {
+                data.Quarter = (new DateTime(data.Year, data.Month.Value, 1)).Quarter(); //fix quarter
                 data.Day = null;
             } //no need day when period is month
             var hasQuarter = data.Quarter != null;
@@ -525,7 +600,7 @@ namespace PQM_WebApp.Service
             {
                 return null;
             }
-            var dim = _dBContext.Set(typeOfCategory).Adapt<List<Dimension>>()
+            var dim = _dbContext.Set(typeOfCategory).Adapt<List<Dimension>>()
                 .FirstOrDefault(s => !s.IsDeleted && (s.Name == name || s.Code == name));
             if (dim != null)
             {
@@ -533,7 +608,7 @@ namespace PQM_WebApp.Service
             }
             else
             {
-                var na = _dBContext.Set(typeOfCategory).Adapt<List<Dimension>>().FirstOrDefault(s => s.Name == "N/A");
+                var na = _dbContext.Set(typeOfCategory).Adapt<List<Dimension>>().FirstOrDefault(s => s.Name == "N/A");
                 undefinedDimValue = new UndefinedDimValue
                 {
                     Dimension = category,
@@ -608,12 +683,13 @@ namespace PQM_WebApp.Service
 
             try
             {
+                using var transaction = _dbContext.Database.BeginTransaction();
                 errorRows = errorRows != null ? errorRows : new List<object>();
                 int succeed = 0;
                 int succeedWithUndefinedDimValue = 0;
                 int updated = 0;
                 var undefinedDimValues = new List<UndefinedDimValue>();
-                var permissions = _dBContext.DataPermissions
+                var permissions = _dbContext.DataPermissions
                     .Where(s => s.Type == DataPermissionType.Write && s.Username == username)
                     .ToList();
                 var percentValues = new List<AggregatedValue>();
@@ -645,7 +721,7 @@ namespace PQM_WebApp.Service
                     {
                         continue;
                     }
-                    var indicator = _dBContext.Indicators.FirstOrDefault(f => !f.IsDeleted && (f.Name.Equals(data.Indicator) || f.Code.Equals(data.Indicator)));
+                    var indicator = _dbContext.Indicators.FirstOrDefault(f => !f.IsDeleted && (f.Name.Equals(data.Indicator) || f.Code.Equals(data.Indicator)));
                     if (indicator == null)
                     {
                         errorRows.Add(new
@@ -663,7 +739,7 @@ namespace PQM_WebApp.Service
                     #region check permission
                     if (username != "admin")
                     {
-                        var site = _dBContext.Sites.Include(s => s.District).FirstOrDefault(s => s.Id == siteId);
+                        var site = _dbContext.Sites.Include(s => s.District).FirstOrDefault(s => s.Id == siteId);
                         if (site == null || site.Name == "N/A")
                         {
                             errorRows.Add(new
@@ -686,7 +762,7 @@ namespace PQM_WebApp.Service
                     }
                     #endregion
                     #region add aggregated value to database
-                    var current = _dBContext.AggregatedValues.FirstOrDefault(f => f.SiteId == siteId
+                    var current = _dbContext.AggregatedValues.FirstOrDefault(f => f.SiteId == siteId
                                                                                && f.KeyPopulationId == keyPopulationId
                                                                                && f.AgeGroupId == ageGroupId
                                                                                && f.GenderId == genderId
@@ -702,7 +778,7 @@ namespace PQM_WebApp.Service
                         {
                             current.Numerator = data.Numerator;
                             current.Denominator = data.Denominator != null ? data.Denominator.Value : 0;
-                            _dBContext.AggregatedValues.Update(current);
+                            _dbContext.AggregatedValues.Update(current);
                             updated++;
                             if (current.DataType == DataType.Percent)
                             {
@@ -734,20 +810,20 @@ namespace PQM_WebApp.Service
                             IsValid = isValid,
                             InvalidMessage = invalidMessage,
                         };
-                        _dBContext.AggregatedValues.Add(aggregatedValue);
+                        _dbContext.AggregatedValues.Add(aggregatedValue);
                         if (localUndefinedDimValues.Count > 0)
                         {
                             succeedWithUndefinedDimValue++;
                             localUndefinedDimValues.ToList().ForEach(u =>
                             {
-                                var undefinedDimValue = _dBContext.UndefinedDimValues.FirstOrDefault(s => s.Dimension == u.Value.Dimension
+                                var undefinedDimValue = _dbContext.UndefinedDimValues.FirstOrDefault(s => s.Dimension == u.Value.Dimension
                                                                             && s.UndefinedValue == u.Value.UndefinedValue);
                                 if (undefinedDimValue == null)
                                 {
                                     undefinedDimValue = u.Value;
-                                    _dBContext.UndefinedDimValues.Add(undefinedDimValue);
+                                    _dbContext.UndefinedDimValues.Add(undefinedDimValue);
                                 }
-                                _dBContext.UnsolvedDimValues.Add(new UnsolvedDimValue()
+                                _dbContext.UnsolvedDimValues.Add(new UnsolvedDimValue()
                                 {
                                     AggregatedValueId = aggregatedValue.Id,
                                     UndefinedDimValueId = undefinedDimValue.Id,
@@ -766,13 +842,15 @@ namespace PQM_WebApp.Service
                     }
                     #endregion
                 }
-                _dBContext.SaveChanges();
+                _dbContext.SaveChanges();
+
+                //update denominator
                 percentValues.ForEach(value =>
                 {
-                    var deIndicator = _dBContext.Indicators.FirstOrDefault(s => !s.IsDeleted && s.Id == value.Indicator.DenominatorIndicatorId);
+                    var deIndicator = _dbContext.Indicators.FirstOrDefault(s => !s.IsDeleted && s.Id == value.Indicator.DenominatorIndicatorId);
                     if (deIndicator != null)
                     {
-                        var denominator = _dBContext.AggregatedValues.FirstOrDefault(f => f.SiteId == value.SiteId
+                        var denominator = _dbContext.AggregatedValues.FirstOrDefault(f => f.SiteId == value.SiteId
                                                                                && f.KeyPopulationId == value.KeyPopulationId
                                                                                && f.AgeGroupId == value.AgeGroupId
                                                                                && f.GenderId == value.GenderId
@@ -802,9 +880,10 @@ namespace PQM_WebApp.Service
                         value.IsValid = false;
                         value.InvalidMessage = "Can not find the denominator data";
                     }
-                    _dBContext.AggregatedValues.Update(value);
+                    _dbContext.AggregatedValues.Update(value);
                 });
-                _dBContext.SaveChanges();
+                _dbContext.SaveChanges();
+                transaction.Commit();
                 return new ResultModel()
                 {
                     Succeed = true,
@@ -900,7 +979,7 @@ namespace PQM_WebApp.Service
             , Guid? indicatorId = null, Guid? ageGroupId = null, Guid? genderId = null, Guid? keyPopulationId = null
             , Guid? provinceId = null, Guid? districId = null, Guid? siteId = null)
         {
-            var filter = _dBContext.AggregatedValues.Where(w => true);
+            var filter = _dbContext.AggregatedValues.Where(w => true);
             if (!string.IsNullOrEmpty(period))
             {
                 filter = filter.Where(w => w.PeriodType == period);
@@ -939,13 +1018,13 @@ namespace PQM_WebApp.Service
             }
             else if (districId != null)
             {
-                var sites = _dBContext.Sites.Where(s => s.DistrictId == districId).Select(s => s.Id);
+                var sites = _dbContext.Sites.Where(s => s.DistrictId == districId).Select(s => s.Id);
                 filter = filter.Where(w => sites.Contains(w.SiteId));
             }
             else if (provinceId != null)
             {
-                var districs = _dBContext.Districts.Where(s => s.ProvinceId == provinceId).Select(s => s.Id);
-                var sites = _dBContext.Sites.Where(s => districs.Contains(s.DistrictId)).Select(s => s.Id);
+                var districs = _dbContext.Districts.Where(s => s.ProvinceId == provinceId).Select(s => s.Id);
+                var sites = _dbContext.Sites.Where(s => districs.Contains(s.DistrictId)).Select(s => s.Id);
                 filter = filter.Where(w => sites.Contains(w.SiteId));
             }
             return new PagingModel
@@ -1003,12 +1082,12 @@ namespace PQM_WebApp.Service
             }
             #endregion
             #region add aggregated value to database
-            var indicator = _dBContext.Indicators.FirstOrDefault(f => f.Name.Equals(aggregatedValue.Indicator));
+            var indicator = _dbContext.Indicators.FirstOrDefault(f => f.Name.Equals(aggregatedValue.Indicator));
             Guid ageGroupId; definedDimValue.TryGetValue("AgeGroup", out ageGroupId);
             Guid siteId; definedDimValue.TryGetValue("Site", out siteId);
             Guid keyPopulationId; definedDimValue.TryGetValue("KeyPopulation", out keyPopulationId);
             Guid genderId; definedDimValue.TryGetValue("Gender", out genderId);
-            var current = _dBContext.AggregatedValues.FirstOrDefault(f => f.SiteId == siteId
+            var current = _dbContext.AggregatedValues.FirstOrDefault(f => f.SiteId == siteId
                                                                        && f.KeyPopulationId == keyPopulationId
                                                                        && f.AgeGroupId == ageGroupId
                                                                        && f.GenderId == genderId
@@ -1051,16 +1130,16 @@ namespace PQM_WebApp.Service
                     Year = aggregatedValue.Year,
                     PeriodType = aggregatedValue.PeriodType,
                 };
-                _dBContext.AggregatedValues.Add(_aggregatedValue);
+                _dbContext.AggregatedValues.Add(_aggregatedValue);
             }
             #endregion
-            rs.Succeed = _dBContext.SaveChanges() > 0;
+            rs.Succeed = _dbContext.SaveChanges() > 0;
             return rs;
         }
 
         public ResultModel Delete(Guid id)
         {
-            var aggregatedValue = _dBContext.AggregatedValues.FirstOrDefault(s => s.Id == id);
+            var aggregatedValue = _dbContext.AggregatedValues.FirstOrDefault(s => s.Id == id);
             if (aggregatedValue == null)
             {
                 return new ResultModel
@@ -1074,12 +1153,12 @@ namespace PQM_WebApp.Service
             }
             foreach (var u in aggregatedValue.UnsolvedDimValues)
             {
-                _dBContext.UnsolvedDimValues.Remove(u);
+                _dbContext.UnsolvedDimValues.Remove(u);
             }
-            _dBContext.AggregatedValues.Remove(aggregatedValue);
+            _dbContext.AggregatedValues.Remove(aggregatedValue);
             var rs = new ResultModel()
             {
-                Succeed = _dBContext.SaveChanges() > 0
+                Succeed = _dbContext.SaveChanges() > 0
             };
             return rs;
         }
@@ -1130,12 +1209,12 @@ namespace PQM_WebApp.Service
             }
             #endregion
             #region add aggregated value to database
-            var indicator = _dBContext.Indicators.FirstOrDefault(f => f.Name.Equals(aggregatedValue.Indicator));
+            var indicator = _dbContext.Indicators.FirstOrDefault(f => f.Name.Equals(aggregatedValue.Indicator));
             Guid ageGroupId; definedDimValue.TryGetValue("AgeGroup", out ageGroupId);
             Guid siteId; definedDimValue.TryGetValue("Site", out siteId);
             Guid keyPopulationId; definedDimValue.TryGetValue("KeyPopulation", out keyPopulationId);
             Guid genderId; definedDimValue.TryGetValue("Gender", out genderId);
-            var current = _dBContext.AggregatedValues.FirstOrDefault(f => f.SiteId == siteId
+            var current = _dbContext.AggregatedValues.FirstOrDefault(f => f.SiteId == siteId
                                                                        && f.KeyPopulationId == keyPopulationId
                                                                        && f.AgeGroupId == ageGroupId
                                                                        && f.GenderId == genderId
@@ -1160,10 +1239,10 @@ namespace PQM_WebApp.Service
             {
                 current.Numerator = aggregatedValue.Numerator;
                 current.Denominator = aggregatedValue.Denominator.Value;
-                _dBContext.AggregatedValues.Update(current);
+                _dbContext.AggregatedValues.Update(current);
             }
             #endregion
-            rs.Succeed = _dBContext.SaveChanges() > 0;
+            rs.Succeed = _dbContext.SaveChanges() > 0;
             return rs;
         }
 
@@ -1176,7 +1255,7 @@ namespace PQM_WebApp.Service
         {
             var rs = new ResultModel();
             var importData = new List<IndicatorImportModel>();
-            var _indicators = _dBContext.Indicators;
+            var _indicators = _dbContext.Indicators;
             var _errorRows = new List<object>();
             int month, year;
             if (!int.TryParse(aggregatedData.year, out year))
@@ -1251,14 +1330,14 @@ namespace PQM_WebApp.Service
 
         public ResultModel ClearAll()
         {
-            using var transaction = _dBContext.Database.BeginTransaction();
+            using var transaction = _dbContext.Database.BeginTransaction();
             try
             {
                 _elasticClient.DeleteByQuery<IndicatorElasticModel>(del => del.Index(_aggregatedValueIndex).Query(q => q.QueryString(qs => qs.Query("*"))));
-                _dBContext.UnsolvedDimValues.RemoveRange(_dBContext.UnsolvedDimValues);
-                _dBContext.UndefinedDimValues.RemoveRange(_dBContext.UndefinedDimValues);
-                _dBContext.AggregatedValues.RemoveRange(_dBContext.AggregatedValues);
-                _dBContext.SaveChanges();
+                _dbContext.UnsolvedDimValues.RemoveRange(_dbContext.UnsolvedDimValues);
+                _dbContext.UndefinedDimValues.RemoveRange(_dbContext.UndefinedDimValues);
+                _dbContext.AggregatedValues.RemoveRange(_dbContext.AggregatedValues);
+                _dbContext.SaveChanges();
                 transaction.Commit();
             }
             catch (Exception)
