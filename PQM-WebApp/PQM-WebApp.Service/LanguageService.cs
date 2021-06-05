@@ -42,7 +42,7 @@ namespace PQM_WebApp.Service
                 if (language != null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("The language {0} already existed", model.Code);
+                    rs.Error.ErrorMessage = string.Format("The language {0} already existed", model.Code);
                 }
                 else
                 {
@@ -70,7 +70,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -104,7 +104,7 @@ namespace PQM_WebApp.Service
                 if (language == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found language: {0}", languageId);
+                    rs.Error.ErrorMessage = string.Format("Not found language: {0}", languageId);
                 }
                 else
                 {
@@ -117,7 +117,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -131,7 +131,7 @@ namespace PQM_WebApp.Service
                 if (language == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found language: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found language: {0}", model.Name);
                 }
                 else
                 {
@@ -139,7 +139,7 @@ namespace PQM_WebApp.Service
                     if (languageList.Count >= 2)
                     {
                         rs.Succeed = false;
-                        rs.ErrorMessage = string.Format("The language {0} already existed", model.Code);
+                        rs.Error.ErrorMessage = string.Format("The language {0} already existed", model.Code);
                     }
                     else
                     {
@@ -175,7 +175,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -189,7 +189,7 @@ namespace PQM_WebApp.Service
                 if (language == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found language: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found language: {0}", model.Name);
                 }
                 else
                 {
@@ -216,7 +216,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }

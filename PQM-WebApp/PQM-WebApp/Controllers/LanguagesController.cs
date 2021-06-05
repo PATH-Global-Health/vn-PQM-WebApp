@@ -39,7 +39,7 @@ namespace PQM_WebApp.Controllers
             var rs = _languageService.Get(pageIndex, pageSize);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace PQM_WebApp.Controllers
             var rs = _languageService.Get(id);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace PQM_WebApp.Controllers
             var rs = _languageService.CreateLanguage(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace PQM_WebApp.Controllers
             var rs = _languageService.UpdateLanguage(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace PQM_WebApp.Controllers
             var rs = _languageService.DeleteLanguage(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

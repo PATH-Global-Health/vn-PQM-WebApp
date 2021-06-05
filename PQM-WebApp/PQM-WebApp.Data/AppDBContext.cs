@@ -46,6 +46,6 @@ namespace PQM_WebApp.Data
     // Update-Database
     //
     // For Terminal
-    // dotnet ef migrations add PQM_DB_v3_3 -s PQM-WebApp -p PQM-WebApp.Data
+    // dotnet ef migrations add PQM_DB_v4_1 -s PQM-WebApp -p PQM-WebApp.Data
     // dotnet ef database update -s PQM-WebApp -p PQM-WebApp.Data
 }
