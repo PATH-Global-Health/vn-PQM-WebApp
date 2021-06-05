@@ -7,54 +7,8 @@
 <div class="container-fluid">
     <div class="row" style="background-color: whitesmoke;" id="filterPanel">
     </div>
-    <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around">
-        <div class="col-3 indicator-container" onclick="openModal('HTS Positive')">
-            <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">HTS_TEST_POS</div>
-                <div class="row d-flex justify-content-center indicator-value">
-                    <span id="HTS_TEST_POS-value"></span>
-                </div>
-                <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="HTS_TEST_POS-percent">
-
-                    </span>
-                </div>
-            </div>
-            <div id="HTS_TEST_POS_chart" class="indicator-infor-chart">
-
-            </div>
-        </div>
-        <div class="col-3 indicator-container" onclick="openModal('%HIV+ referred')">
-            <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">HTS_TEST-Recency</div>
-                <div class="row d-flex justify-content-center indicator-value" id="HTS_TEST-Recency-value"></div>
-                <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="HTS_TEST-Recency-percent">
-
-                    </span>
-                </div>
-            </div>
-            <div id="HTS_TEST-Recency_chart" class="indicator-infor-chart">
-
-            </div>
-        </div>
-        <div class="col-3 indicator-container" onclick="openModal('%HTS recent')">
-            <div class="d-flex flex-column justify-content-around indicator-infor">
-                <div class="row d-flex justify-content-center indicator-title">
-                    <div class="col-12 d-flex justify-content-center indicator-title">HTS_TEST_POS</div>
-                    <div class="col-12 d-flex justify-content-center indicator-title">successfully refer to OPC</div>
-                </div>
-                <div class="row d-flex justify-content-center indicator-value" id="HTS_TEST_POS-refer-value"></div>
-                <div class="row d-flex justify-content-center indicator-percent">
-                    <span class="align-middle" id="HTS_TEST_POS-refer-percent">
-
-                    </span>
-                </div>
-            </div>
-            <div id="HTS_TEST_POS-refer_chart" class="indicator-infor-chart">
-
-            </div>
-        </div>
+    <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around" id="indicatorPanel">
+        
     </div>
     <div class="row dashboard-row">
         <div class="col-12" style="margin:15px">
@@ -102,6 +56,7 @@
 
 @section Scripts {
     <script src="~/js/variableChart.js"></script>
+    <script src="~/js/indicatorOverview.js"></script>
     <script src="~/js/filterComponent.js"></script>
     <script src="~/js/testing.js"></script>
 }

@@ -1,6 +1,10 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+html {
+    scroll-behavior: smooth;
+}
+
 a.navbar-brand {
     white-space: normal;
     text-align: center;
@@ -84,16 +88,13 @@ body {
 
 .dashboard-container {
     padding: 0px !important;
-    font-size: 20px
+    height: calc(100vh - 55px);
+    font-size: 20px;
 }
 
 .dashboard-card {
     margin: 3px
 }
-
-    .dashboard-card:hover {
-        background-color: whitesmoke;
-    }
 
 hr {
     margin: 3px;
@@ -105,11 +106,11 @@ hr {
 }
 
     .dashboard-indicator:hover {
-        background-color: whitesmoke;
     }
 
 .dashboard-map {
-    height: 30vh;
+    height: calc(100vh - 144px);
+    margin-top: 10px;
 }
 
 .dashboard-chart-25 {
@@ -121,7 +122,7 @@ hr {
 }
 
 .dashboard-bg-ws {
-    background-color: whitesmoke;
+    background-color: #fafbfd;
 }
 
 .indicator-title {
@@ -138,13 +139,12 @@ hr {
 .chip {
     display: inline-block;
     padding: 0 20px;
-    height: 40px;
-    font-size: 16px;
-    line-height: 40px;
-    border-radius: 20px;
+    height: 30px;
+    font-size: 14px;
+    line-height: 30px;
+    border-radius: 15px;
     background-color: darkgray;
-    margin-right: 5px;
-    margin-bottom: 10px;
+    margin: 5px;
 }
 
 .closebtn {
@@ -162,12 +162,18 @@ hr {
 
 .indicator-container {
     background-color: white;
-    height: 400px;
+    height: 380px;
+    max-height: 380px;
+    max-width: 420px !important;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #d3dae6;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px #d3dae6;
 }
 
     .indicator-container:hover {
         cursor: pointer;
-        border: 1px solid whitesmoke;
     }
 
     .indicator-container > .indicator-title {
@@ -176,7 +182,7 @@ hr {
     }
 
     .indicator-container > .indicator-infor {
-        height: 200px
+        height: 185px
     }
 
         .indicator-container > .indicator-infor > .indicator-value {
@@ -185,13 +191,19 @@ hr {
         }
 
     .indicator-container > .indicator-infor-chart {
-        height: 200px
+        height: 185px
     }
 
+.selected-indicator-container {
+    border: 1px solid black;
+    border-radius: 15px;
+    box-shadow: 1px 1px 1px black;
+}
+
 .variable-containter {
-    background-color: whitesmoke;
-    height: 40vh;
-    min-height: 470px;
+    background-color: #fafbfd;
+    height: 39vh;
+    min-height: 465px;
     padding-right: 5px;
 }
 
@@ -205,3 +217,32 @@ hr {
 .b-card-body {
     padding: 13px !important;
 }
+
+.pqm-btn {
+    border: none;
+    background-color: transparent;
+    width: 35px;
+    height: 35px;
+}
+
+    .pqm-btn:hover {
+        border: 1px black solid;
+        border-radius: 5px;
+    }
+
+.k-file-name-size-wrapper {
+    margin-left: 35px !important;
+}
+
+.add-filter-label {
+    cursor: pointer;
+    width: 120px;
+    border: none;
+    background-color: #fafbfd;
+    padding-top: 8px;
+}
+
+    .add-filter-label:hover {
+        color: lightskyblue;
+        text-decoration: underline;
+    }

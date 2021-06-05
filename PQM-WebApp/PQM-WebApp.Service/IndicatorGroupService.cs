@@ -48,7 +48,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -79,7 +79,7 @@ namespace PQM_WebApp.Service
                 if (indicatorGroup == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
                 }
                 else
                 {
@@ -97,7 +97,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -111,7 +111,7 @@ namespace PQM_WebApp.Service
                 if (indicatorGroup == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found indicator group: {0}", model.Name);
                 }
                 else
                 {
@@ -136,7 +136,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }

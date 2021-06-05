@@ -25,9 +25,11 @@ namespace PQM_WebApp.Service
         ResultModel DeleteDistrict(DistrictModel model);
 
         ResultModel GetSites(Guid districtId);
+        ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null, Guid? siteTypeId = null);
         ResultModel CreateSite(SiteCreateModel model);
         ResultModel UpdateSite(SiteViewModel model);
         ResultModel DeleteSite(SiteViewModel model);
+        ResultModel ImportSites(List<SiteCreateModel> sites);
     }
 
     public class LocationService : ILocationService
@@ -78,7 +80,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -92,7 +94,7 @@ namespace PQM_WebApp.Service
                 if (province == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found province: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found province: {0}", model.Name);
                 }
                 else
                 {
@@ -110,7 +112,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -124,7 +126,7 @@ namespace PQM_WebApp.Service
                 if (province == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found province: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found province: {0}", model.Name);
                 }
                 else
                 {
@@ -156,7 +158,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -205,7 +207,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -219,7 +221,7 @@ namespace PQM_WebApp.Service
                 if (district == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found district: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found district: {0}", model.Name);
                 }
                 else
                 {
@@ -246,7 +248,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -260,7 +262,7 @@ namespace PQM_WebApp.Service
                 if (district == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found district: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found district: {0}", model.Name);
                 }
                 else
                 {
@@ -285,7 +287,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -303,6 +305,29 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 e.Adapt(result);
+            }
+            return result;
+        }
+
+        public ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null, Guid? siteTypeId = null)
+        {
+            var result = new PagingModel();
+            try
+            {
+                var filter = _dbContext.Sites.Include(s => s.District).ThenInclude(s => s.Province).AsSoftDelete(false)
+                                            .Where(w => (proviceCode == null || w.District.Province.Code == proviceCode)
+                                                     && (districtCode == null || w.District.Code == districtCode)
+                                                     && (siteTypeId == null || w.SiteTypeId == siteTypeId));
+                result.Total = filter.Count();
+                result.PageCount = filter.PageCount(pageSize);
+                var data = filter.Skip(pageIndex * pageSize)
+                                 .Take(pageSize);
+                result.Data = data.AsEnumerable().Adapt<IEnumerable<SiteViewModel>>();
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                ex.Adapt(result);
             }
             return result;
         }
@@ -340,7 +365,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -354,7 +379,7 @@ namespace PQM_WebApp.Service
                 if (site == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found site: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found site: {0}", model.Name);
                 }
                 else
                 {
@@ -385,7 +410,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -399,7 +424,7 @@ namespace PQM_WebApp.Service
                 if (site == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found site: {0}", model.Name);
+                    rs.Error.ErrorMessage = string.Format("Not found site: {0}", model.Name);
                 }
                 else
                 {
@@ -417,9 +442,49 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
+        }
+
+        public ResultModel ImportSites(List<SiteCreateModel> sites)
+        {
+            var rs = new ResultModel();
+            using var transaction = _dbContext.Database.BeginTransaction();
+            try
+            {
+                sites.ForEach(model =>
+                {
+                    var site = model.Adapt<Site>();
+                    var district = _dbContext.Districts.AsSoftDelete(false).FirstOrDefault(s => s.Id == site.DistrictId);
+                    if (district == null)
+                    {
+                        throw new Exception("No district for reference.");
+                    }
+
+                    var siteType = _dbContext.SiteTypes.AsSoftDelete(false).FirstOrDefault(s => s.Id == site.SiteTypeId);
+                    if (siteType == null)
+                    {
+                        throw new Exception("No site type for reference.");
+                    }
+
+                    site.Id = Guid.NewGuid();
+                    site.DateCreated = DateTime.Now;
+                    site.District = district;
+                    site.SiteType = siteType;
+                    _dbContext.Sites.Add(site);
+                });
+                _dbContext.SaveChanges();
+                transaction.Commit();
+                rs.Data = sites.Adapt<IEnumerable<SiteViewModel>>();
+                rs.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                rs.Succeed = false;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return rs;
         }
 
         private void CopyProvince(ProvinceModel source, Province dest)
@@ -452,6 +517,9 @@ namespace PQM_WebApp.Service
             site.Order = source.Order;
             site.DistrictId = source.DistrictId;
             site.SiteTypeId = source.SiteTypeId;
+            site.Lat = source.Lat;
+            site.Lng = source.Lng;
         }
+
     }
 }

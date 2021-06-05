@@ -44,7 +44,7 @@ namespace PQM_WebApp.Controllers
             var rs = _categoryAliasService.Get(categoryId, category, pageIndex, pageSize);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace PQM_WebApp.Controllers
             var rs = _categoryAliasService.Create(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace PQM_WebApp.Controllers
             var rs = _categoryAliasService.Update(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace PQM_WebApp.Controllers
             var rs = _categoryAliasService.Delete(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

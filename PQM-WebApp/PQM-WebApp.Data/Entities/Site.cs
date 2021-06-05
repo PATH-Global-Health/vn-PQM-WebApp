@@ -16,7 +16,7 @@ namespace PQM_WebApp.Data.Entities
         [ForeignKey("DistrictId")]
         public virtual District District { get; set; }
 
-        public Guid SiteTypeId { get; set; }
+        public Guid? SiteTypeId { get; set; }
         [ForeignKey("SiteTypeId")]
         public virtual SiteType SiteType { get; set; }
     }

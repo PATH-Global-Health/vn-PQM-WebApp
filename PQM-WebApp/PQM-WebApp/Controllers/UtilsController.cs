@@ -5,6 +5,8 @@ using PQM_WebApp.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PQM_WebApp.Controllers
@@ -25,7 +27,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _utilsService.ImportProvince(models);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         [HttpPost("District")]
@@ -33,7 +35,13 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _utilsService.ImportDistrict(models);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
+        }
+
+        [HttpPut]
+        public IActionResult FixVLUnsupressed()
+        {
+            return Ok(_utilsService.FixVLUnsupressed());
         }
     }
 }

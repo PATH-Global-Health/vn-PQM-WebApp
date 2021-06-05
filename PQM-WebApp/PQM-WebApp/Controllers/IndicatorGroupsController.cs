@@ -41,7 +41,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _indicatorGroupService.Get(pageIndex, pageSize);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace PQM_WebApp.Controllers
         {
             var rs = _indicatorGroupService.Create(model);
             if (rs.Succeed) return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace PQM_WebApp.Controllers
             var rs = _indicatorGroupService.Update(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace PQM_WebApp.Controllers
             var rs = _indicatorGroupService.Delete(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

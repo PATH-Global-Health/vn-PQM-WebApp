@@ -51,7 +51,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.CreateProvince(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.UpdateProvince(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.DeleteProvince(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.CreateDistrict(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.UpdateDistrict(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.DeleteDistrict(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.CreateSite(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.UpdateSite(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
         }
 
         /// <summary>
@@ -187,7 +187,25 @@ namespace PQM_WebApp.Controllers
             var rs = _locationService.DeleteSite(model);
             if (rs.Succeed)
                 return Ok(rs.Data);
-            return BadRequest(rs.ErrorMessage);
+            return BadRequest(rs.Error.ErrorMessage);
+        }
+
+        [HttpGet("Sites/ByCode")]
+        public IActionResult GetSitesByCode(int pageIndex = 0, int pageSize = 10, string provinceCode = null, string districtCode = null, Guid? siteTypeId = null)
+        {
+            var rs = _locationService.GetSites(pageIndex, pageSize, provinceCode, districtCode, siteTypeId);
+            if (rs.Succeed)
+                return Ok(rs);
+            return BadRequest(rs.Error.ErrorMessage);
+        }
+
+        [HttpPost("Sites/Import")]
+        public IActionResult ImportSites([FromBody]List<SiteCreateModel> sites)
+        {
+            var rs = _locationService.ImportSites(sites);
+            if (rs.Succeed)
+                return Ok(rs.Data);
+            return BadRequest(rs.Error.ErrorMessage);
         }
     }
 }

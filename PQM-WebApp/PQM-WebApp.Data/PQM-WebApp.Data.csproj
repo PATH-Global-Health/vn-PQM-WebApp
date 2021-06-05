@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20210516171428_PQM_DB_v1_9.cs" />
-    <Compile Remove="Migrations\20210516171428_PQM_DB_v1_9.Designer.cs" />
+    <Compile Remove="Migrations\20210422040540_PQM_DB_v2.cs" />
+    <Compile Remove="Migrations\20210422040540_PQM_DB_v2.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +22,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NEST" Version="7.11.1" />
+    <PackageReference Include="NEST" Version="7.12.0" />
   </ItemGroup>
 
 </Project>

@@ -45,7 +45,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -90,7 +90,7 @@ namespace PQM_WebApp.Service
                 if (categoryAlias == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found alias {0}", model.Alias);
+                    rs.Error.ErrorMessage = string.Format("Not found alias {0}", model.Alias);
                 }
                 else
                 {
@@ -108,7 +108,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }
@@ -122,7 +122,7 @@ namespace PQM_WebApp.Service
                 if (categoryAlias == null)
                 {
                     rs.Succeed = false;
-                    rs.ErrorMessage = string.Format("Not found alias {0}", model.Alias);
+                    rs.Error.ErrorMessage = string.Format("Not found alias {0}", model.Alias);
                 }
                 else
                 {
@@ -140,7 +140,7 @@ namespace PQM_WebApp.Service
             catch (Exception e)
             {
                 rs.Succeed = false;
-                rs.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                rs.Error.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                 return rs;
             }
         }

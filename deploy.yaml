@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pqm-console
+  name: pqm-console
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pqm-console
+  template:
+    metadata:
+      labels:
+        app: pqm-console
+        build_number: ${BUILD_NUMBER}
+        role: rolling-update
+    spec:
+      containers:
+      - image: 192.168.1.2:5000/pqm-console:beta
+        imagePullPolicy: Always
+        name: pqm-console
+      imagePullSecrets:
+      - name: mydockercredentials
+  strategy:
+    type: RollingUpdate
+  revisionHistoryLimit: 0
