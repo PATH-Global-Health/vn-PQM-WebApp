@@ -13,7 +13,7 @@ namespace PQM_WebApp.Service
     public interface IDataPermissionService
     {
         public ResultModel Create(DataPermissionCreateModel dataPermission);
-        public PagingModel Get(int pageIndex, int pageSize);
+        public PagingModel Get(int pageIndex, int pageSize, string username = null);
         public ResultModel Delete(Guid id);
     }
 
@@ -102,12 +102,12 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public PagingModel Get(int pageIndex, int pageSize)
+        public PagingModel Get(int pageIndex, int pageSize, string username = null)
         {
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.DataPermissions.AsSoftDelete(false);
+                var filter = _dbContext.DataPermissions.AsSoftDelete(false).Where(s => string.IsNullOrEmpty(username) || s.Username == username);
                 result.Total = filter.Count();
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<DataPermission>>();
