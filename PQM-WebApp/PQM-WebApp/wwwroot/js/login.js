@@ -74,7 +74,7 @@ const initMultipleLanguage = () => {
 const onLogin = () => {
     httpClient.callApi({
         method: 'POST',
-        url: 'https://auth.vkhealth.vn/api/Users/Login',
+        url: 'https://user.bakco.vn/api/Users/Login',
         data: {
             username: $('#inputUsername').val(),
             password: $('#inputPassword').val()
