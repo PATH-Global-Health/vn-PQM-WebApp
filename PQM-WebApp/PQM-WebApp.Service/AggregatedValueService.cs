@@ -436,6 +436,7 @@ namespace PQM_WebApp.Service
                                 .Where(w => all ||
                                             (w.Month == month && w.Year == year
                                             && (string.IsNullOrEmpty(indicator) || w.Indicator.Name == indicator)));
+
             var populateData = new List<IndicatorElasticModel>();
 
             foreach (var s in data)
@@ -553,7 +554,7 @@ namespace PQM_WebApp.Service
                 {
                     nextDate = date.AddYears(1);
                 };
-                int nextYear = nextDate.Year, nextQuarter = nextDate.Quarter(), nextMonth = nextDate.Month, nextDay = lastDate.Day;
+                int nextYear = nextDate.Year, nextQuarter = nextDate.Quarter(), nextMonth = nextDate.Month, nextDay = nextDate.Day;
                 var nextData = _dbContext.AggregatedValues
                                          .FirstOrDefault(f => f.SiteId == s.SiteId
                                                         && f.KeyPopulationId == s.KeyPopulationId
