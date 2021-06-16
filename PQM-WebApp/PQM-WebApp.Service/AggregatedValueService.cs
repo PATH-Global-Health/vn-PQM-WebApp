@@ -432,11 +432,16 @@ namespace PQM_WebApp.Service
                 "year"
             };
             var data = _dbContext.AggregatedValues
-                                .Where(w => all || (w.Month == month && w.Year == year && w.Indicator.Name == indicator));
-
+                                .Where(w => w.IsValid)
+                                .Where(w => all ||
+                                            (w.Month == month && w.Year == year
+                                            && (string.IsNullOrEmpty(indicator) || w.Indicator.Name == indicator)));
             var populateData = new List<IndicatorElasticModel>();
+
             foreach (var s in data)
             {
+                #region Update Last Period
+                //begin calaculating last date
                 DateTime date = new DateTime();
                 if (s.PeriodType.ToLower() == "month")
                 {
@@ -472,6 +477,7 @@ namespace PQM_WebApp.Service
                 {
                     lastDate = date.AddYears(-1);
                 };
+                //end calculating last date
                 int lastYear = lastDate.Year, lastQuarter = lastDate.Quarter(), lastMonth = lastDate.Month, lastDay = lastDate.Day;
                 var lastData = _dbContext.AggregatedValues
                                          .FirstOrDefault(f => f.SiteId == s.SiteId
@@ -484,10 +490,6 @@ namespace PQM_WebApp.Service
                                                         && (periodIndex > 2 || f.Quarter == lastQuarter)
                                                         && f.Year == lastYear
                                                         && f.PeriodType == s.PeriodType);
-                if (lastData == null)
-                {
-                    var n = 1;
-                }
                 var lastN = lastData != null ? lastData.Numerator : 0;
                 var lastD = lastData != null ? lastData.Denominator : 0;
                 populateData.Add(new IndicatorElasticModel
@@ -516,25 +518,104 @@ namespace PQM_WebApp.Service
                     Month = !all ? month : s.Month,
                     Year = !all ? year : s.Year,
                     Day = !all ? day : s.Day,
-                }) ;
-                populateData.ForEach(s =>
-                {
-                    if (s.PeriodType.ToLower() == "month")
-                    {
-                        s.Date = new DateTime(s.Year, s.Month.Value, DateTime.DaysInMonth(s.Year, s.Month.Value));
-                    }
-                    else if (s.PeriodType.ToLower() == "quarter")
-                    {
-                        var _day = s.Quarter.Value == 1 ? 31 : s.Quarter.Value == 2 ? 30 : s.Quarter.Value == 3 ? 30 : 31;
-                        var _month = s.Quarter.Value == 1 ? 3 : s.Quarter.Value == 2 ? 6 : s.Quarter.Value == 3 ? 9 : 12;
-                        s.Date = new DateTime(s.Year, _month, _day);
-                    }
-                    else if (s.PeriodType.ToLower() == "day")
-                    {
-                        s.Date = new DateTime(s.Year, s.Month.Value, s.Day.Value);
-                    }
                 });
+                #endregion
+                #region Update Next Period (fix missing data)
+                //begin calaculating next date
+                if (s.PeriodType.ToLower() == "month")
+                {
+                    date = new DateTime(s.Year, s.Month.Value, DateTime.DaysInMonth(s.Year, s.Month.Value));
+                }
+                else if (s.PeriodType.ToLower() == "quarter")
+                {
+                    var _day = s.Quarter.Value == 1 ? 31 : s.Quarter.Value == 2 ? 30 : s.Quarter.Value == 3 ? 30 : 31;
+                    var _month = s.Quarter.Value == 1 ? 3 : s.Quarter.Value == 2 ? 6 : s.Quarter.Value == 3 ? 9 : 12;
+                    date = new DateTime(s.Year, _month, _day);
+                }
+                else if (s.PeriodType.ToLower() == "day")
+                {
+                    date = new DateTime(s.Year, s.Month.Value, s.Day.Value);
+                }
+                var nextDate = DateTime.Now;
+                if (periodType == "day")
+                {
+                    nextDate = date.AddDays(1);
+                }
+                else if (periodType == "month")
+                {
+                    nextDate = date.AddMonths(1);
+                }
+                else if (periodType == "quarter")
+                {
+                    nextDate = date.AddMonths(3);
+                }
+                else if (periodType == "year")
+                {
+                    nextDate = date.AddYears(1);
+                };
+                int nextYear = nextDate.Year, nextQuarter = nextDate.Quarter(), nextMonth = nextDate.Month, nextDay = lastDate.Day;
+                var nextData = _dbContext.AggregatedValues
+                                         .FirstOrDefault(f => f.SiteId == s.SiteId
+                                                        && f.KeyPopulationId == s.KeyPopulationId
+                                                        && f.AgeGroupId == s.AgeGroupId
+                                                        && f.GenderId == s.GenderId
+                                                        && f.IndicatorId == s.IndicatorId
+                                                        && (periodIndex > 0 || f.Day == nextDay)
+                                                        && (periodIndex > 1 || f.Month == nextMonth)
+                                                        && (periodIndex > 2 || f.Quarter == nextQuarter)
+                                                        && f.Year == nextYear
+                                                        && f.PeriodType == s.PeriodType);
+                if (nextData == null)
+                {
+                    populateData.Add(new IndicatorElasticModel
+                    {
+                        IndicatorName = s.Indicator.Name,
+                        IndicatorCode = s.Indicator.Code,
+                        IndicatorGroup = s.Indicator.IndicatorGroup.Name,
+                        IsTotal = s.Indicator.IsTotal.Value,
+                        Quarter = s.Quarter,
+                        DistrictCode = s.Site.District.Code,
+                        DistrictName = s.Site.District.NameWithType,
+                        ProvinceCode = s.Site.District.Province.Code,
+                        ProvinceName = s.Site.District.Province.NameWithType,
+                        Location = null,
+                        ValueType = s.DataType == DataType.Number ? 1 : 2,
+                        Denominator = 0,  // data will be not existed on next period
+                        Numerator = 0,    //
+                        LastDenominator = s.Denominator,
+                        LastNumerator = s.Numerator,
+                        AgeGroup = s.AgeGroup.Name,
+                        KeyPopulation = s.KeyPopulation.Name,
+                        Site = s.Site.Name,
+                        Gender = s.Gender.Name,
+                        PeriodType = s.PeriodType,
+
+                        Month = !all ? month : s.Month,
+                        Year = !all ? year : s.Year,
+                        Day = !all ? day : s.Day,
+                    });
+                }
+                #endregion
             }
+
+            populateData.ForEach(s =>
+            {
+                if (s.PeriodType.ToLower() == "month")
+                {
+                    s.Date = new DateTime(s.Year, s.Month.Value, DateTime.DaysInMonth(s.Year, s.Month.Value));
+                }
+                else if (s.PeriodType.ToLower() == "quarter")
+                {
+                    var _day = s.Quarter.Value == 1 ? 31 : s.Quarter.Value == 2 ? 30 : s.Quarter.Value == 3 ? 30 : 31;
+                    var _month = s.Quarter.Value == 1 ? 3 : s.Quarter.Value == 2 ? 6 : s.Quarter.Value == 3 ? 9 : 12;
+                    s.Date = new DateTime(s.Year, _month, _day);
+                }
+                else if (s.PeriodType.ToLower() == "day")
+                {
+                    s.Date = new DateTime(s.Year, s.Month.Value, s.Day.Value);
+                }
+            });
+
             var pageSize = 100;
             var pageCount = populateData.Count / pageSize + (populateData.Count % pageSize != 0 ? 1 : 0);
             for (var index = 0; index < pageCount; index++)
