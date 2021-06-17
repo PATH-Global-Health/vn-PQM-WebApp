@@ -444,6 +444,8 @@ namespace PQM_WebApp.Service
                 #region Update Last Period
                 //begin calaculating last date
                 DateTime date = new DateTime();
+                var periodType = s.PeriodType.ToLower();
+                var periodIndex = periods.IndexOf(periodType);
                 if (s.PeriodType.ToLower() == "month")
                 {
                     date = new DateTime(s.Year, s.Month.Value, DateTime.DaysInMonth(s.Year, s.Month.Value));
@@ -458,8 +460,7 @@ namespace PQM_WebApp.Service
                 {
                     date = new DateTime(s.Year, s.Month.Value, s.Day.Value);
                 }
-                var periodType = s.PeriodType.ToLower();
-                var periodIndex = periods.IndexOf(periodType);
+                
                 DateTime lastDate = new DateTime();
 
                 if (periodType == "day")
@@ -521,8 +522,16 @@ namespace PQM_WebApp.Service
                     Day = !all ? day : s.Day,
                 });
                 #endregion
+                
+            }
+
+            foreach (var s in data)
+            {
                 #region Update Next Period (fix missing data)
                 //begin calaculating next date
+                DateTime date = new DateTime();
+                var periodType = s.PeriodType.ToLower();
+                var periodIndex = periods.IndexOf(periodType);
                 if (s.PeriodType.ToLower() == "month")
                 {
                     date = new DateTime(s.Year, s.Month.Value, DateTime.DaysInMonth(s.Year, s.Month.Value));
@@ -574,7 +583,7 @@ namespace PQM_WebApp.Service
                         IndicatorCode = s.Indicator.Code,
                         IndicatorGroup = s.Indicator.IndicatorGroup.Name,
                         IsTotal = s.Indicator.IsTotal.Value,
-                        Quarter = s.Quarter,
+                        Quarter = nextQuarter,
                         DistrictCode = s.Site.District.Code,
                         DistrictName = s.Site.District.NameWithType,
                         ProvinceCode = s.Site.District.Province.Code,
@@ -590,10 +599,9 @@ namespace PQM_WebApp.Service
                         Site = s.Site.Name,
                         Gender = s.Gender.Name,
                         PeriodType = s.PeriodType,
-
-                        Month = !all ? month : s.Month,
-                        Year = !all ? year : s.Year,
-                        Day = !all ? day : s.Day,
+                        Month = nextMonth,
+                        Year = nextYear,
+                        Day = nextDay,
                     });
                 }
                 #endregion
@@ -1011,6 +1019,10 @@ namespace PQM_WebApp.Service
                 {
                     var row = sheet.GetRow(i);
                     var period = row.GetCell(0).ToString();
+                    if (string.IsNullOrEmpty(period))
+                    {
+                        break;
+                    }
                     var year = int.Parse(row.GetCell(1).ToString());
                     var quarter = TryParse(row.GetCell(2).ToString());
                     var month = TryParse(row.GetCell(3) != null ? row.GetCell(3).ToString() : null);
