@@ -494,6 +494,8 @@ namespace PQM_WebApp.Service
                                                         && f.PeriodType == s.PeriodType);
                 var lastN = lastData != null ? lastData.Numerator : 0;
                 var lastD = lastData != null ? lastData.Denominator : 0;
+                var monthView = periodType == "month" ?  (s.Month < 10 ? "0" + s.Month : s.Month + "") : "_";
+                var quarterView = periodType == "quarter" ? s.Quarter + "" : "_";
                 populateData.Add(new IndicatorElasticModel
                 {
                     IndicatorName = s.Indicator.Name,
@@ -520,6 +522,10 @@ namespace PQM_WebApp.Service
                     Month = !all ? month : s.Month,
                     Year = !all ? year : s.Year,
                     Day = !all ? day : s.Day,
+
+                    YearView = s.Year + "",
+                    QuarterView = quarterView,
+                    MonthView = monthView,
                 });
                 #endregion
                 
