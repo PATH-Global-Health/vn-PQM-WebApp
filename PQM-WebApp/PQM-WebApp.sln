@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PQM-WebApp.Service", "PQM-W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PQM-WebApp.Data", "PQM-WebApp.Data\PQM-WebApp.Data.csproj", "{B6F10763-F5BD-40D2-817B-61F71AA1EF14}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2C43F5D7-CB31-453F-ACA4-0B4DD382F8B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B6F10763-F5BD-40D2-817B-61F71AA1EF14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6F10763-F5BD-40D2-817B-61F71AA1EF14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6F10763-F5BD-40D2-817B-61F71AA1EF14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C43F5D7-CB31-453F-ACA4-0B4DD382F8B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C43F5D7-CB31-453F-ACA4-0B4DD382F8B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C43F5D7-CB31-453F-ACA4-0B4DD382F8B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C43F5D7-CB31-453F-ACA4-0B4DD382F8B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

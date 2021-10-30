@@ -5,6 +5,10 @@ namespace PQM_WebApp.Data.Models
 {
     public class IndicatorElasticModel
     {
+        public IndicatorElasticModel()
+        {
+            IsMaskData = false;
+        }
         //indicator information
         public string IndicatorGroup { get; set; }
         public string IndicatorName { get; set; }
@@ -14,6 +18,7 @@ namespace PQM_WebApp.Data.Models
         public string AgeGroup { get; set; }
         public string KeyPopulation { get; set; }
         public string Gender { get; set; }
+        public string Drug { get; set; }
 
         //location dimensions
         public GeoCoordinate Location { get; set; } //for map on kibana
@@ -45,5 +50,10 @@ namespace PQM_WebApp.Data.Models
         //last data for data trend
         public int LastDenominator { get; set; }
         public int LastNumerator { get; set; }
+
+        public bool IsSafe { get; set; }
+        public bool IsMaskData { get; set; }
+
+        public string DataSource { get; set; }
     }
 }

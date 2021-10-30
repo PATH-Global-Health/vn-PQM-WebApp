@@ -32,4 +32,18 @@ namespace PQM_WebApp.Data.Models
         public string CriticalInfo { get; set; }
 
     }
+
+    public class RecallModel
+    {
+        public int Year { get; set; }
+        public int? Quarter { get; set; }
+        public int? Month { get; set; }
+
+        public string IndicatorCode { get; set; }
+        public string AgeGroup { get; set; }
+        public string Gender { get; set; }
+        public string KeyPopulation { get; set; }
+        public string Site { get; set; }
+        public string Drug { get; set; }
+    }
 }

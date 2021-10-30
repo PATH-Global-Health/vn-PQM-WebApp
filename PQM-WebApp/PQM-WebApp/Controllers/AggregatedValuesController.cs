@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PQM_WebApp.Data.Models;
 using PQM_WebApp.Data.ViewModels;
 using PQM_WebApp.Service;
 using System;
@@ -34,12 +35,12 @@ namespace PQM_WebApp.Controllers
         public IActionResult Get(int? pageIndex = 0, int? pageSize = int.MaxValue
             , string period = null, int? year = null, int? quarter = null, int? month = null
             , Guid? indicatorId = null, Guid? ageGroupId = null, Guid? genderId = null, Guid? keyPopulationId = null
-            , Guid? provinceId = null, Guid? districId = null, Guid? siteId = null)
+            , Guid? provinceId = null, Guid? districId = null, Guid? siteId = null, Guid? indicatorGroupId = null)
         {
             var rs = _aggregatedService.Get(pageIndex, pageSize
                 , period, year, quarter, month
                 , indicatorId, ageGroupId, genderId, keyPopulationId
-                , provinceId, districId, siteId);
+                , provinceId, districId, siteId, indicatorGroupId);
             if (rs.Succeed) return Ok(rs);
             return BadRequest(rs.Error.ErrorMessage);
         }
@@ -97,7 +98,7 @@ namespace PQM_WebApp.Controllers
             {
                 return Ok(rs);
             }
-            return BadRequest(rs);
+            return Ok(rs);
         }
 
         [HttpPost("PopulateData")]
@@ -136,6 +137,18 @@ namespace PQM_WebApp.Controllers
         {
             _aggregatedService.ClearAll();
             return Ok();
+        }
+
+        [HttpPost("Recall")]
+        public IActionResult Recall([FromBody]RecallModel model)
+        {
+            return Ok(_aggregatedService.Recall(model));
+        }
+
+        [HttpGet("CheckVersion")]
+        public IActionResult CheckVersion()
+        {
+            return Ok(new { v = "1.0.0" });
         }
     }
 }
