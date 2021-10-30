@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  pqm-webapp:
+    image: ${DOCKER_REGISTRY-}pqmwebapp
+    build:
+      context: .
+      dockerfile: PQM-WebApp/Dockerfile

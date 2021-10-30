@@ -17,5 +17,8 @@ namespace PQM_WebApp.Data.ViewModels
         public int ValueType { get; set; }
         public int Numerator { get; set; }
         public int? Denominator { get; set; }
+        public string DrugName { get; set; }
+        public string DrugUnitName { get; set; }
+        public string DataSource { get; set; }
     }
 }
