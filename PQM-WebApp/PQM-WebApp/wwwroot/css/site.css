@@ -1,6 +1,10 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+html {
+    scroll-behavior: smooth;
+}
+
 a.navbar-brand {
   white-space: normal;
   text-align: center;
@@ -63,9 +67,179 @@ body {
   margin-bottom: 60px;
 }
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
 }
+
+.dashboard-header {
+    background-color: lightgray;
+    height: 70px;
+}
+
+.dashboard-body {
+    background-color: whitesmoke;
+}
+
+.dashboard-container {
+    padding: 0px !important;
+    height: calc(100vh - 55px);
+    font-size: 20px;
+}
+
+.dashboard-card {
+    margin: 3px
+}
+
+hr {
+    margin: 3px;
+}
+
+.dashboard-indicator {
+    padding: 5px;
+    border-radius: 10px;
+}
+
+    .dashboard-indicator:hover {
+    }
+
+.dashboard-map {
+    height: calc(100vh - 144px);
+    margin-top: 10px;
+}
+
+.dashboard-chart-25 {
+    height: 25vh;
+}
+
+.dashboard-row {
+    padding: 20px;
+}
+
+.dashboard-bg-ws {
+    background-color: #fafbfd;
+}
+
+.indicator-title {
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+
+
+.indicator-percent {
+    font-size: x-large;
+}
+
+.chip {
+    display: inline-block;
+    padding: 0 20px;
+    height: 30px;
+    font-size: 14px;
+    line-height: 30px;
+    border-radius: 15px;
+    background-color: darkgray;
+    margin: 5px;
+}
+
+.closebtn {
+    padding-left: 10px;
+    color: #999;
+    float: right;
+    font-weight: bold;
+    font-size: 19px;
+    cursor: pointer;
+}
+
+    .closebtn:hover {
+        color: dimgray
+    }
+
+.indicator-container {
+    background-color: white;
+    height: 380px;
+    max-height: 380px;
+    max-width: 420px !important;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #d3dae6;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px #d3dae6;
+}
+
+    .indicator-container:hover {
+        cursor: pointer;
+    }
+
+    .indicator-container > .indicator-title {
+        font-size: x-large;
+        font-weight: bold;
+    }
+
+    .indicator-container > .indicator-infor {
+        height: 185px
+    }
+
+        .indicator-container > .indicator-infor > .indicator-value {
+            font-size: 50px;
+            font-weight: bold;
+        }
+
+    .indicator-container > .indicator-infor-chart {
+        height: 185px
+    }
+
+.selected-indicator-container {
+    border: 1px solid black;
+    border-radius: 15px;
+    box-shadow: 1px 1px 1px black;
+}
+
+.variable-containter {
+    background-color: #fafbfd;
+    height: 39vh;
+    min-height: 465px;
+    padding-right: 5px;
+}
+
+@media (min-width: 992px) {
+    .modal-lg {
+        width: 800px;
+        min-width: 1600px;
+    }
+}
+
+.b-card-body {
+    padding: 13px !important;
+}
+
+.pqm-btn {
+    border: none;
+    background-color: transparent;
+    width: 35px;
+    height: 35px;
+}
+
+    .pqm-btn:hover {
+        border: 1px black solid;
+        border-radius: 5px;
+    }
+
+.k-file-name-size-wrapper {
+    margin-left: 35px !important;
+}
+
+.add-filter-label {
+    cursor: pointer;
+    width: 120px;
+    border: none;
+    background-color: #fafbfd;
+    padding-top: 8px;
+}
+
+    .add-filter-label:hover {
+        color: lightskyblue;
+        text-decoration: underline;
+    }

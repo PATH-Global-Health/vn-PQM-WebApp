@@ -2,8 +2,151 @@
     ViewData["Title"] = "Dashboard";
 }
 
+<div class="container-fluid">
+    <div class="row" style="background-color: whitesmoke;" id="filterPanel">
+    </div>
+    <div class="row" style="background-color: whitesmoke">
+        <div class="col-lg-4 col-12 dashboard-container">
+            <div class="card dashboard-card">
+                <div class="card-body b-card-body">
+                    <select class="form-control">
+                        <option value="79" selected>HTS_TST_Recency</option>
+                    </select>
+                    <div id="map" class="dashboard-map"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-12 dashboard-container">
+            <div class="card dashboard-card indicator-group" id="testing-container">
+                <div class="card-body b-card-body">
+                    <div class="card-title d-flex justify-content-between">
+                        <div>
+                            <img src="~/images/testing.PNG" style="width:35px; height:35px; border-radius: 8px" />
+                            <span style="font-size: 1.75rem" id="testingLabel">Testing</span>
+                        </div>
+                        <div>
+                            <button type="button" class="pqm-btn" onclick="drillDown('Testing')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
+                                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="testing">
+                    </div>
+                </div>
+            </div>
+            <div class="card dashboard-card indicator-group" id="prep-container">
+                <div class="card-body b-card-body">
+                    <div class="card-title d-flex justify-content-between">
+                        <div>
+                            <img src="~/images/PrEP.PNG" style="width:35px; height:35px; border-radius: 8px" />
+                            <span style="font-size: 1.75rem" id="prepLabel">PrEP</span>
+                        </div>
+                        <div>
+                            <button type="button" class="pqm-btn" onclick="drillDown('PrEP')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
+                                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="prep">
+                    </div>
+                </div>
+            </div>
+            <div class="card dashboard-card indicator-group" id="treatment-container">
+                <div class="card-body b-card-body">
+                    <div class="card-title d-flex justify-content-between">
+                        <div>
+                            <img src="~/images/Treatment.PNG" style="width:35px; height:35px; border-radius: 8px" />
+                            <span style="font-size: 1.75rem" id="treatmentLabel">Treatment</span>
+                        </div>
+                        <div>
+                            <button type="button" class="pqm-btn" onclick="drillDown('Treatment')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
+                                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="treatment">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-12 dashboard-container">
+            <div class="card dashboard-card" id="drug-container">
+                <div class="card-body b-card-body">
+                    <div class="card-title d-flex justify-content-between">
+                        <div>
+                            <img src="~/images/Drug.PNG" style="width:35px; height:35px; border-radius: 8px" />
+                            <span style="font-size: 1.75rem" id="drugLabel">Drugs</span>
+                        </div>
+                        <div>
+                            <button type="button" class="pqm-btn" onclick="drillDown('Drugs')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
+                                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="drugs">
+                    </div>
+                </div>
+            </div>
+            <div class="card dashboard-card" id="shi-container">
+                <div class="card-body b-card-body">
+                    <div class="card-title d-flex justify-content-between">
+                        <div>
+                            <img src="~/images/SHI.PNG" style="width:35px; height:35px; border-radius: 8px" />
+                            <span style="font-size: 1.75rem" id="shiLabel">SHI</span>
+                        </div>
+                        <div>
+                            <button type="button" class="pqm-btn" onclick="drillDown('SHI')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
+                                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="shi">
+                    </div>
+                </div>
+            </div>
+            <div class="card dashboard-card" id="service-quality-container">
+                <div class="card-body b-card-body">
+                    <div class="card-title d-flex justify-content-between">
+                        <div>
+                            <img src="~/images/ServiceQuality.PNG" style="width:35px; height:35px; border-radius: 8px" />
+                            <span style="font-size: 1.75rem" id="sqLabel">Service Quality</span>
+                        </div>
+                        <div>
+                            <button type="button" class="pqm-btn" onclick="drillDown('ServiceQuality')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z" />
+                                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="service-quality">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
-    <script>
-        
-    </script>
+    <script src="~/js/markerclustererplus.min.js"></script>
+    <script src="~/js/filterComponent.js"></script>
+    <script src="~/js/dashboard.js"></script>
+    <script defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_uYWyuQfE3qofErFoGnDl9PkjEF7xGbk&callback=initMap"></script>
 }

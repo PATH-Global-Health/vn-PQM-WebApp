@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewData["Title"] = "Testing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row" style="background-color: whitesmoke;" id="filterPanel">
+    </div>
+    <div class="row d-flex dashboard-row dashboard-bg-ws justify-content-around" id="indicatorPanel">
+        
+    </div>
+    <div class="row dashboard-row">
+        <div class="col-12" style="margin:15px">
+            <h3>Testing Variables</h3>
+        </div>
+        <div class="col-12" id="variables" style="padding-left: 30px">
+
+        </div>
+        <div class="col-12 d-flex justify-content-around">
+            <div class="col-3" style="padding: 0px">
+                <div class="col-12 variable-containter">
+                    <div class="row" style="padding-left: 15px; padding-top: 15px">
+                        <h4>Age Group</h4>
+                    </div>
+                    <div id="age-group-chart"></div>
+                </div>
+            </div>
+            <div class="col-3" style="padding: 0px">
+                <div class="col-12 variable-containter">
+                    <div class="row" style="padding-left: 15px; padding-top: 15px">
+                        <h4>Gender</h4>
+                    </div>
+                    <div id="gender-chart"></div>
+                </div>
+            </div>
+            <div class="col-3" style="padding: 0px">
+                <div class="col-12 variable-containter">
+                    <div class="row" style="padding-left: 15px; padding-top: 15px">
+                        <h4>Key Populations</h4>
+                    </div>
+                    <div id="key-populations-chart"></div>
+                </div>
+            </div>
+            <div class="col-3" style="padding: 0px">
+                <div class="col-12 variable-containter">
+                    <div class="row" style="padding-left: 15px; padding-top: 15px">
+                        <h4>Clinics</h4>
+                    </div>
+                    <div id="clinics-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/variableChart.js"></script>
+    <script src="~/js/indicatorOverview.js"></script>
+    <script src="~/js/filterComponent.js"></script>
+    <script src="~/js/testing.js"></script>
+}

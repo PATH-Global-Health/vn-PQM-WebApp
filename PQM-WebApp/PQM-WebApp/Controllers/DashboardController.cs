@@ -23,7 +23,22 @@ namespace PQM_WebApp.Controllers
             return View();
         }
 
+        public IActionResult Create()
+        {
+            return PartialView();
+        }
+
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult KeyIndicators()
+        {
+            return View();
+        }
+
+        public IActionResult AggregatedValues()
         {
             return View();
         }

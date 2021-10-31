@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Setting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="modal fade" id="create-setting-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Cài đặt ngưỡng màu</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="create-setting-modal-body">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ</button>
+                <button type="button" class="btn btn-primary" onclick="createThreshold()">Đồng ý</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row" style="margin-top: 10px">
+        <button type="button" class="btn btn-primary" onclick="openCreateSettingModal()">Tạo mới</button>
+    </div>
+    <div class="row" style="margin-top: 10px">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Tài khoản</th>
+                    <th scope="col">Loại</th>
+                    <th scope="col">Tỉnh thành</th>
+                    <th scope="col">Quận huyện</th>
+                    <th scope="col">Chỉ số</th>
+                    <th scope="col">Từ</th>
+                    <th scope="col">Đến</th>
+                    <th scope="col">Ngưỡng màu</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="threshold-setting-list">
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/js/threshold-setting.js"></script>
+}
