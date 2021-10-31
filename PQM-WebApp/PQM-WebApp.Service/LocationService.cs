@@ -50,7 +50,7 @@ namespace PQM_WebApp.Service
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.PageData(pageIndex, pageSize).Adapt<IEnumerable<ProvinceModel>>();
                 result.Succeed = true;*/
-                var filter = _dbContext.Provinces.AsSoftDelete(false);
+                var filter = _dbContext.Provinces.AsSoftDelete(false).OrderByDescending(s => s.DateCreated);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<ProvinceModel>>();
                 result.Succeed = true;
@@ -67,6 +67,25 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
+                if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.Code))
+                {
+                    rs.Succeed = false;
+                    rs.Error = new ErrorModel
+                    {
+                        ErrorMessage = "name or code is empty"
+                    };
+                    return rs;
+                }
+                var e = _dbContext.Provinces.FirstOrDefault(s => s.Code == model.Code);
+                if (e != null)
+                {
+                    rs.Succeed = false;
+                    rs.Error = new ErrorModel
+                    {
+                        ErrorMessage = "code is used"
+                    };
+                    return rs;
+                }
                 var province = model.Adapt<Province>();
                 province.Id = Guid.NewGuid();
                 _dbContext.Provinces.Add(province);
@@ -134,12 +153,12 @@ namespace PQM_WebApp.Service
                     province.DateUpdated = DateTime.Now;
                     if (province.Districts != null)
                     {
-                        foreach(var district in province.Districts)
+                        foreach (var district in province.Districts)
                         {
                             district.IsDeleted = true;
                             if (district.Sites != null)
                             {
-                                foreach(var site in district.Sites)
+                                foreach (var site in district.Sites)
                                 {
                                     site.IsDeleted = true;
                                 }
@@ -169,7 +188,8 @@ namespace PQM_WebApp.Service
             try
             {
                 var filter = _dbContext.Districts.AsSoftDelete(false)
-                                                 .Where(_ => _.ParentCode == provinceCode);
+                                                 .Where(_ => _.ParentCode == provinceCode)
+                                                 .OrderByDescending(s => s.DateCreated);
                 result.Data = filter.AsEnumerable().Adapt<IEnumerable<DistrictModel>>();
                 result.Succeed = true;
             }
@@ -191,7 +211,25 @@ namespace PQM_WebApp.Service
                 {
                     throw new Exception("No province for reference.");
                 }
-
+                if (string.IsNullOrEmpty(model.Code) || string.IsNullOrEmpty(model.Name))
+                {
+                    rs.Succeed = false;
+                    rs.Error = new ErrorModel
+                    {
+                        ErrorMessage = "name or code is empty"
+                    };
+                    return rs;
+                }
+                var e = _dbContext.Districts.FirstOrDefault(s => s.Code == model.Code);
+                if (e != null)
+                {
+                    rs.Succeed = false;
+                    rs.Error = new ErrorModel
+                    {
+                        ErrorMessage = "code is used"
+                    };
+                    return rs;
+                }
                 district.ProvinceId = province.Id;
                 district.Province = province;
                 district.Id = Guid.NewGuid();
@@ -270,7 +308,7 @@ namespace PQM_WebApp.Service
                     district.DateUpdated = DateTime.Now;
                     if (district.Sites != null)
                     {
-                        foreach(var site in district.Sites)
+                        foreach (var site in district.Sites)
                         {
                             site.IsDeleted = true;
                         }
