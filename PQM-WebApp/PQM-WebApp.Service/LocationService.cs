@@ -421,6 +421,13 @@ namespace PQM_WebApp.Service
                 }
                 else
                 {
+                    var existWithCode = _dbContext.Sites.AsSoftDelete(false).FirstOrDefault(s => s.Id != model.Id && s.Code == model.Code);
+                    if (existWithCode != null)
+                    {
+                        rs.Succeed = false;
+                        rs.Error.ErrorMessage = string.Format("Code is existed");
+                        return rs;
+                    }
                     CopySite(model, site);
                     site.DateUpdated = DateTime.Now;
                     var district = _dbContext.Districts.AsSoftDelete(false).FirstOrDefault(s => s.Id == site.DistrictId);
