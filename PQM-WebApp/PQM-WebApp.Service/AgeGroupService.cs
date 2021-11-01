@@ -36,6 +36,10 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
+                if (CheckExist(null, model.Name))
+                {
+                    throw new Exception("Name is existed");
+                }
                 var ageGroup = model.Adapt<AgeGroup>();
                 ageGroup.Id = Guid.NewGuid();
                 ageGroup.DateCreated = DateTime.Now;
@@ -104,6 +108,10 @@ namespace PQM_WebApp.Service
                 }
                 else
                 {
+                    if (CheckExist(null, model.Name))
+                    {
+                        throw new Exception("Name is existed");
+                    }
                     Copy(model, ageGroup);
                     ageGroup.DateUpdated = DateTime.Now;
                     _dbContext.AgeGroups.Update(ageGroup);
@@ -161,6 +169,10 @@ namespace PQM_WebApp.Service
             dest.From = source.From;
             dest.To = source.To;
             dest.Order = source.Order;
+        }
+        private bool CheckExist(Guid? curId, string newName)
+        {
+            return _dbContext.AgeGroups.FirstOrDefault(x => x.Id != curId && x.Name == newName) != null;
         }
     }
 }
