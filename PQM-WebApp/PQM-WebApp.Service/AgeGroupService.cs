@@ -40,6 +40,10 @@ namespace PQM_WebApp.Service
                 {
                     throw new Exception("Name is existed");
                 }
+                if (model.From > model.To)
+                {
+                    throw new Exception("Error value inputs");
+                }
                 var ageGroup = model.Adapt<AgeGroup>();
                 ageGroup.Id = Guid.NewGuid();
                 ageGroup.DateCreated = DateTime.Now;
@@ -111,6 +115,10 @@ namespace PQM_WebApp.Service
                     if (CheckExist(null, model.Name))
                     {
                         throw new Exception("Name is existed");
+                    }
+                    if (model.From > model.To)
+                    {
+                        throw new Exception("Error value inputs");
                     }
                     Copy(model, ageGroup);
                     ageGroup.DateUpdated = DateTime.Now;
