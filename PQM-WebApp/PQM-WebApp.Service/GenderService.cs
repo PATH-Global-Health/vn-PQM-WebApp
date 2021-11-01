@@ -33,6 +33,10 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
+                if (string.IsNullOrEmpty(model.Name))
+                {
+                    throw new Exception("Name value is null");
+                }
                 var Gender = model.Adapt<Gender>();
                 Gender.Id = Guid.NewGuid();
                 Gender.DateCreated = DateTime.Now;
@@ -82,6 +86,10 @@ namespace PQM_WebApp.Service
                 }
                 else
                 {
+                    if (string.IsNullOrEmpty(model.Name))
+                    {
+                        throw new Exception("Name value is null");
+                    }
                     Copy(model, gender);
                     gender.DateUpdated = DateTime.Now;
                     _dbContext.Gender.Update(gender);
