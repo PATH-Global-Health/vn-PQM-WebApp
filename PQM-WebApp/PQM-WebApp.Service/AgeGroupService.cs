@@ -83,7 +83,7 @@ namespace PQM_WebApp.Service
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.AgeGroups.AsSoftDelete(false);
+                var filter = _dbContext.AgeGroups.AsSoftDelete(false).OrderBy(x => x.DateCreated);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<AgeGroupViewModel>>();
                 result.Succeed = true;
