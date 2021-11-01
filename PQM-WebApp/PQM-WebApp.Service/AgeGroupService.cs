@@ -44,6 +44,10 @@ namespace PQM_WebApp.Service
                 {
                     throw new Exception("Error value inputs");
                 }
+                if (string.IsNullOrEmpty(model.Name))
+                {
+                    throw new Exception("Name value is null");
+                }
                 var ageGroup = model.Adapt<AgeGroup>();
                 ageGroup.Id = Guid.NewGuid();
                 ageGroup.DateCreated = DateTime.Now;
@@ -119,6 +123,10 @@ namespace PQM_WebApp.Service
                     if (model.From > model.To)
                     {
                         throw new Exception("Error value inputs");
+                    }
+                    if (string.IsNullOrEmpty(model.Name))
+                    {
+                        throw new Exception("Name value is null");
                     }
                     Copy(model, ageGroup);
                     ageGroup.DateUpdated = DateTime.Now;
