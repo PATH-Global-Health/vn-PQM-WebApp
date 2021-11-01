@@ -63,7 +63,7 @@ namespace PQM_WebApp.Service
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.KeyPopulations.AsSoftDelete(false);
+                var filter = _dbContext.KeyPopulations.AsSoftDelete(false).OrderBy(x => x.DateCreated);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<KeyPopulationViewModel>>();
                 result.Succeed = true;
