@@ -35,6 +35,10 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
+                if (string.IsNullOrEmpty(model.Name))
+                {
+                    throw new Exception("Name value is null");
+                }
                 if (CheckExist(null, model.Name))
                 {
                     throw new Exception("Name is existed");
@@ -88,7 +92,10 @@ namespace PQM_WebApp.Service
                 }
                 else
                 {
-
+                    if (string.IsNullOrEmpty(model.Name))
+                    {
+                        throw new Exception("Name value is null");
+                    }
                     if (CheckExist(keyPopulation.Id, model.Name))
                     {
                         throw new Exception("Name is existed");
