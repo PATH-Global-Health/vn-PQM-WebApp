@@ -30,6 +30,9 @@ namespace PQM_WebApp
             services.ConfigSwagger();
             services.AddElasticsearch(Configuration["elasticsearch:url"], Configuration["elasticsearch:username"], Configuration["elasticsearch:password"], Configuration["elasticsearch:index"]);
             services.ConfigCors();
+
+
+            Console.WriteLine("PQM-Core");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
