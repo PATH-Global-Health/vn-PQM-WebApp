@@ -1,27 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: default
   labels:
-    app: pqm-api
-  name: pqm-api
+    app: pqm-core
+    env: production
+  name: pqm-core
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: pqm-api
+      app: pqm-core
+      env: production
   template:
     metadata:
       labels:
-        app: pqm-api
-        build_number: ${BUILD_NUMBER}
+        app: pqm-core
+        env: production
         role: rolling-update
     spec:
       containers:
-      - image: 192.168.1.2:5000/pqm-api:beta
+      - image: bakcovn/pqm-core:latest
         imagePullPolicy: Always
-        name: pqm-api
+        name: pqm-core
       imagePullSecrets:
-      - name: mydockercredentials
+      - name: regcred
   strategy:
     type: RollingUpdate
   revisionHistoryLimit: 1
