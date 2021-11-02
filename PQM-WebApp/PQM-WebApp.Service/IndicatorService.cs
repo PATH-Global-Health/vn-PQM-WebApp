@@ -28,7 +28,7 @@ namespace PQM_WebApp.Service
         public ResultModel Get(int pageIndex, int pageSize);
         public ResultModel Update(IndicatorViewModel model);
         public ResultModel Delete(IndicatorViewModel model);
-        
+
         public ResultModel GetValue(int year, int quater, int? month, string provinceCode, string districtCode, string indicatorCode, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null);
     }
 
@@ -46,6 +46,10 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
+                if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.Code))
+                {
+                    throw new Exception("Code and Name is not null");
+                }
                 var indicator = model.Adapt<Indicator>();
                 indicator.Id = Guid.NewGuid();
                 indicator.DateCreated = DateTime.Now;
@@ -94,6 +98,10 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
+                if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.Code))
+                {
+                    throw new Exception("Code and Name is not null");
+                }
                 var indicator = _dbContext.Indicators.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.Id);
                 if (indicator == null)
                 {

@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace PQM_WebApp.Service
 {
@@ -33,6 +35,14 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             try
             {
+                if (string.IsNullOrEmpty(model.Name))
+                {
+                    throw new Exception("Name value is null");
+                }
+                if (CheckExist(null, model.Name))
+                {
+                    throw new Exception("Name is existed");
+                }
                 var keyPopulation = model.Adapt<KeyPopulation>();
                 keyPopulation.Id = Guid.NewGuid();
                 keyPopulation.DateCreated = DateTime.Now;
@@ -57,7 +67,7 @@ namespace PQM_WebApp.Service
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.KeyPopulations.AsSoftDelete(false);
+                var filter = _dbContext.KeyPopulations.AsSoftDelete(false).OrderBy(x => x.DateCreated);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<KeyPopulationViewModel>>();
                 result.Succeed = true;
@@ -82,6 +92,14 @@ namespace PQM_WebApp.Service
                 }
                 else
                 {
+                    if (string.IsNullOrEmpty(model.Name))
+                    {
+                        throw new Exception("Name value is null");
+                    }
+                    if (CheckExist(keyPopulation.Id, model.Name))
+                    {
+                        throw new Exception("Name is existed");
+                    }
                     Copy(model, keyPopulation);
                     keyPopulation.DateUpdated = DateTime.Now;
                     _dbContext.KeyPopulations.Update(keyPopulation);
@@ -138,6 +156,10 @@ namespace PQM_WebApp.Service
             dest.Name = source.Name;
             dest.CreatedBy = source.CreatedBy;
             dest.Order = source.Order;
+        }
+        private bool CheckExist(Guid? curId, string newName)
+        {
+            return _dbContext.KeyPopulations.FirstOrDefault(x => x.Id != curId && x.Name == newName) != null;
         }
     }
 }
