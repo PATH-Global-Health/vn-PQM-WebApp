@@ -1137,7 +1137,7 @@ namespace PQM_WebApp.Service
                 transaction.Commit();
                 using (var _httpClient = new HttpClient())
                 {
-                    _httpClient.PostAsync("https://pctn.bakco.vn/api/AggregatedValues/PopulateData?all=true&makeDeletion=true", null);
+                    _httpClient.PostAsync("https://pqm-core.hcdc.vn/api/AggregatedValues/PopulateData?all=true&makeDeletion=true", null);
                 }
                 return new ResultModel()
                 {
@@ -1708,7 +1708,7 @@ namespace PQM_WebApp.Service
                 transaction.Commit();
                 using (var _httpClient = new HttpClient())
                 {
-                    _httpClient.PostAsync("https://pctn.bakco.vn/api/AggregatedValues/PopulateData?all=true&makeDeletion=true", null);
+                    _httpClient.PostAsync("https://pqm-core.hcdc.vn/api/AggregatedValues/PopulateData?all=true&makeDeletion=true", null);
                 }
                 rs.Data = new
                 {
