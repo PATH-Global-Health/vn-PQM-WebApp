@@ -50,6 +50,10 @@ namespace PQM_WebApp.Service
                 {
                     throw new Exception("Code and Name is not null");
                 }
+                if (CheckExist(null, model.Name))
+                {
+                    throw new Exception("Name is existed");
+                }
                 var indicator = model.Adapt<Indicator>();
                 indicator.Id = Guid.NewGuid();
                 indicator.DateCreated = DateTime.Now;
@@ -110,6 +114,10 @@ namespace PQM_WebApp.Service
                 }
                 else
                 {
+                    if (CheckExist(indicator.Id, model.Name))
+                    {
+                        throw new Exception("Name is existed");
+                    }
                     Copy(model, indicator);
                     indicator.DateUpdated = DateTime.Now;
                     var indicatorGroups = _dbContext.IndicatorGroups.AsEnumerable();
@@ -183,6 +191,10 @@ namespace PQM_WebApp.Service
             dest.IsTotal = source.IsTotal;
             dest.CreatedBy = source.CreatedBy;
             dest.IndicatorGroupId = source.IndicatorGroupId;
+        }
+        private bool CheckExist(Guid? curId, string newName)
+        {
+            return _dbContext.Indicators.FirstOrDefault(x => x.Id != curId && x.Name == newName) != null;
         }
     }
 }
