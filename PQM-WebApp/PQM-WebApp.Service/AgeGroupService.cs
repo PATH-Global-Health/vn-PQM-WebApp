@@ -116,7 +116,7 @@ namespace PQM_WebApp.Service
                 }
                 else
                 {
-                    if (CheckExist(null, model.Name))
+                    if (CheckExist(model.Id, model.Name))
                     {
                         throw new Exception("Name is existed");
                     }
