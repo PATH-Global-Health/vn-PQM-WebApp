@@ -471,6 +471,7 @@ namespace PQM_WebApp.Service
                             var _month = month.Key;
                             var monthView = _month > 9 ? _month + "" : "0" + _month;
                             var _drug = drug.Key;
+                            var _datasource = drug.FirstOrDefault().DataSource;
                             var isSafe = drug.Sum(s => (s.Numerator - s.Denominator)) >= 0;
                             var item = new IndicatorElasticModel
                             {
@@ -487,6 +488,7 @@ namespace PQM_WebApp.Service
                                 ProvinceName = province.Key.Name,
                                 IsMaskData = true,
                                 Drug = _drug,
+                                DataSource = _datasource,
                             };
                             populateData.Add(item);
                         }
@@ -1754,6 +1756,7 @@ namespace PQM_WebApp.Service
                         IndicatorName = "%ARV_Consu_Plan",
                         PeriodType = "month",
                         IsMaskData = true,
+                        DataSource = s.DataSource,
                     };
                     populateData.Add(item);
                 }
