@@ -98,7 +98,7 @@ namespace PQM_WebApp.Controllers
             {
                 return Ok(rs);
             }
-            return Ok(rs);
+            return BadRequest(rs);
         }
 
         [HttpPost("PopulateData")]
