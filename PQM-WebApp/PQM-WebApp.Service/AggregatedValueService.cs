@@ -1,4 +1,4 @@
-﻿using Mapster;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Nest;
 using static Nest.Infer;
@@ -49,7 +49,7 @@ namespace PQM_WebApp.Service
             , int? quarter = null, int? month = null, string ageGroups = "", string keyPopulations = "", string genders = "", string sites = "", Guid? indicatorGroupId = null);
 
         ResultModel ImportExcel(IFormFile file, string username = null);
-        ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRow = null, string username = null);
+        ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRow = null, string username = null, AggregatedData aggregatedData = null);
         ResultModel ImportIndicator(AggregatedData aggregatedData, string username = null);
         ResultModel ClearAll();
         ResultModel Recall(RecallModel recallModel);
@@ -63,16 +63,20 @@ namespace PQM_WebApp.Service
 
         private readonly AppDBContext _dbContext;
         private readonly ElasticClient _elasticClient;
+        private readonly IErrorLoggingService _errorLoggingService;
 
         private IConfiguration Configuration { get; }
         private string _aggregatedValueIndex { get; set; }
+        private string _populateLink { get; set; }
 
-        public AggregatedValueService(AppDBContext dBContext, ElasticClient elasticClient, IConfiguration configuration)
+        public AggregatedValueService(AppDBContext dBContext, ElasticClient elasticClient, IConfiguration configuration, IErrorLoggingService errorLoggingService)
         {
             _dbContext = dBContext;
             _elasticClient = elasticClient;
             Configuration = configuration;
             _aggregatedValueIndex = Configuration["elasticsearch:index"];
+            _populateLink = Configuration["populate_url"];
+            _errorLoggingService = errorLoggingService;
         }
 
         public ResultModel GetAggregatedValues(int year, int? quarter, int? month, string indicatorGroup, string indicatorCode, string groupBy, string provinceCode, string districtCode, Guid? indicatorGroupId = null)
@@ -471,6 +475,7 @@ namespace PQM_WebApp.Service
                             var _month = month.Key;
                             var monthView = _month > 9 ? _month + "" : "0" + _month;
                             var _drug = drug.Key;
+                            var _datasource = drug.FirstOrDefault().DataSource;
                             var isSafe = drug.Sum(s => (s.Numerator - s.Denominator)) >= 0;
                             var item = new IndicatorElasticModel
                             {
@@ -487,6 +492,7 @@ namespace PQM_WebApp.Service
                                 ProvinceName = province.Key.Name,
                                 IsMaskData = true,
                                 Drug = _drug,
+                                DataSource = _datasource,
                             };
                             populateData.Add(item);
                         }
@@ -916,7 +922,7 @@ namespace PQM_WebApp.Service
             return definedDimValue;
         }
 
-        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRows = null, string username = null)
+        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRows = null, string username = null, AggregatedData aggregatedData = null)
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -1137,9 +1143,9 @@ namespace PQM_WebApp.Service
                 transaction.Commit();
                 using (var _httpClient = new HttpClient())
                 {
-                    _httpClient.PostAsync("https://pqm-core.hcdc.vn/api/AggregatedValues/PopulateData?all=true&makeDeletion=true", null);
+                    _httpClient.PostAsync(_populateLink, null);
                 }
-                return new ResultModel()
+                var rs = new ResultModel()
                 {
                     Succeed = true,
                     Error = null,
@@ -1152,6 +1158,11 @@ namespace PQM_WebApp.Service
                         error_rows = errorRows
                     }
                 };
+                if (errorRows.Count > 0)
+                {
+                    _errorLoggingService.CreateFromResultModel(rs, aggregatedData);
+                }
+                return rs;
             }
             catch (Exception ex)
             {
@@ -1516,51 +1527,130 @@ namespace PQM_WebApp.Service
         public ResultModel ImportIndicator(AggregatedData aggregatedData, string username)
         {
             var rs = new ResultModel();
-            var importData = new List<IndicatorImportModel>();
-            var _indicators = _dbContext.Indicators;
-            var _errorRows = new List<object>();
             int month, year;
-            if (!int.TryParse(aggregatedData.year, out year))
+            if (!int.TryParse(aggregatedData.year, out year) || year < 0 || year > DateTime.Now.Year)
             {
-                return new ResultModel()
+                rs = new ResultModel()
                 {
                     Succeed = false,
                     Error = new ErrorModel
                     {
-                        ErrorMessage = "Year is not defined"
+                        Code = "01",
+                        ErrorMessage = "Year is not defined",
+                        raw_data = aggregatedData
                     }
                 };
+                _errorLoggingService.CreateFromResultModel(rs, aggregatedData);
+                return rs;
             }
-            if (!int.TryParse(aggregatedData.month, out month))
+            if (!int.TryParse(aggregatedData.month, out month) || month < 1 || month > 12)
             {
-                return new ResultModel()
+                rs = new ResultModel()
                 {
                     Succeed = false,
                     Error = new ErrorModel
                     {
-                        ErrorMessage = "Month is not defined"
+                        Code = "02",
+                        ErrorMessage = "Month is not defined",
+                        raw_data = aggregatedData
                     }
                 };
+                _errorLoggingService.CreateFromResultModel(rs, aggregatedData);
+                return rs;
             }
+            if (aggregatedData.datas.Count == 0)
+            {
+                rs = new ResultModel()
+                {
+                    Succeed = false,
+                    Error = new ErrorModel
+                    {
+                        Code = "03",
+                        ErrorMessage = "data is not defined",
+                        raw_data = aggregatedData
+                    }
+                };
+                _errorLoggingService.CreateFromResultModel(rs, aggregatedData);
+                return rs;
+            }
+            var importData = new List<IndicatorImportModel>();
+            var _indicators = _dbContext.Indicators.AsSoftDelete(false);
+            var _ageGroups = _dbContext.AgeGroups.AsSoftDelete(false);
+            var _sites = _dbContext.Sites.AsSoftDelete(false);
+            var _keyPopulations = _dbContext.KeyPopulations.AsSoftDelete(false);
+            var _gendes = _dbContext.Gender.AsSoftDelete(false);
+            var _errorRows = new List<object>();
             for (int i = 0; i < aggregatedData.datas.Count; i++)
             {
                 var row = aggregatedData.datas[i];
+                if (row.data.type != "month" && row.data.type != "quarter")
+                {
+                    _errorRows.Add(new
+                    {
+                        Row = i + 1,
+                        Code = "07",
+                        Error = string.Format("Period type is not month or quarter"),
+                        raw_data = row
+                    });
+                    continue;
+                }
+                var site = _sites.FirstOrDefault(s => s.Code == row.site_code || s.Name == row.site_code);
+                if (site == null)
+                {
+                    _errorRows.Add(new
+                    {
+                        Row = i + 1,
+                        Code = "04",
+                        Error = string.Format("Site {0} is not defined", row.site_code),
+                        raw_data = row
+                    });
+                    continue;
+                }
+                var ageGroup = _ageGroups.FirstOrDefault(s => s.Name == row.data.age_group);
+                if (ageGroup == null)
+                {
+                    _errorRows.Add(new
+                    {
+                        Row = i + 1,
+                        Code = "08",
+                        Error = string.Format("Age group {0} is not defined", row.data.age_group),
+                        raw_data = row
+                    });
+                    continue;
+                }
+                var keyPopulation = _keyPopulations.FirstOrDefault(s => s.Name == row.data.key_population);
+                if (keyPopulation == null)
+                {
+                    _errorRows.Add(new
+                    {
+                        Row = i + 1,
+                        Code = "09",
+                        Error = string.Format("Key population {0} is not defined", row.data.key_population),
+                        raw_data = row
+                    });
+                    continue;
+                }
+                var gender = _gendes.FirstOrDefault(s => s.Name == row.data.sex);
+                if (gender == null)
+                {
+                    _errorRows.Add(new
+                    {
+                        Row = i + 1,
+                        Code = "10",
+                        Error = string.Format("Gender {0} is not defined", row.data.sex),
+                        raw_data = row
+                    });
+                    continue;
+                }
                 var indicator = _indicators.FirstOrDefault(s => s.Code == row.indicator_code || s.Name == row.indicator_code);
                 if (indicator == null)
                 {
                     _errorRows.Add(new
                     {
                         Row = i + 1,
-                        Error = string.Format("No {0} indicator data", row.indicator_code)
-                    });
-                    continue;
-                }
-                if (!int.TryParse(row.data.value, out int _value))
-                {
-                    _errorRows.Add(new
-                    {
-                        Row = i + 1,
-                        Error = string.Format("Value is not defined")
+                        Code = "11",
+                        Error = string.Format("Indicator {0} is not defined", row.indicator_code),
+                        raw_data = row
                     });
                     continue;
                 }
@@ -1569,7 +1659,9 @@ namespace PQM_WebApp.Service
                     _errorRows.Add(new
                     {
                         Row = i + 1,
-                        Error = string.Format("Value is not defined")
+                        Code = "05",
+                        Error = string.Format("Value is not defined"),
+                        raw_data = row
                     });
                     continue;
                 };
@@ -1602,7 +1694,9 @@ namespace PQM_WebApp.Service
                         _errorRows.Add(new
                         {
                             Row = i + 1,
-                            Error = string.Format("Value is not defined")
+                            Code = "06",
+                            Error = string.Format("Value is not defined"),
+                            raw_data = row,
                         });
                         continue;
                     };
@@ -1620,17 +1714,6 @@ namespace PQM_WebApp.Service
                 }
                 importData.Add(data);
             };
-            if (importData.Count() == 0)
-            {
-                return new ResultModel
-                {
-                    Succeed = false,
-                    Error = new ErrorModel
-                    {
-                        ErrorMessage = JsonConvert.SerializeObject(_errorRows)
-                    }
-                };
-            }
             return ImportIndicator(importData, _errorRows, username);
         }
 
@@ -1708,7 +1791,7 @@ namespace PQM_WebApp.Service
                 transaction.Commit();
                 using (var _httpClient = new HttpClient())
                 {
-                    _httpClient.PostAsync("https://pqm-core.hcdc.vn/api/AggregatedValues/PopulateData?all=true&makeDeletion=true", null);
+                    _httpClient.PostAsync(_populateLink, null);
                 }
                 rs.Data = new
                 {
@@ -1754,6 +1837,7 @@ namespace PQM_WebApp.Service
                         IndicatorName = "%ARV_Consu_Plan",
                         PeriodType = "month",
                         IsMaskData = true,
+                        DataSource = s.DataSource,
                     };
                     populateData.Add(item);
                 }

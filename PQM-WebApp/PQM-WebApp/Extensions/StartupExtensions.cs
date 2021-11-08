@@ -62,6 +62,7 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<ICategoryAliasService, CategoryAliasService>();
             services.AddTransient<ILanguageService, LanguageService>();
             services.AddTransient<IDataPermissionService, DataPermissionService>();
+            services.AddTransient<IErrorLoggingService, ErrorLoggingService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)

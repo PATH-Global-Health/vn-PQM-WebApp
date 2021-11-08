@@ -8,6 +8,7 @@ namespace PQM_WebApp.Data.Models
     {
         public string Code { get; set; }
         public string ErrorMessage { get; set; }
+        public object raw_data { get; set; }
     }
 
     public class ResultModel
