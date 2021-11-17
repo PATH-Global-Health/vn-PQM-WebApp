@@ -49,7 +49,7 @@ namespace PQM_WebApp.Service
             , int? quarter = null, int? month = null, string ageGroups = "", string keyPopulations = "", string genders = "", string sites = "", Guid? indicatorGroupId = null);
 
         ResultModel ImportExcel(IFormFile file, string username = null);
-        ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRow = null, string username = null, AggregatedData aggregatedData = null);
+        ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRow = null, string username = null, AggregatedData aggregatedData = null, int? total = null);
         ResultModel ImportIndicator(AggregatedData aggregatedData, string username = null);
         ResultModel ClearAll();
         ResultModel Recall(RecallModel recallModel);
@@ -922,7 +922,7 @@ namespace PQM_WebApp.Service
             return definedDimValue;
         }
 
-        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRows = null, string username = null, AggregatedData aggregatedData = null)
+        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRows = null, string username = null, AggregatedData aggregatedData = null, int? total = null)
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -938,9 +938,18 @@ namespace PQM_WebApp.Service
 
             try
             {
+                if (total == null)
+                {
+                    if (aggregatedData != null)
+                    {
+                        total = aggregatedData.datas.Count;
+                    } else
+                    {
+                        total = importValues.Count;
+                    }
+                }
                 using var transaction = _dbContext.Database.BeginTransaction();
                 errorRows = errorRows != null ? errorRows : new List<object>();
-                int total = importValues.Count();
                 int succeed = 0;
                 int succeedWithUndefinedDimValue = 0;
                 int updated = 0;
@@ -1154,7 +1163,7 @@ namespace PQM_WebApp.Service
                         total,
                         succeed,
                         updated,
-                        error_count = (total - succeed - updated),
+                        error_count = errorRows.Count,
                         error_rows = errorRows
                     }
                 };
@@ -1528,6 +1537,7 @@ namespace PQM_WebApp.Service
         {
             var rs = new ResultModel();
             int month, year;
+            int total = aggregatedData.datas.Count;
             if (!int.TryParse(aggregatedData.year, out year) || year < 0 || year > DateTime.Now.Year)
             {
                 rs = new ResultModel()
@@ -1714,7 +1724,7 @@ namespace PQM_WebApp.Service
                 }
                 importData.Add(data);
             };
-            return ImportIndicator(importData, _errorRows, username);
+            return ImportIndicator(importData, _errorRows, username, aggregatedData, total);
         }
 
         public ResultModel ClearAll()
