@@ -1538,6 +1538,16 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             int month, year;
             int total = aggregatedData.datas.Count;
+
+            //auto convert PP => SDCs for key_population
+            aggregatedData.datas.ForEach(data =>
+            {
+                if (data.data.key_population == "PP")
+                {
+                    data.data.key_population = "SDCs";
+                }
+            });
+
             if (!int.TryParse(aggregatedData.year, out year) || year < 0 || year > DateTime.Now.Year)
             {
                 rs = new ResultModel()
