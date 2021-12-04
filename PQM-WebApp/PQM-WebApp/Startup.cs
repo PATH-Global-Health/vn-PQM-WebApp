@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,8 +10,12 @@ namespace PQM_WebApp
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup()
         {
+            var configuration = new ConfigurationBuilder()
+                              .AddJsonFile("appsettings.json")
+                              .AddEnvironmentVariables()
+                              .Build();
             Configuration = configuration;
         }
 
@@ -30,7 +31,6 @@ namespace PQM_WebApp
             services.ConfigSwagger();
             services.AddElasticsearch(Configuration["elasticsearch:url"], Configuration["elasticsearch:username"], Configuration["elasticsearch:password"], Configuration["elasticsearch:index"]);
             services.ConfigCors();
-
 
             Console.WriteLine("PQM-Core");
         }

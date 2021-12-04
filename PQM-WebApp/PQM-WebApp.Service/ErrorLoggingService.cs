@@ -10,7 +10,7 @@ namespace PQM_WebApp.Service
     public interface IErrorLoggingService
     {
         public ResultModel Create(ErrorLoggingModel error);
-        public ResultModel CreateFromResultModel(ResultModel result, object raw);
+        public bool CreateFromResultModel(ResultModel result, object raw, ErrorDetailLogging detail = null, List<ErrorDetailLogging> errorDetails = null);
         public ResultModel Get(int pageIndex = 0, int pageSize = 10, DateTime? from = null, DateTime? to = null, string code = null);
     }
 
@@ -67,16 +67,38 @@ namespace PQM_WebApp.Service
             return rs;
         }
 
-        public ResultModel CreateFromResultModel(ResultModel result, object raw)
+        public bool CreateFromResultModel(ResultModel result, object raw, ErrorDetailLogging detail = null, List<ErrorDetailLogging> errorDetails = null)
         {
-            var error = new ErrorLoggingModel
+            //check case error from root object
+            if (result.Succeed == false && (result.Error.Code == "01" || result.Error.Code == "02" || result.Error.Code == "03"))
             {
-                Id = Guid.NewGuid(),
-                DateTime = DateTime.Now,
-                RawData = raw,
-                Result = result
-            };
-            return Create(error);
+                var error = new ErrorLoggingModel
+                {
+                    Id = Guid.NewGuid(),
+                    DateTime = DateTime.Now,
+                    RawData = raw,
+                    Result = result,
+                    Detail = detail
+                };
+                Create(error);
+            }
+            else
+            {
+                //error from data (array of aggregated value)
+                errorDetails.ForEach(detail =>
+                {
+                    var error = new ErrorLoggingModel
+                    {
+                        Id = Guid.NewGuid(),
+                        DateTime = DateTime.Now,
+                        RawData = raw,
+                        Result = result,
+                        Detail = detail
+                    };
+                    Create(error);
+                });
+            }
+            return true;
         }
 
         public ResultModel Get(int pageIndex = 0, int pageSize = 10, DateTime? from = null, DateTime? to = null, string code = null)
@@ -97,15 +119,7 @@ namespace PQM_WebApp.Service
                 }
                 if (!string.IsNullOrEmpty(code))
                 {
-                    var innerError = code == "01" || code == "02" || code == "03" ? false : true;
-                    if (innerError)
-                    {
-                        queryContainers.Add((new QueryContainerDescriptor<ErrorLoggingModel>()).Term(s => s.Field("result.data.error_rows.code").Value(code)));
-                    }
-                    else
-                    {
-                        queryContainers.Add((new QueryContainerDescriptor<ErrorLoggingModel>()).Term(s => s.Field("result.error.code").Value(code)));
-                    }
+                    queryContainers.Add((new QueryContainerDescriptor<ErrorLoggingModel>()).Term(s => s.Field("detail.code").Value(code)));
                 }
                 var searchRequest = new SearchRequest<ErrorLoggingModel>(_index)
                 {

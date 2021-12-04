@@ -49,7 +49,7 @@ namespace PQM_WebApp.Service
             , int? quarter = null, int? month = null, string ageGroups = "", string keyPopulations = "", string genders = "", string sites = "", Guid? indicatorGroupId = null);
 
         ResultModel ImportExcel(IFormFile file, string username = null);
-        ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRow = null, string username = null, AggregatedData aggregatedData = null, int? total = null);
+        ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<ErrorDetailLogging> errorRow = null, string username = null, AggregatedData aggregatedData = null, int? total = null);
         ResultModel ImportIndicator(AggregatedData aggregatedData, string username = null);
         ResultModel ClearAll();
         ResultModel Recall(RecallModel recallModel);
@@ -76,6 +76,7 @@ namespace PQM_WebApp.Service
             Configuration = configuration;
             _aggregatedValueIndex = Configuration["elasticsearch:index"];
             _populateLink = Configuration["populate_url"];
+            Console.WriteLine("Populate URL: " + _populateLink);
             _errorLoggingService = errorLoggingService;
         }
 
@@ -888,10 +889,10 @@ namespace PQM_WebApp.Service
         private Dictionary<string, Guid> GetDimensionValues(IndicatorImportModel data
             , int index
             , out Dictionary<string, UndefinedDimValue> localUndefinedDimValues
-            , out List<object> errors)
+            , out List<ErrorDetailLogging> errors)
         {
             var _localUndefinedDimValues = new Dictionary<string, UndefinedDimValue>();
-            var _errors = new List<object>();
+            var _errors = new List<ErrorDetailLogging>();
             var dim = new Dictionary<string, string>()
                     {
                         { "AgeGroup", data.AgeGroup },
@@ -910,7 +911,7 @@ namespace PQM_WebApp.Service
                 }
                 else
                 {
-                    _errors.Add(new
+                    _errors.Add(new ErrorDetailLogging
                     {
                         Row = index,
                         Error = string.Format("No {0} data", e.Key)
@@ -922,7 +923,7 @@ namespace PQM_WebApp.Service
             return definedDimValue;
         }
 
-        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<object> errorRows = null, string username = null, AggregatedData aggregatedData = null, int? total = null)
+        public ResultModel ImportIndicator(List<IndicatorImportModel> importValues, List<ErrorDetailLogging> errorRows = null, string username = null, AggregatedData aggregatedData = null, int? total = null)
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -949,7 +950,7 @@ namespace PQM_WebApp.Service
                     }
                 }
                 using var transaction = _dbContext.Database.BeginTransaction();
-                errorRows = errorRows != null ? errorRows : new List<object>();
+                errorRows = errorRows != null ? errorRows : new List<ErrorDetailLogging>();
                 int succeed = 0;
                 int succeedWithUndefinedDimValue = 0;
                 int updated = 0;
@@ -969,7 +970,7 @@ namespace PQM_WebApp.Service
                     data = VerifyTime(data, out error);
                     if (error.Length > 0)
                     {
-                        errorRows.Add(new
+                        errorRows.Add(new ErrorDetailLogging
                         {
                             Row = _index,
                             Error = error,
@@ -979,7 +980,7 @@ namespace PQM_WebApp.Service
                     #endregion
                     #region map category alias name and add unsolved dimension value
                     var localUndefinedDimValues = new Dictionary<string, UndefinedDimValue>();
-                    var errors = new List<object>();
+                    var errors = new List<ErrorDetailLogging>();
                     var definedDimValue = GetDimensionValues(data, _index, out localUndefinedDimValues, out errors);
                     errorRows.AddRange(errors);
                     if (errors.Count > 0)
@@ -989,7 +990,7 @@ namespace PQM_WebApp.Service
                     var indicator = _dbContext.Indicators.FirstOrDefault(f => !f.IsDeleted && (f.Name.Equals(data.Indicator) || f.Code.Equals(data.Indicator)));
                     if (indicator == null)
                     {
-                        errorRows.Add(new
+                        errorRows.Add(new ErrorDetailLogging
                         {
                             Row = _index,
                             Error = "Can not find indicator",
@@ -1007,7 +1008,7 @@ namespace PQM_WebApp.Service
                         var site = _dbContext.Sites.Include(s => s.District).FirstOrDefault(s => s.Id == siteId);
                         if (site == null || site.Name == "N/A")
                         {
-                            errorRows.Add(new
+                            errorRows.Add(new ErrorDetailLogging
                             {
                                 Row = _index,
                                 Error = "Undefined Site",
@@ -1017,26 +1018,13 @@ namespace PQM_WebApp.Service
                         var p = permissions.FirstOrDefault(s => s.IndicatorId == indicator.Id && s.ProvinceId == site.District.ProvinceId);
                         if (p == null)
                         {
-                            errorRows.Add(new
+                            errorRows.Add(new ErrorDetailLogging
                             {
                                 Row = _index,
                                 Error = "User doesn't have permission to insert or update",
                             });
                             continue;
                         }
-                    }
-                    #endregion
-
-                    #region check site
-                    var _site = _dbContext.Sites.Include(s => s.District).FirstOrDefault(s => s.Id == siteId);
-                    if (_site == null || _site.Name == "N/A")
-                    {
-                        errorRows.Add(new
-                        {
-                            Row = _index,
-                            Error = "Undefined Site",
-                        });
-                        continue;
                     }
                     #endregion
 
@@ -1169,7 +1157,7 @@ namespace PQM_WebApp.Service
                 };
                 if (errorRows.Count > 0)
                 {
-                    _errorLoggingService.CreateFromResultModel(rs, aggregatedData);
+                    _errorLoggingService.CreateFromResultModel(rs, aggregatedData, null, errorRows);
                 }
                 return rs;
             }
@@ -1335,7 +1323,7 @@ namespace PQM_WebApp.Service
             #endregion
             #region map category alias name and add unsolved dimension value
             var localUndefinedDimValues = new Dictionary<string, UndefinedDimValue>();
-            var errors = new List<object>();
+            var errors = new List<ErrorDetailLogging>();
             var definedDimValue = GetDimensionValues(aggregatedValue, 0, out localUndefinedDimValues, out errors);
             if (errors.Count > 0)
             {
@@ -1465,7 +1453,7 @@ namespace PQM_WebApp.Service
             #endregion
             #region map category alias name and add unsolved dimension value
             var localUndefinedDimValues = new Dictionary<string, UndefinedDimValue>();
-            var errors = new List<object>();
+            var errors = new List<ErrorDetailLogging>();
             var definedDimValue = GetDimensionValues(aggregatedValue, 0, out localUndefinedDimValues, out errors);
             if (errors.Count > 0)
             {
@@ -1538,6 +1526,8 @@ namespace PQM_WebApp.Service
             var rs = new ResultModel();
             int month, year;
             int total = aggregatedData.datas.Count;
+            var province = _dbContext.Provinces.AsSoftDelete(false).FirstOrDefault(s => s.Code == aggregatedData.province_code);
+            var province_name = province == null ? aggregatedData.province_code : $"[{province.Code}] {province.NameWithType}";
 
             //auto convert PP => SDCs for key_population
             aggregatedData.datas.ForEach(data =>
@@ -1547,7 +1537,8 @@ namespace PQM_WebApp.Service
                     data.data.key_population = "SDCs";
                 }
             });
-
+            #region check root object
+            #region check error code 01 - Year is not defined
             if (!int.TryParse(aggregatedData.year, out year) || year < 0 || year > DateTime.Now.Year)
             {
                 rs = new ResultModel()
@@ -1560,9 +1551,11 @@ namespace PQM_WebApp.Service
                         raw_data = aggregatedData
                     }
                 };
-                _errorLoggingService.CreateFromResultModel(rs, aggregatedData);
+                _errorLoggingService.CreateFromResultModel(rs, aggregatedData, new ErrorDetailLogging { Code = "01", Error = "Year is not defined", Province = province_name });
                 return rs;
             }
+            #endregion
+            #region check error code 02 - Month is not defined
             if (!int.TryParse(aggregatedData.month, out month) || month < 1 || month > 12)
             {
                 rs = new ResultModel()
@@ -1575,9 +1568,11 @@ namespace PQM_WebApp.Service
                         raw_data = aggregatedData
                     }
                 };
-                _errorLoggingService.CreateFromResultModel(rs, aggregatedData);
+                _errorLoggingService.CreateFromResultModel(rs, aggregatedData, new ErrorDetailLogging { Code = "02", Error = "Month is not defined", Province = province_name });
                 return rs;
             }
+            #endregion
+            #region check error code 03 - data is not defined
             if (aggregatedData.datas.Count == 0)
             {
                 rs = new ResultModel()
@@ -1590,98 +1585,124 @@ namespace PQM_WebApp.Service
                         raw_data = aggregatedData
                     }
                 };
-                _errorLoggingService.CreateFromResultModel(rs, aggregatedData);
+                _errorLoggingService.CreateFromResultModel(rs, aggregatedData, new ErrorDetailLogging { Code = "03", Error = "data is not defined", Province = province_name });
                 return rs;
             }
+            #endregion
+            #endregion
+            #region check data and mapping to aggregated data
             var importData = new List<IndicatorImportModel>();
             var _indicators = _dbContext.Indicators.AsSoftDelete(false);
             var _ageGroups = _dbContext.AgeGroups.AsSoftDelete(false);
             var _sites = _dbContext.Sites.AsSoftDelete(false);
             var _keyPopulations = _dbContext.KeyPopulations.AsSoftDelete(false);
             var _gendes = _dbContext.Gender.AsSoftDelete(false);
-            var _errorRows = new List<object>();
+            var _errorRows = new List<ErrorDetailLogging>();
             for (int i = 0; i < aggregatedData.datas.Count; i++)
             {
                 var row = aggregatedData.datas[i];
-                if (row.data.type != "month" && row.data.type != "quarter")
-                {
-                    _errorRows.Add(new
-                    {
-                        Row = i + 1,
-                        Code = "07",
-                        Error = string.Format("Period type is not month or quarter"),
-                        raw_data = row
-                    });
-                    continue;
-                }
                 var site = _sites.FirstOrDefault(s => s.Code == row.site_code || s.Name == row.site_code);
                 if (site == null)
                 {
-                    _errorRows.Add(new
+                    _errorRows.Add(new ErrorDetailLogging
                     {
                         Row = i + 1,
                         Code = "04",
                         Error = string.Format("Site {0} is not defined", row.site_code),
-                        raw_data = row
+                        Province = province_name,
+                        Indicator = row.indicator_code,
+                        Site = row.site_code,
+                        raw_data = aggregatedData
                     });
                     continue;
                 }
+                var site_name = site == null ? row.site_code : $"[{site.Code}] {site.Name}";
+                if (row.data.type != "month" && row.data.type != "quarter")
+                {
+                    _errorRows.Add(new ErrorDetailLogging
+                    {
+                        Row = i + 1,
+                        Code = "07",
+                        Error = string.Format("Period type is not month or quarter"),
+                        Province = province_name,
+                        Indicator = row.indicator_code,
+                        Site = site_name,
+                        raw_data = aggregatedData
+                    });
+                    continue;
+                }
+
                 var ageGroup = _ageGroups.FirstOrDefault(s => s.Name == row.data.age_group);
                 if (ageGroup == null)
                 {
-                    _errorRows.Add(new
+                    _errorRows.Add(new ErrorDetailLogging
                     {
                         Row = i + 1,
                         Code = "08",
                         Error = string.Format("Age group {0} is not defined", row.data.age_group),
-                        raw_data = row
+                        Province = province_name,
+                        Indicator = row.indicator_code,
+                        Site = site_name,
+                        raw_data = aggregatedData
                     });
                     continue;
                 }
                 var keyPopulation = _keyPopulations.FirstOrDefault(s => s.Name == row.data.key_population);
                 if (keyPopulation == null)
                 {
-                    _errorRows.Add(new
+                    _errorRows.Add(new ErrorDetailLogging
                     {
                         Row = i + 1,
                         Code = "09",
                         Error = string.Format("Key population {0} is not defined", row.data.key_population),
-                        raw_data = row
+                        Province = province_name,
+                        Indicator = row.indicator_code,
+                        Site = site_name,
+                        raw_data = aggregatedData
                     });
                     continue;
                 }
                 var gender = _gendes.FirstOrDefault(s => s.Name == row.data.sex);
                 if (gender == null)
                 {
-                    _errorRows.Add(new
+                    _errorRows.Add(new ErrorDetailLogging
                     {
                         Row = i + 1,
                         Code = "10",
                         Error = string.Format("Gender {0} is not defined", row.data.sex),
-                        raw_data = row
+                        Province = province_name,
+                        Indicator = row.indicator_code,
+                        Site = site_name,
+                        raw_data = aggregatedData
                     });
                     continue;
                 }
                 var indicator = _indicators.FirstOrDefault(s => s.Code == row.indicator_code || s.Name == row.indicator_code);
                 if (indicator == null)
                 {
-                    _errorRows.Add(new
+                    _errorRows.Add(new ErrorDetailLogging
                     {
                         Row = i + 1,
                         Code = "11",
                         Error = string.Format("Indicator {0} is not defined", row.indicator_code),
-                        raw_data = row
+                        Province = province_name,
+                        Indicator = row.indicator_code,
+                        Site = site_name,
+                        raw_data = aggregatedData
                     });
                     continue;
                 }
                 if (!double.TryParse(row.data.value, out double numerator))
                 {
-                    _errorRows.Add(new
+                    _errorRows.Add(new ErrorDetailLogging
                     {
                         Row = i + 1,
                         Code = "05",
                         Error = string.Format("Value is not defined"),
-                        raw_data = row
+                        Province = province_name,
+                        Indicator = row.indicator_code,
+                        Site = site_name,
+                        raw_data = aggregatedData
                     });
                     continue;
                 };
@@ -1711,12 +1732,15 @@ namespace PQM_WebApp.Service
                     var optional_data = row.optional_data;
                     if (!double.TryParse(optional_data.value, out double denominator))
                     {
-                        _errorRows.Add(new
+                        _errorRows.Add(new ErrorDetailLogging
                         {
                             Row = i + 1,
                             Code = "06",
                             Error = string.Format("Value is not defined"),
-                            raw_data = row,
+                            Province = province_name,
+                            Indicator = row.indicator_code,
+                            Site = site_name,
+                            raw_data = aggregatedData,
                         });
                         continue;
                     };
@@ -1734,6 +1758,7 @@ namespace PQM_WebApp.Service
                 }
                 importData.Add(data);
             };
+            #endregion
             return ImportIndicator(importData, _errorRows, username, aggregatedData, total);
         }
 
