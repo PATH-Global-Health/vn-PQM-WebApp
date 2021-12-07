@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using PQM_WebApp.Service;
 
 namespace PQM_WebApp.Controllers
@@ -13,10 +14,12 @@ namespace PQM_WebApp.Controllers
     public class ExcelsController : ControllerBase
     {
         private readonly IExcelService _excelService;
+        private IConfiguration Configuration { get; }
 
-        public ExcelsController(IExcelService excelService)
+        public ExcelsController(IExcelService excelService, IConfiguration configuration)
         {
             _excelService = excelService;
+            Configuration = configuration;
         }
 
         public IActionResult ExportExamBook(int? pageIndex = 0, int? pageSize = int.MaxValue
@@ -30,8 +33,10 @@ namespace PQM_WebApp.Controllers
                 , provinceId, districId, siteId, indicatorGroupId);
             if (result.Succeed)
             {
+                var now = DateTime.Now.ToString("yyyyMMdd");
+                var fileName = $"PQM_{Configuration["Province"]}_{now}";
                 var fileBytes = result.Data as byte[];
-                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"data.xlsx");
+                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileName}.xlsx");
             }
             return BadRequest(result.Error.ErrorMessage);
         }
