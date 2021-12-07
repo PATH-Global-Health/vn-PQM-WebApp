@@ -36,15 +36,10 @@ namespace PQM_WebApp.Service
             {
                 var filter = _dbContext.AggregatedValues.Where(w => !w.IsDeleted)
                                                 .Include(w => w.AgeGroup)
-                                                .AsSplitQuery()
                                                 .Include(w => w.Indicator)
-                                                .AsSplitQuery()
                                                 .Include(w => w.Gender)
-                                                .AsSplitQuery()
                                                 .Include(w => w.Site)
-                                                .AsSplitQuery()
                                                 .Include(w => w.KeyPopulation)
-                                                .AsSplitQuery()
                                                 .AsNoTracking();
                 if (!string.IsNullOrEmpty(period))
                 {
