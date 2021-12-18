@@ -54,7 +54,7 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpPut("")]
-        public IActionResult Update(IndicatorImportModel aggregatedValue)
+        public IActionResult Update(AggregatedValueUpdaetModel aggregatedValue)
         {
             var rs = _aggregatedService.Update(aggregatedValue);
             if (rs.Succeed) return Ok(rs.Data);

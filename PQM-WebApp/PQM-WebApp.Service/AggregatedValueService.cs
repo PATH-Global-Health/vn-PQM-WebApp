@@ -30,7 +30,7 @@ namespace PQM_WebApp.Service
                       , Guid? indicatorId = null, Guid? ageGroupId = null, Guid? genderId = null, Guid? keyPopulationId = null
                       , Guid? provinceId = null, Guid? districId = null, Guid? siteId = null, Guid? indicatorGroupId = null);
         ResultModel Create(IndicatorImportModel aggregatedValue);
-        ResultModel Update(IndicatorImportModel aggregatedValue);
+        ResultModel Update(AggregatedValueUpdaetModel aggregatedValue);
         ResultModel Delete(Guid id);
         /// <summary>
         /// 
@@ -1433,87 +1433,35 @@ namespace PQM_WebApp.Service
             return rs;
         }
 
-        public ResultModel Update(IndicatorImportModel aggregatedValue)
+        public ResultModel Update(AggregatedValueUpdaetModel aggregatedValue)
         {
             var rs = new ResultModel();
-            #region check time
-            string error;
-            aggregatedValue = VerifyTime(aggregatedValue, out error);
-            if (error.Length > 0)
+            try
             {
-                return new ResultModel
+                var item = _dbContext.AggregatedValues.FirstOrDefault(s => s.Id == aggregatedValue.Id);
+                if (item == null)
                 {
-                    Succeed = false,
-                    Error = new ErrorModel
-                    {
-                        ErrorMessage = error,
-                    }
-                };
-            }
-            #endregion
-            #region map category alias name and add unsolved dimension value
-            var localUndefinedDimValues = new Dictionary<string, UndefinedDimValue>();
-            var errors = new List<ErrorDetailLogging>();
-            var definedDimValue = GetDimensionValues(aggregatedValue, 0, out localUndefinedDimValues, out errors);
-            if (errors.Count > 0)
-            {
-                return new ResultModel
+                    rs.Succeed = false;
+                    rs.Error.ErrorMessage = "Not found";
+                    return rs;
+                }
+                item.Numerator = aggregatedValue.Numerator;
+                if(aggregatedValue.Denominator != null)
                 {
-                    Succeed = false,
-                    Error = new ErrorModel
-                    {
-                        ErrorMessage = JsonConvert.SerializeObject(errors),
-                    }
-                };
+                    item.Denominator = aggregatedValue.Denominator.Value;
+                }
+                _dbContext.AggregatedValues.Update(item);
+                _dbContext.SaveChanges();
+                rs.Succeed = true;
+                rs.Data = item.Adapt<AggregatedValueViewModel>();
+                return rs;
             }
-            if (localUndefinedDimValues.Count > 0)
+            catch (Exception ex)
             {
-                return new ResultModel
-                {
-                    Succeed = false,
-                    Error = new ErrorModel
-                    {
-                        ErrorMessage = JsonConvert.SerializeObject(localUndefinedDimValues.Select(s => string.Format("Category {0} does not have value: {1}", s.Key, s.Value.UndefinedValue))),
-                    }
-                };
+                rs.Succeed = false;
+                rs.Error.ErrorMessage = ex.Message;
+                return rs;
             }
-            #endregion
-            #region add aggregated value to database
-            var indicator = _dbContext.Indicators.FirstOrDefault(f => f.Name.Equals(aggregatedValue.Indicator));
-            Guid ageGroupId; definedDimValue.TryGetValue("AgeGroup", out ageGroupId);
-            Guid siteId; definedDimValue.TryGetValue("Site", out siteId);
-            Guid keyPopulationId; definedDimValue.TryGetValue("KeyPopulation", out keyPopulationId);
-            Guid genderId; definedDimValue.TryGetValue("Gender", out genderId);
-            var current = _dbContext.AggregatedValues.FirstOrDefault(f => f.SiteId == siteId
-                                                                       && f.KeyPopulationId == keyPopulationId
-                                                                       && f.AgeGroupId == ageGroupId
-                                                                       && f.GenderId == genderId
-                                                                       && f.IndicatorId == indicator.Id
-                                                                       && f.Day == aggregatedValue.Day
-                                                                       && f.Month == aggregatedValue.Month
-                                                                       && f.Quarter == aggregatedValue.Quarter
-                                                                       && f.Year == aggregatedValue.Year
-                                                                       && f.PeriodType == aggregatedValue.PeriodType);
-            if (current == null)
-            {
-                return new ResultModel
-                {
-                    Succeed = false,
-                    Error = new ErrorModel
-                    {
-                        ErrorMessage = "no existed aggregated value",
-                    }
-                };
-            }
-            else
-            {
-                current.Numerator = aggregatedValue.Numerator;
-                current.Denominator = aggregatedValue.Denominator.Value;
-                _dbContext.AggregatedValues.Update(current);
-            }
-            #endregion
-            rs.Succeed = _dbContext.SaveChanges() > 0;
-            return rs;
         }
 
         private int GetQuarter(int month)

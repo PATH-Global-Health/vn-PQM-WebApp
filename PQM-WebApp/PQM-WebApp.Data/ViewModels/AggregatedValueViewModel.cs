@@ -34,4 +34,11 @@ namespace PQM_WebApp.Data.ViewModels
         public string DataSource { get; set; }
         public virtual ICollection<UnsolvedDimValueViewModel> UnsolvedDimValues { get; set; }
     }
+
+    public class AggregatedValueUpdaetModel
+    {
+        public Guid Id { get; set; }
+        public int Numerator { get; set; }
+        public int? Denominator { get; set; }
+    }
 }
