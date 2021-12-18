@@ -20,5 +20,6 @@ namespace PQM_WebApp.Data.ViewModels
     public class DistrictModel : DistrictCreateModel
     {
         public Guid Id { get; set; }
+        public ProvinceModel Province { get; set; }
     }
 }

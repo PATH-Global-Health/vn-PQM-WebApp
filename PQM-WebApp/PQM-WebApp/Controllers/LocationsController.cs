@@ -191,11 +191,20 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet("Sites/ByCode")]
-        public IActionResult GetSitesByCode(int pageIndex = 0, int pageSize = 10, string provinceCode = null, string districtCode = null, Guid? siteTypeId = null)
+        public IActionResult GetSitesByCode(int pageIndex = 0, int pageSize = 10, string provinceCode = null, string districtCode = null, Guid? siteTypeId = null, DateTime? from = null, DateTime? to = null)
         {
-            var rs = _locationService.GetSites(pageIndex, pageSize, provinceCode, districtCode, siteTypeId);
+            var rs = _locationService.GetSites(pageIndex, pageSize, provinceCode, districtCode, siteTypeId, from, to);
             if (rs.Succeed)
                 return Ok(rs);
+            return BadRequest(rs.Error.ErrorMessage);
+        }
+
+        [HttpGet("AllSites")]
+        public IActionResult GetAllSites(string provinceCode = null, string districtCode = null, DateTime? from = null, DateTime? to = null)
+        {
+            var rs = _locationService.GetAllSites(provinceCode, districtCode, from, to);
+            if (rs.Succeed)
+                return Ok(rs.Data);
             return BadRequest(rs.Error.ErrorMessage);
         }
 

@@ -21,5 +21,7 @@ namespace PQM_WebApp.Data.ViewModels
     public class SiteViewModel : SiteCreateModel
     {
         public Guid Id { get; set; }
+        public SiteTypeViewModel SiteType { get; set; }
+        public DistrictModel District { get; set; }
     }
 }

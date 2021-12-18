@@ -25,11 +25,12 @@ namespace PQM_WebApp.Service
         ResultModel DeleteDistrict(DistrictModel model);
 
         ResultModel GetSites(Guid districtId);
-        ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null, Guid? siteTypeId = null);
+        ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null, Guid? siteTypeId = null, DateTime? from = null, DateTime? to = null);
         ResultModel CreateSite(SiteCreateModel model);
         ResultModel UpdateSite(SiteViewModel model);
         ResultModel DeleteSite(SiteViewModel model);
         ResultModel ImportSites(List<SiteCreateModel> sites);
+        ResultModel GetAllSites(string provinceCode = null, string districtCode = null, DateTime? from = null, DateTime? to = null);
     }
 
     public class LocationService : ILocationService
@@ -347,7 +348,7 @@ namespace PQM_WebApp.Service
             return result;
         }
 
-        public ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null, Guid? siteTypeId = null)
+        public ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null, Guid? siteTypeId = null, DateTime? from = null, DateTime? to = null)
         {
             var result = new PagingModel();
             try
@@ -355,7 +356,9 @@ namespace PQM_WebApp.Service
                 var filter = _dbContext.Sites.Include(s => s.District).ThenInclude(s => s.Province).AsSoftDelete(false)
                                             .Where(w => (proviceCode == null || w.District.Province.Code == proviceCode)
                                                      && (districtCode == null || w.District.Code == districtCode)
-                                                     && (siteTypeId == null || w.SiteTypeId == siteTypeId));
+                                                     && (siteTypeId == null || w.SiteTypeId == siteTypeId)
+                                                     && (from == null || (w.DateUpdated == null && w.DateCreated >= from.Value) || (w.DateUpdated != null && w.DateUpdated >= from.Value))
+                                                     && (to == null || (w.DateUpdated == null && w.DateCreated <= to.Value) || (w.DateUpdated != null && w.DateUpdated <= to.Value)));
                 result.Total = filter.Count();
                 result.PageCount = filter.PageCount(pageSize);
                 var data = filter.Skip(pageIndex * pageSize)
@@ -573,5 +576,47 @@ namespace PQM_WebApp.Service
             site.Lng = source.Lng;
         }
 
+        public ResultModel GetAllSites(string provinceCode = null, string districtCode = null, DateTime? from = null, DateTime? to = null)
+        {
+            try
+            {
+                var filter = _dbContext.Sites.Include(s => s.District).ThenInclude(s => s.Province).AsSoftDelete(false)
+                                            .Where(w => (provinceCode == null || w.District.Province.Code == provinceCode)
+                                                     && (districtCode == null || w.District.Code == districtCode)
+                                                     && (from == null || (w.DateUpdated == null && w.DateCreated >= from.Value) || (w.DateUpdated != null && w.DateUpdated >= from.Value))
+                                                     && (to == null || (w.DateUpdated == null && w.DateCreated <= to.Value) || (w.DateUpdated != null && w.DateUpdated <= to.Value)));
+
+                var data = filter.Select(s => new
+                {
+                    site_name = s.Name,
+                    site_code = s.Code,
+                    district_code = s.District.Code,
+                    district_name = s.District.Name,
+                    province_code = s.District.Province.Code,
+                    province_name = s.District.Province.Name,
+                    site_type = s.SiteType.Name,
+                    lat = s.Lat,
+                    lng = s.Lng,
+                    date_created = s.DateCreated,
+                    date_updated = s.DateUpdated
+                }).ToList();
+                return new ResultModel
+                {
+                    Data = data,
+                    Succeed = true,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultModel
+                {
+                    Succeed = false,
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = ex.Message
+                    }
+                };
+            }
+        }
     }
 }
