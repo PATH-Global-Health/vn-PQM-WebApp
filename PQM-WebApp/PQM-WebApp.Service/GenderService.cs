@@ -14,7 +14,7 @@ namespace PQM_WebApp.Service
     public interface IGenderService
     {
         ResultModel Create(GenderCreateModel model);
-        PagingModel Get(int pageIndex, int pageSize);
+        PagingModel Get(int pageIndex, int pageSize, DateTime? from = null, DateTime? to = null);
         ResultModel Update(GenderViewModel model);
         ResultModel Delete(GenderViewModel model);
     }
@@ -56,12 +56,14 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public PagingModel Get(int pageIndex, int pageSize)
+        public PagingModel Get(int pageIndex, int pageSize, DateTime? from = null, DateTime? to = null)
         {
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.Gender.Where(_ => _.IsDeleted == false);
+                var filter = _dbContext.Gender.AsSoftDelete(false)
+                    .Where(w => (from == null || (w.DateUpdated == null && w.DateCreated >= from.Value) || (w.DateUpdated != null && w.DateUpdated >= from.Value))
+                                                     && (to == null || (w.DateUpdated == null && w.DateCreated <= to.Value) || (w.DateUpdated != null && w.DateUpdated <= to.Value)));
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<GenderViewModel>>();
                 result.Succeed = true;

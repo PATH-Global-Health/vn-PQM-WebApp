@@ -34,9 +34,9 @@ namespace PQM_WebApp.Controllers
         /// <param name="pageSize">Page Size</param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Get(int pageIndex = 0, int pageSize = int.MaxValue)
+        public IActionResult Get(int pageIndex = 0, int pageSize = int.MaxValue, DateTime? from = null, DateTime? to = null)
         {
-            var rs = _keyPopulationService.Get(pageIndex, pageSize);
+            var rs = _keyPopulationService.Get(pageIndex, pageSize, from, to);
             if (rs.Succeed)
                 return Ok(rs.Data);
             return BadRequest(rs.Error.ErrorMessage);

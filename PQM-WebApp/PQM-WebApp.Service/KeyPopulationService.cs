@@ -16,7 +16,7 @@ namespace PQM_WebApp.Service
     public interface IKeyPopulationService
     {
         ResultModel Create(KeyPopulationCreateModel model);
-        PagingModel Get(int pageIndex, int pageSize);
+        PagingModel Get(int pageIndex, int pageSize, DateTime? from = null, DateTime? to = null);
         ResultModel Update(KeyPopulationViewModel model);
         ResultModel Delete(KeyPopulationViewModel model);
     }
@@ -62,12 +62,15 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public PagingModel Get(int pageIndex, int pageSize)
+        public PagingModel Get(int pageIndex, int pageSize, DateTime? from = null, DateTime? to = null)
         {
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.KeyPopulations.AsSoftDelete(false).OrderBy(x => x.DateCreated);
+                var filter = _dbContext.KeyPopulations.AsSoftDelete(false)
+                    .Where(w => (from == null || (w.DateUpdated == null && w.DateCreated >= from.Value) || (w.DateUpdated != null && w.DateUpdated >= from.Value))
+                                                     && (to == null || (w.DateUpdated == null && w.DateCreated <= to.Value) || (w.DateUpdated != null && w.DateUpdated <= to.Value)))
+                    .OrderBy(x => x.DateCreated);
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<KeyPopulationViewModel>>();
                 result.Succeed = true;

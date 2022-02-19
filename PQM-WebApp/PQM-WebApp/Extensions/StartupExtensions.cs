@@ -64,6 +64,7 @@ namespace PQM_WebApp.Extensions
             services.AddTransient<IDataPermissionService, DataPermissionService>();
             services.AddTransient<IErrorLoggingService, ErrorLoggingService>();
             services.AddTransient<IExcelService, ExcelService>();
+            services.AddTransient<ICategoryService, CategoryService>();
         }
 
         public static void ConfigDbContext(this IServiceCollection services, string dbConnection)

@@ -29,9 +29,9 @@ namespace PQM_WebApp.Controllers
         /// In case pageIndex = 0 and pageSize = MaxValue, the system will return all items
         /// </remarks>
         [HttpGet]
-        public IActionResult Get(int pageIndex = 0, int pageSize = int.MaxValue)
+        public IActionResult Get(int pageIndex = 0, int pageSize = int.MaxValue, DateTime? from = null, DateTime? to = null)
         {
-            var rs = _ageGroupService.Get(pageIndex, pageSize);
+            var rs = _ageGroupService.Get(pageIndex, pageSize, from, to);
             if (rs.Succeed)
                 return Ok(rs.Data);
             return BadRequest(rs.Error.ErrorMessage);
