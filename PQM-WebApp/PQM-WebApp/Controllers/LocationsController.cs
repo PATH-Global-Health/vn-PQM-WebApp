@@ -163,6 +163,18 @@ namespace PQM_WebApp.Controllers
         }
 
         /// <summary>
+        /// Create a site
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("Sites/CreateSiteFromDataHub")]
+        public IActionResult CreateSiteFromDataHub(SiteCreateModel model)
+        {
+            var rs = _locationService.CreateSiteFromDataHub(model);
+            return Ok(rs);
+        }
+
+        /// <summary>
         /// Update a site
         /// </summary>
         /// <param name="model"></param>
@@ -191,11 +203,20 @@ namespace PQM_WebApp.Controllers
         }
 
         [HttpGet("Sites/ByCode")]
-        public IActionResult GetSitesByCode(int pageIndex = 0, int pageSize = 10, string provinceCode = null, string districtCode = null, Guid? siteTypeId = null)
+        public IActionResult GetSitesByCode(int pageIndex = 0, int pageSize = 10, string provinceCode = null, string districtCode = null, Guid? siteTypeId = null, DateTime? from = null, DateTime? to = null)
         {
-            var rs = _locationService.GetSites(pageIndex, pageSize, provinceCode, districtCode, siteTypeId);
+            var rs = _locationService.GetSites(pageIndex, pageSize, provinceCode, districtCode, siteTypeId, from, to);
             if (rs.Succeed)
                 return Ok(rs);
+            return BadRequest(rs.Error.ErrorMessage);
+        }
+
+        [HttpGet("AllSites")]
+        public IActionResult GetAllSites(string provinceCode = null, string districtCode = null, DateTime? from = null, DateTime? to = null)
+        {
+            var rs = _locationService.GetAllSites(provinceCode, districtCode, from, to);
+            if (rs.Succeed)
+                return Ok(rs.Data);
             return BadRequest(rs.Error.ErrorMessage);
         }
 
@@ -206,6 +227,20 @@ namespace PQM_WebApp.Controllers
             if (rs.Succeed)
                 return Ok(rs.Data);
             return BadRequest(rs.Error.ErrorMessage);
+        }
+
+        [HttpGet("DataHubGetProvince")]
+        public IActionResult GetProvinceFromHub(DateTime? from = null, DateTime? to = null)
+        {
+            var rs = _locationService.DataHubGetProvinces(from, to);
+            return Ok(rs.Data);
+        }
+
+        [HttpGet("DataHubGetDistrict")]
+        public IActionResult GetDistrictFromHub(string province_code = null, DateTime? from = null, DateTime? to = null)
+        {
+            var rs = _locationService.DataHubGetDistricts(province_code, from, to);
+            return Ok(rs.Data);
         }
     }
 }

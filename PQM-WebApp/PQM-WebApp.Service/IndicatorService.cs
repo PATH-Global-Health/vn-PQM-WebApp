@@ -25,7 +25,7 @@ namespace PQM_WebApp.Service
     public interface IIndicatorService
     {
         public ResultModel Create(IndicatorCreateModel model);
-        public ResultModel Get(int pageIndex, int pageSize);
+        public ResultModel Get(int pageIndex, int pageSize, DateTime? from = null, DateTime? to = null);
         public ResultModel Update(IndicatorViewModel model);
         public ResultModel Delete(IndicatorViewModel model);
 
@@ -80,12 +80,14 @@ namespace PQM_WebApp.Service
             }
         }
 
-        public ResultModel Get(int pageIndex, int pageSize)
+        public ResultModel Get(int pageIndex, int pageSize, DateTime? from = null, DateTime? to = null)
         {
             var result = new PagingModel();
             try
             {
-                var filter = _dbContext.Indicators.AsSoftDelete(false);
+                var filter = _dbContext.Indicators.AsSoftDelete(false)
+                                        .Where(w => (from == null || (w.DateUpdated == null && w.DateCreated >= from.Value) || (w.DateUpdated != null && w.DateUpdated >= from.Value))
+                                                     && (to == null || (w.DateUpdated == null && w.DateCreated <= to.Value) || (w.DateUpdated != null && w.DateUpdated <= to.Value)));
                 result.PageCount = filter.PageCount(pageSize);
                 result.Data = filter.Skip(pageIndex * pageSize).Take(pageSize).Adapt<IEnumerable<IndicatorViewModel>>();
                 result.Succeed = true;

@@ -1,5 +1,7 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using PQM_WebApp.Data;
 using PQM_WebApp.Data.Entities;
 using PQM_WebApp.Data.Models;
@@ -8,7 +10,9 @@ using PQM_WebApp.Service.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Web;
 
 namespace PQM_WebApp.Service
 {
@@ -25,20 +29,27 @@ namespace PQM_WebApp.Service
         ResultModel DeleteDistrict(DistrictModel model);
 
         ResultModel GetSites(Guid districtId);
-        ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null, Guid? siteTypeId = null);
+        ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null, Guid? siteTypeId = null, DateTime? from = null, DateTime? to = null);
         ResultModel CreateSite(SiteCreateModel model);
+        ResultModel CreateSiteFromDataHub(SiteCreateModel model);
         ResultModel UpdateSite(SiteViewModel model);
         ResultModel DeleteSite(SiteViewModel model);
         ResultModel ImportSites(List<SiteCreateModel> sites);
+        ResultModel GetAllSites(string provinceCode = null, string districtCode = null, DateTime? from = null, DateTime? to = null);
+
+        ResultModel DataHubGetProvinces(DateTime? from = null, DateTime? to = null);
+        ResultModel DataHubGetDistricts(string code = null, DateTime? from = null, DateTime? to = null);
     }
 
     public class LocationService : ILocationService
     {
         private readonly AppDBContext _dbContext;
+        private string GOOGLE_APIKEY;
 
-        public LocationService(AppDBContext dBContext)
+        public LocationService(AppDBContext dBContext, IConfiguration configuration)
         {
             _dbContext = dBContext;
+            GOOGLE_APIKEY = configuration["GOOGLE_APIKEY"];
         }
 
         public PagingModel GetProvinces(int pageIndex, int pageSize)
@@ -347,7 +358,7 @@ namespace PQM_WebApp.Service
             return result;
         }
 
-        public ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null, Guid? siteTypeId = null)
+        public ResultModel GetSites(int pageIndex, int pageSize, string proviceCode = null, string districtCode = null, Guid? siteTypeId = null, DateTime? from = null, DateTime? to = null)
         {
             var result = new PagingModel();
             try
@@ -355,7 +366,9 @@ namespace PQM_WebApp.Service
                 var filter = _dbContext.Sites.Include(s => s.District).ThenInclude(s => s.Province).AsSoftDelete(false)
                                             .Where(w => (proviceCode == null || w.District.Province.Code == proviceCode)
                                                      && (districtCode == null || w.District.Code == districtCode)
-                                                     && (siteTypeId == null || w.SiteTypeId == siteTypeId));
+                                                     && (siteTypeId == null || w.SiteTypeId == siteTypeId)
+                                                     && (from == null || (w.DateUpdated == null && w.DateCreated >= from.Value) || (w.DateUpdated != null && w.DateUpdated >= from.Value))
+                                                     && (to == null || (w.DateUpdated == null && w.DateCreated <= to.Value) || (w.DateUpdated != null && w.DateUpdated <= to.Value)));
                 result.Total = filter.Count();
                 result.PageCount = filter.PageCount(pageSize);
                 var data = filter.Skip(pageIndex * pageSize)
@@ -567,11 +580,223 @@ namespace PQM_WebApp.Service
             site.CreatedBy = source.CreatedBy;
             site.Code = source.Code;
             site.Order = source.Order;
-            site.DistrictId = source.DistrictId;
+            site.DistrictId = source.DistrictId.Value;
             site.SiteTypeId = source.SiteTypeId;
             site.Lat = source.Lat;
             site.Lng = source.Lng;
         }
 
+        public ResultModel GetAllSites(string provinceCode = null, string districtCode = null, DateTime? from = null, DateTime? to = null)
+        {
+            try
+            {
+                var filter = _dbContext.Sites.Include(s => s.District).ThenInclude(s => s.Province).AsSoftDelete(false)
+                                            .Where(w => (provinceCode == null || w.District.Province.Code == provinceCode)
+                                                     && (districtCode == null || w.District.Code == districtCode)
+                                                     && (from == null || (w.DateUpdated == null && w.DateCreated >= from.Value) || (w.DateUpdated != null && w.DateUpdated >= from.Value))
+                                                     && (to == null || (w.DateUpdated == null && w.DateCreated <= to.Value) || (w.DateUpdated != null && w.DateUpdated <= to.Value)));
+
+                var data = filter.Select(s => new
+                {
+                    site_name = s.Name,
+                    site_code = s.Code,
+                    district_code = s.District.Code,
+                    district_name = s.District.Name,
+                    province_code = s.District.Province.Code,
+                    province_name = s.District.Province.Name,
+                    site_type = s.SiteType.Name,
+                    lat = s.Lat,
+                    lng = s.Lng,
+                    date_created = s.DateCreated,
+                    date_updated = s.DateUpdated
+                }).ToList();
+                return new ResultModel
+                {
+                    Data = data,
+                    Succeed = true,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultModel
+                {
+                    Succeed = false,
+                    Error = new ErrorModel
+                    {
+                        ErrorMessage = ex.Message
+                    }
+                };
+            }
+        }
+
+        private bool GetLocation(string address, out double lat, out double lng)
+        {
+            var url = new Uri($"https://maps.googleapis.com/maps/api/geocode/json?key={GOOGLE_APIKEY}&address={address}&sensor=true");
+            using var httpClient = new HttpClient();
+            var response = httpClient.GetAsync(url).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                var oRootObject = JsonConvert.DeserializeObject<MapsResponse.Rootobject>(content);
+                if (oRootObject.status == "OK")
+                {
+                    lat = oRootObject.results[0].geometry.location.lat;
+                    lng = oRootObject.results[0].geometry.location.lng;
+                    return true;
+                }
+            }
+            lat = 0;
+            lng = 0;
+            return false;
+        }
+
+        public ResultModel CreateSiteFromDataHub(SiteCreateModel model)
+        {
+            var rs = new ResultModel { Succeed = false };
+            #region Verify data
+            if (string.IsNullOrEmpty(model.Code))
+            {
+                rs.Error = new ErrorModel
+                {
+                    Code = "01",
+                    ErrorMessage = "Site code is empty"
+                };
+                return rs;
+            }
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                rs.Error = new ErrorModel
+                {
+                    Code = "02",
+                    ErrorMessage = "Site name is empty"
+                };
+                return rs;
+            }
+            if (string.IsNullOrEmpty(model.Address))
+            {
+                rs.Error = new ErrorModel
+                {
+                    Code = "03",
+                    ErrorMessage = "Site address is empty"
+                };
+                return rs;
+            }
+            if (string.IsNullOrEmpty(model.DistrictCode))
+            {
+                rs.Error = new ErrorModel
+                {
+                    Code = "04",
+                    ErrorMessage = "District code is empty"
+                };
+                return rs;
+            }
+            #endregion
+            try
+            {
+                var site = model.Adapt<Site>();
+                var existWithCode = _dbContext.Sites.AsSoftDelete(false).FirstOrDefault(s => s.Code == model.Code);
+                if (existWithCode != null)
+                {
+                    rs.Error = new ErrorModel
+                    {
+                        Code = "05",
+                        ErrorMessage = "Code is existed"
+                    };
+                    return rs;
+                }
+                var district = _dbContext.Districts.FirstOrDefault(s => s.Code == model.DistrictCode);
+                if (district == null)
+                {
+                    rs.Error = new ErrorModel
+                    {
+                        Code = "06",
+                        ErrorMessage = "No district for reference"
+                    };
+                    return rs;
+                }
+                if (model.SiteTypeId != null)
+                {
+                    var siteType = _dbContext.SiteTypes.AsSoftDelete(false).FirstOrDefault(s => s.Id == model.SiteTypeId);
+                    if (siteType == null)
+                    {
+                        rs.Error = new ErrorModel
+                        {
+                            Code = "07",
+                            ErrorMessage = "No site type for reference"
+                        };
+                        return rs;
+                    }
+                }
+                site.DistrictId = district.Id;
+                site.DateCreated = DateTime.UtcNow;
+                if (GetLocation(model.Address, out var lat, out var lng))
+                {
+                    site.Lat = lat;
+                    site.Lng = lng;
+                }
+                _dbContext.Sites.Add(site);
+                _dbContext.SaveChanges();
+                rs.Data = site.Adapt<SiteViewModel>();
+                rs.Succeed = true;
+                return rs;
+            }
+            catch (Exception ex)
+            {
+                rs.Succeed = false;
+                rs.Error.ErrorMessage = ex.Message;
+                return rs;
+            }
+        }
+
+        public ResultModel DataHubGetProvinces(DateTime? from = null, DateTime? to = null)
+        {
+            var rs = new ResultModel();
+            try
+            {
+                rs.Data = _dbContext.Provinces.AsSoftDelete(false)
+                                                    .Where(w => (from == null || (w.DateUpdated == null && w.DateCreated >= from.Value) || (w.DateUpdated != null && w.DateUpdated >= from.Value))
+                                                     && (to == null || (w.DateUpdated == null && w.DateCreated <= to.Value) || (w.DateUpdated != null && w.DateUpdated <= to.Value)))
+                                                    .Select(s => new
+                                                    {
+                                                        province_name = s.Name,
+                                                        province_code = s.Code
+                                                    }).ToList();
+                rs.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                rs.Succeed = false;
+                rs.Error.ErrorMessage = ex.Message;
+            }
+            return rs;
+        }
+
+        public ResultModel DataHubGetDistricts(string code = null, DateTime? from = null, DateTime? to = null)
+        {
+            var rs = new ResultModel();
+            try
+            {
+                rs.Data = _dbContext.Districts.AsSoftDelete(false)
+                                                    .Where(w => w.Province.Code == code || code == null)
+                                                    .Where(w => (from == null || (w.DateUpdated == null && w.DateCreated >= from.Value) || (w.DateUpdated != null && w.DateUpdated >= from.Value))
+                                                     && (to == null || (w.DateUpdated == null && w.DateCreated <= to.Value) || (w.DateUpdated != null && w.DateUpdated <= to.Value)))
+                                                    .Select(s => new
+                                                    {
+                                                        district_name = s.Name,
+                                                        name_with_type = s.NameWithType,
+                                                        path = s.Path,
+                                                        path_with_type = s.PathWithType,
+                                                        district_code = s.Code,
+                                                        province_code = s.Province.Code
+                                                    }).ToList();
+                rs.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                rs.Succeed = false;
+                rs.Error.ErrorMessage = ex.Message;
+            }
+            return rs;
+        }
     }
 }
