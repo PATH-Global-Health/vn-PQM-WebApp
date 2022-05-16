@@ -58,6 +58,7 @@ namespace PQM_WebApp
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Dashboard}/{action=Index}/{id?}");

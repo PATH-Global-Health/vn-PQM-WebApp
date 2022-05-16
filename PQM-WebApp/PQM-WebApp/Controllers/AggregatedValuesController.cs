@@ -45,7 +45,7 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.Error.ErrorMessage);
         }
 
-        [HttpPost("")]
+        [HttpPost("/api/AggregatedValues/Create")]
         public IActionResult Create(IndicatorImportModel aggregatedValue)
         {
             var rs = _aggregatedService.Create(aggregatedValue);
@@ -53,15 +53,15 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.Error.ErrorMessage);
         }
 
-        [HttpPut("")]
-        public IActionResult Update(AggregatedValueUpdaetModel aggregatedValue)
+        [HttpPut("/api/AggregatedValues/Update")]
+        public IActionResult Update(AggregatedValueUpdateModel aggregatedValue)
         {
             var rs = _aggregatedService.Update(aggregatedValue);
             if (rs.Succeed) return Ok(rs.Data);
             return BadRequest(rs.Error.ErrorMessage);
         }
 
-        [HttpDelete("")]
+        [HttpDelete("/api/AggregatedValues/Delete")]
         public IActionResult Delete(Guid id)
         {
             var rs = _aggregatedService.Delete(id);
@@ -69,7 +69,7 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.Error.ErrorMessage);
         }
 
-        [HttpPost("ImportByExcel")]
+        [HttpPost("/api/AggregatedValues/ImportByExcel")]
         [Consumes("multipart/form-data")]
         public IActionResult ImportByExcel([FromForm] IFormFile file)
         {
@@ -78,7 +78,7 @@ namespace PQM_WebApp.Controllers
             return Ok(rs);
         }
 
-        [HttpPost("Import")]
+        [HttpPost("/api/AggregatedValues/Import")]
         public IActionResult ImportAggregateData([FromBody] List<IndicatorImportModel> aggregateData)
         {
             var username = User.Claims.FirstOrDefault(s => s.Type == "Username").Value;
@@ -90,7 +90,7 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.Error.ErrorMessage);
         }
 
-        [HttpPost("ImportV2")]
+        [HttpPost("/api/AggregatedValues/ImportV2")]
         public IActionResult ImportAggregateDataV2([FromBody] AggregatedData aggregateData)
         {
             var rs = _aggregatedService.ImportIndicator(aggregateData, "admin");
@@ -101,13 +101,13 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs);
         }
 
-        [HttpPost("PopulateData")]
+        [HttpPost("/api/AggregatedValues/PopulateData")]
         public IActionResult PopulateData(string indicator, int year, int month, int? day = null, bool all = false, bool makeDeletion = false)
         {
             return Ok(_aggregatedService.PopulateData(indicator, year, month, day, all, makeDeletion));
         }
 
-        [HttpGet("ChartData")]
+        [HttpGet("/api/AggregatedValues/ChartData")]
         public IActionResult GetChartData(string indicator, int year, int quarter, string provinceCode, string districtCode, int? month = null, string ageGroups = null, string keyPopulations = null, string genders = null, string clinnics = null)
         {
             var rs = _aggregatedService.GetChartData(indicator, year, quarter, provinceCode, districtCode, month, ageGroups, keyPopulations, genders, clinnics);
@@ -118,7 +118,7 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.Error.ErrorMessage);
         }
 
-        [HttpGet("IndicatorValues")]
+        [HttpGet("/api/AggregatedValues/IndicatorValues")]
         public IActionResult GetIndicatorValues(string provinceCode, string districtCode
                                               , string indicatorGroup, string indicatorCode
                                               , int year, int? quarter = null, int? month = null
@@ -132,20 +132,20 @@ namespace PQM_WebApp.Controllers
             return BadRequest(rs.Error.ErrorMessage);
         }
 
-        [HttpGet("ClearAll")]
+        [HttpGet("/api/AggregatedValues/ClearAll")]
         public IActionResult ClearAll()
         {
             _aggregatedService.ClearAll();
             return Ok();
         }
 
-        [HttpPost("Recall")]
-        public IActionResult Recall([FromBody]RecallModel model)
+        [HttpPost("/api/AggregatedValues/Recall")]
+        public IActionResult Recall([FromBody] RecallModel model)
         {
             return Ok(_aggregatedService.Recall(model));
         }
 
-        [HttpGet("CheckVersion")]
+        [HttpGet("/api/AggregatedValues/CheckVersion")]
         public IActionResult CheckVersion()
         {
             return Ok(new { v = "1.0.0" });

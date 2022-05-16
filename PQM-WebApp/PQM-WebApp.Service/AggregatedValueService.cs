@@ -30,7 +30,7 @@ namespace PQM_WebApp.Service
                       , Guid? indicatorId = null, Guid? ageGroupId = null, Guid? genderId = null, Guid? keyPopulationId = null
                       , Guid? provinceId = null, Guid? districId = null, Guid? siteId = null, Guid? indicatorGroupId = null);
         ResultModel Create(IndicatorImportModel aggregatedValue);
-        ResultModel Update(AggregatedValueUpdaetModel aggregatedValue);
+        ResultModel Update(AggregatedValueUpdateModel aggregatedValue);
         ResultModel Delete(Guid id);
         /// <summary>
         /// 
@@ -1350,6 +1350,10 @@ namespace PQM_WebApp.Service
             #endregion
             #region add aggregated value to database
             var indicator = _dbContext.Indicators.FirstOrDefault(f => f.Name.Equals(aggregatedValue.Indicator));
+            if (Guid.TryParse(aggregatedValue.Indicator, out var indicatorValue))
+            {
+                indicator = _dbContext.Indicators.FirstOrDefault(f => f.Id.Equals(indicatorValue));
+            }
             Guid ageGroupId; definedDimValue.TryGetValue("AgeGroup", out ageGroupId);
             Guid siteId; definedDimValue.TryGetValue("Site", out siteId);
             Guid keyPopulationId; definedDimValue.TryGetValue("KeyPopulation", out keyPopulationId);

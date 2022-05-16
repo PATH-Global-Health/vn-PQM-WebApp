@@ -79,7 +79,7 @@ namespace PQM_WebApp.Extensions
             services.AddOpenApiDocument(document =>
             {
                 document.Title = "PQM API";
-                document.Version = "1.0";
+                document.Version = "1.0.1";
                 document.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
                 {
                     Type = OpenApiSecuritySchemeType.ApiKey,
