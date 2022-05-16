@@ -530,6 +530,16 @@ namespace PQM_WebApp.Service
             };
         }
 
+        private async Task PopulateDataAsync(string indicator, int year, int month, int? day = null, bool all = false, bool makeDeletion = false)
+        {
+            await Task.Run(() =>
+            {
+                Console.WriteLine("Start populate data");
+                var rs = PopulateData(indicator, year, month, day, all, makeDeletion);
+                Console.WriteLine(JsonConvert.SerializeObject(rs));
+            });
+        }
+
         public ResultModel PopulateData(string indicator, int year, int month, int? day = null, bool all = false, bool makeDeletion = false)
         {
             if (makeDeletion)
@@ -1408,6 +1418,7 @@ namespace PQM_WebApp.Service
             }
             #endregion
             rs.Succeed = _dbContext.SaveChanges() > 0;
+            PopulateDataAsync("", 0, 0, 0, true, true);
             return rs;
         }
 
