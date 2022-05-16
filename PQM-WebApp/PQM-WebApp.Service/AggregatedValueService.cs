@@ -1437,7 +1437,7 @@ namespace PQM_WebApp.Service
             return rs;
         }
 
-        public ResultModel Update(AggregatedValueUpdaetModel aggregatedValue)
+        public ResultModel Update(AggregatedValueUpdateModel aggregatedValue)
         {
             var rs = new ResultModel();
             try
